@@ -1,7 +1,10 @@
 ![](Logos/easyROB_logo.png)
 
-#
-## <p align="center"> easyROB — Standalone GUI Launcher </p>
+<p align="center">
+  <img src="Logos/easyROB_logo.png" alt="easyROB logo" width="250"/>
+</p>
+
+<h2 align="center">easyROB — Standalone GUI Launcher</h2>
 
 ---
 
