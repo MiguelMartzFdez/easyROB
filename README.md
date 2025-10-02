@@ -1,4 +1,3 @@
-![](Logos/easyROB_logo.png)
 
 <p align="center">
   <img src="Logos/easyROB_logo.png" alt="easyROB logo" width="250"/>
