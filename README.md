@@ -28,13 +28,12 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
 ---
 
 ### 🐧 Linux instructions (coming soon)
-- A prebuilt `easyROB_linux.zip` will be provided.  
-- It will include `run_easyrob_linux.sh` and a `.desktop` launcher for menu integration.
+- .
 
 ---
 
 ### 🍏 macOS instructions (coming soon)
-- A prebuilt `.app` launcher will be available, using an AppleScript wrapper with integrated icon.
+- .
 
 ---
 
