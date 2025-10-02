@@ -1,4 +1,4 @@
-![](Logos/easyROB_logo.jpg)
+![](Logos/easyROB_logo.png)
 
 #
 ## <p align="center"> easyROB — Standalone GUI Launcher </p>
