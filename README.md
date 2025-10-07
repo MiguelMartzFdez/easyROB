@@ -30,9 +30,49 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
 
 ---
 
-### 🐧 Linux instructions (coming soon)
-- .
+### 🐧 Linux instructions
+1. Download and unzip **easyROB_linux.zip** from [Releases](../../releases).  
+2. Inside the folder you will find:  
+   - `run_easyrob.sh` → main launcher (starts the app using the bundled Python).  
+   - `create_desktop_shortcut.sh` → optional, creates a desktop shortcut with the official icon.  
+   - `robert_env_unpacked/` → prebuilt portable Python environment.  
+   - `easyROB/` → contains the GUI code and program icon.  
+   > ⚠️ If after extracting you get a nested folder (e.g. `easyROB_linux/easyROB_linux/...`),  
+   > move everything so that there is only **one** `easyROB_linux/` directory.
 
+3. **Give execution permissions** (first time only):  
+   Open a terminal in the folder and run:
+   ```bash
+   chmod +x run_easyrob.sh
+   chmod +x create_desktop_shortcut.sh
+   ```
+   > Alternatively, you can also right-click each file → **Properties → Permissions → Allow executing file as program**.
+
+4. **Launch easyROB manually**:  
+   You can either right-click `run_easyrob.sh` and choose **“Run as a program”**,  
+   or run it from a terminal:
+   ```bash
+   ./run_easyrob.sh
+   ```
+   You will see an info popup saying *“easyROB is starting…”*.  
+   The first run may take longer because it configures the environment.
+
+5. **(Optional) Create a desktop shortcut**:
+   You can either right-click `run_easyrob.sh` and choose **“Run as a program”**,
+   or run it from a terminal:
+   ```bash
+   ./create_desktop_shortcut.sh
+   ```
+   This will create:
+   ```
+   ~/Desktop/easyROB.desktop
+   ```
+   - If Ubuntu opens it as text, right-click → **Properties → Permissions → Allow executing file as program**.  
+   - To add it to the application menu:
+     ```bash
+     mkdir -p ~/.local/share/applications
+     cp ~/Desktop/easyROB.desktop ~/.local/share/applications/
+     ```
 ---
 
 ### 🍏 macOS instructions (coming soon)
