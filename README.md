@@ -59,7 +59,7 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
    The first run may take longer because it configures the environment.
 
 5. **(Optional) Create a desktop shortcut**:
-   You can either right-click `run_easyrob.sh` and choose **“Run as a program”**,
+   You can either right-click `create_desktop_shortcut.sh` and choose **“Run as a program”**,
    or run it from a terminal:
    ```bash
    ./create_desktop_shortcut.sh
