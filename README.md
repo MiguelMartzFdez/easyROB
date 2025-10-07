@@ -69,11 +69,6 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
    ~/Desktop/easyROB.desktop
    ```
    - If Ubuntu opens it as text, right-click → **Properties → Permissions → Allow executing file as program**.  
-   - To add it to the application menu:
-     ```bash
-     mkdir -p ~/.local/share/applications
-     cp ~/Desktop/easyROB.desktop ~/.local/share/applications/
-     ```
 ---
 
 ### 🍏 macOS instructions (coming soon)
