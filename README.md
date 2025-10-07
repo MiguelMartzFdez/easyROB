@@ -37,7 +37,7 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
    - `create_desktop_shortcut.sh` → optional, creates a desktop shortcut with the official icon.  
    - `robert_env_unpacked/` → prebuilt portable Python environment.  
    - `easyROB/` → contains the GUI code and program icon.  
-
+   &nbsp;  
    > ⚠️ If after extracting you get a nested folder (e.g. `easyROB_linux/easyROB_linux/...`),  
    > move everything so that there is only **one** `easyROB_linux/` directory.
 
