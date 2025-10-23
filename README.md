@@ -84,8 +84,7 @@ Since the app is **not code-signed**, it is **normal** that Windows Defender, Sm
 
 ---
 ### 🎥 Video tutorials  
-You can find a full playlist of tutorial videos on YouTube:  
-[Watch the tutorial videos](https://www.youtube.com/playlist?list=TU_PLAYLIST_ID)  
+You can find a full playlist of tutorial videos on YouTube:  [EasyROB Youtube Tutorial](https://www.youtube.com/watch?v=Dl-8owb3RRQ&list=PLByM6_dzomp6KHj60OzcS0ATSSe_l1Bv9)  
 Feel free to browse the playlist to see step-by-step how to use **easyROB** from installation to advanced features.
 
 ---
