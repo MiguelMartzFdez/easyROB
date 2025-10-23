@@ -83,13 +83,17 @@ Since the app is **not code-signed**, it is **normal** that Windows Defender, Sm
 - If you encounter issues, report your OS, AV product/version and the exact message.
 
 ---
+### 🎥 Video tutorials  
+You can find a full playlist of tutorial videos on YouTube:  
+[Watch the tutorial videos](https://www.youtube.com/playlist?list=TU_PLAYLIST_ID)  
+Feel free to browse the playlist to see step-by-step how to use **easyROB** from installation to advanced features.
 
+---
 ### 📝 Developers and contact
 Main developer and contact:  
 - [ ] [Miguel Martínez Fernández](https://orcid.org/0009-0002-8538-7250) — [miguel.martinez@csic.es](mailto:miguel.martinez@csic.es)
 
 For feedback, issues and improvements, please use the **Issues** and **Pull requests** tabs on GitHub.  
-
 ---
 
 ### 📜 License
