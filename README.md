@@ -17,14 +17,18 @@ Pre-packaged versions of **easyROB** (with bundled Python environments) are avai
 ---
 
 ### 🖥️ Windows instructions
+
 1. Download and unzip **easyROB_win.zip** from [Releases](../../releases).
+
 2. Inside the folder you will find:
    - `launcher.vbs` → main launcher (starts the app without console window).  
    - `create_shortcut.vbs` → optional, creates a desktop shortcut with the official icon.  
    - `tools/run_easyrob.bat` → internal script with logging and environment setup.  
    - `easyROB/` → contains the GUI code and program icon.  
    - `robert_env_unpacked/` → prebuilt Python environment.
+     
 3. Run `launcher.vbs` to start the program.
+   
 4. (Optional) Run `create_shortcut.vbs` once to place an **easyROB** icon on your desktop for easier access.
 
 The log file will be stored in `easyrob_process.log` at the root of the folder.
@@ -32,7 +36,9 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
 ---
 
 ### 🐧 Linux instructions
-1. Download and unzip **easyROB_linux.zip** from [Releases](../../releases).  
+
+1. Download and unzip **easyROB_linux.zip** from [Releases](../../releases).
+    
 2. Inside the folder you will find:  
    - `run_easyrob.sh` → main launcher (starts the app using the bundled Python).  
    - `create_desktop_shortcut.sh` → optional, creates a desktop shortcut with the official icon.  
