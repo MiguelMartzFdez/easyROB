@@ -92,7 +92,7 @@ You can find a full playlist of tutorial videos on YouTube:  [EasyROB Youtube Tu
 Feel free to browse the playlist to see step-by-step how to use **easyROB** from installation to advanced features.
 
 ---
-📚 Documentation
+### 📚 Documentation
 
 For more detailed information about easyROB and the ROBERT ecosystem, visit the official documentation on ReadTheDocs
 ### 📝 Developers and contact
