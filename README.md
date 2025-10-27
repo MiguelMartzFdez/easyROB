@@ -94,7 +94,9 @@ Feel free to browse the playlist to see step-by-step how to use **easyROB** from
 ---
 ### 📚 Documentation
 
-For more detailed information about easyROB and the ROBERT ecosystem, visit the official documentation on ReadTheDocs
+For more detailed information about easyROB and the ROBERT ecosystem, visit the official documentation on [ReadTheDocs](https://robert.readthedocs.io/en/latest/). 
+
+---
 ### 📝 Developers and contact
 Main developer and contact:  
 - [ ] [Miguel Martínez Fernández](https://orcid.org/0009-0002-8538-7250) — [miguel.martinez@csic.es](mailto:miguel.martinez@csic.es)
