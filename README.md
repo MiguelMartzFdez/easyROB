@@ -11,6 +11,7 @@
 ### 📦 Downloads
 
 Pre-packaged versions of **easyROB** (with bundled Python environments) are available in the [Releases](../../releases) page.  
+
 👉 Just download the ZIP corresponding to your operating system.
 
 ---
