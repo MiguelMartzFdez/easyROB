@@ -94,7 +94,7 @@ Feel free to browse the playlist to see step-by-step how to use **easyROB** from
 ---
 ### 📚 Documentation
 
-For more detailed information about easyROB and the ROBERT ecosystem, visit the official documentation on [ReadTheDocs](https://robert.readthedocs.io/en/latest/). 
+For more detailed information about easyROB and ROBERT, visit the official documentation on [ReadTheDocs](https://robert.readthedocs.io/en/latest/). 
 
 ---
 ### 📝 Developers and contact
