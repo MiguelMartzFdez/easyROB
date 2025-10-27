@@ -71,8 +71,10 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
    If Ubuntu opens it as text, right-click → **Properties → Permissions → Allow executing file as program**.  
 ---
 
-### 🍏 macOS instructions (coming soon)
-- .
+### 🍏 macOS instructions
+For macOS users, please follow the installation steps described in the [official ROBERT GUI documentation](https://robert.readthedocs.io/en/latest/Install/gui.html).  
+There you’ll find the download link and detailed instructions to set up and launch **easyROB** on macOS.
+
 
 ---
 
