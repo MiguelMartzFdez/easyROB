@@ -16,6 +16,15 @@ Pre-packaged versions of **easyROB** (with bundled Python environments) are avai
 
 ---
 
+> ⚠️ **IMPORTANT — Windows ≠ Linux (WSL not supported)**
+>
+> If your operating system is **Windows**, **DO NOT** use the Linux installer or try to run it under **WSL** (Windows Subsystem for Linux).  
+> Download the **Windows ZIP** from [Releases](../../releases) and use `launcher.vbs` instead.  
+>
+> The Linux package only works on **native Linux distributions**.
+
+---
+
 ### 🖥️ Windows instructions
 
 1. Download and unzip **easyROB_win.zip** from [Releases](../../releases).
