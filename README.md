@@ -86,7 +86,7 @@ The log file will be stored in `easyrob_process.log` at the root of the folder.
    ```
    If Ubuntu opens it as text, right-click → **Properties → Permissions → Allow executing file as program**.
 
->  #### ⚠️ Alternative installation (Linux)  
+  #### ⚠️ Alternative installation (Linux)  
   
   If the Linux launcher fails to run on your system (e.g. missing libraries, Wayland issues, Qt errors), you can follow the official installation steps to launch the GUI manually:
   
