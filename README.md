@@ -6,6 +6,10 @@
 
 <h2 align="center">easyROB — Standalone GUI Launcher</h2>
 
+<p align="center">
+  <img src="Logos/tuit.gif" alt="easyROB demo" width="800"/>
+</p>
+
 ---
 
 ### 📦 Downloads
