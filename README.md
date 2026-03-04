@@ -1,15 +1,18 @@
 ---
-
 <p align="center">
   <img src="Logos/easyROB_logo.png" alt="easyROB logo" width="250"/>
 </p>
 
+<br><br>
+
 <h2 align="center">easyROB — Standalone GUI Launcher</h2>
 
-<p align="center">
-  <img src="Logos/tuit.gif" alt="easyROB demo" width="800"/>
-</p>
+<br>
 
+<p align="center">
+  <img src="Logos/tuit.gif" alt="easyROB demo" width="750"
+       style="border:1px solid #d0d7de; border-radius:10px;">
+</p>
 ---
 
 ### 📦 Downloads
