@@ -1,6 +1,6 @@
 ---
 <p align="center">
-  <img src="Logos/easyROB_logo.png" alt="easyROB logo" width="250"/>
+  <img src="Logos/easyROB_logo.png" alt="easyROB logo" width="150"/>
 </p>
 
 <br><br>
