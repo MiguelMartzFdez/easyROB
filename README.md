@@ -232,7 +232,3 @@ packaging/shared/env.yaml
 * 🍎 macOS Packaging → `docs/packaging-macos.md`
 
 ---
-
-<p align="center">
-  Built with ❤️ using Micromamba, Python and platform-native installers.
-</p>
