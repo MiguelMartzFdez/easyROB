@@ -8,10 +8,7 @@ DIST_DIR="$REPO_ROOT/dist/linux"
 STAGE_DIR="$SCRIPT_DIR/.build/deb-root"
 DEBIAN_DIR="$STAGE_DIR/DEBIAN"
 PACKAGE_NAME="easyrob"
-TMP_DIR="$SCRIPT_DIR/.build/tmp"
-MICROMAMBA_ARCHIVE="$TMP_DIR/micromamba.tar.bz2"
-MICROMAMBA_EXTRACT_DIR="$TMP_DIR/micromamba"
-MICROMAMBA_URL="${MICROMAMBA_TARBALL_URL:-https://micro.mamba.pm/api/micromamba/linux-64/latest}"
+MICROMAMBA_ASSET="$SCRIPT_DIR/assets/micromamba-linux-64"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -24,7 +21,6 @@ require_command dpkg-deb
 require_command install
 require_command grep
 require_command sed
-require_command tar
 
 VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
 if [[ -z "$VERSION" ]]; then
@@ -33,7 +29,6 @@ if [[ -z "$VERSION" ]]; then
 fi
 
 rm -rf "$STAGE_DIR"
-rm -rf "$MICROMAMBA_EXTRACT_DIR"
 mkdir -p \
   "$DEBIAN_DIR" \
   "$STAGE_DIR/usr/bin" \
@@ -42,29 +37,10 @@ mkdir -p \
   "$STAGE_DIR/usr/lib/easyrob/shared" \
   "$STAGE_DIR/usr/share/applications" \
   "$STAGE_DIR/usr/share/pixmaps" \
-  "$DIST_DIR" \
-  "$TMP_DIR"
+  "$DIST_DIR"
 
-download_file() {
-  local url="$1"
-  local output="$2"
-
-  if command -v curl >/dev/null 2>&1; then
-    curl -L "$url" -o "$output"
-  elif command -v wget >/dev/null 2>&1; then
-    wget -O "$output" "$url"
-  else
-    echo "Either curl or wget is required to download Micromamba during .deb build." >&2
-    exit 1
-  fi
-}
-
-download_file "$MICROMAMBA_URL" "$MICROMAMBA_ARCHIVE"
-mkdir -p "$MICROMAMBA_EXTRACT_DIR"
-tar -xjf "$MICROMAMBA_ARCHIVE" -C "$MICROMAMBA_EXTRACT_DIR"
-
-if [[ ! -f "$MICROMAMBA_EXTRACT_DIR/bin/micromamba" ]]; then
-  echo "Downloaded Micromamba archive did not contain bin/micromamba" >&2
+if [[ ! -f "$MICROMAMBA_ASSET" ]]; then
+  echo "Micromamba asset not found: $MICROMAMBA_ASSET" >&2
   exit 1
 fi
 
@@ -83,7 +59,7 @@ Description: EasyRob full Debian installer
 EOF
 
 install -m 0755 "$SCRIPT_DIR/scripts/easyrob_bootstrap.sh" "$STAGE_DIR/usr/bin/easyrob"
-install -m 0755 "$MICROMAMBA_EXTRACT_DIR/bin/micromamba" "$STAGE_DIR/usr/lib/easyrob/bootstrap/micromamba"
+install -m 0755 "$MICROMAMBA_ASSET" "$STAGE_DIR/usr/lib/easyrob/bootstrap/micromamba"
 install -m 0755 "$SCRIPT_DIR/scripts/install_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/install_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/install_easyrob_system.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/install_easyrob_system.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/install_desktop_shortcut_system.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/install_desktop_shortcut_system.sh"
