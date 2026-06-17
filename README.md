@@ -3,7 +3,7 @@
 **EasyRob** provides simple desktop installers that prepare and launch a fully private runtime environment for the application.
 
 <p align="center">
-  <img src="docs/assets/logo.png" width="180" alt="EasyRob Logo">
+  <img src="docs/assets/easyROB_logo.png" width="180" alt="EasyRob Logo">
 </p>
 
 ---
