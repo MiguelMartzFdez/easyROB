@@ -4,7 +4,8 @@ set -euo pipefail
 INSTALL_ROOT="${EASYROB_INSTALL_ROOT:-${EASYROB_SYSTEM_ROOT:-${XDG_DATA_HOME:-$HOME/.local/share}/easyrob}}"
 MICROMAMBA_BIN="$INSTALL_ROOT/bin/micromamba"
 ENV_PREFIX="$INSTALL_ROOT/envs/easyrob"
-LOG_DIR="$INSTALL_ROOT/logs"
+USER_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/easyrob"
+LOG_DIR="$USER_STATE_DIR/logs"
 RUNTIME_LOG="$LOG_DIR/runtime.log"
 NOTICE_PID=""
 
