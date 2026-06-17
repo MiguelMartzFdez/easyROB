@@ -118,14 +118,14 @@ chmod +x packaging/linux/build-deb.sh
 
 Expected output:
 
-`dist/linux/easyrob_<VERSION>_all.deb`
+`dist/linux/easyrob-<VERSION>.deb`
 
 ## Installing the .deb
 
 On Ubuntu:
 
 ```bash
-sudo dpkg -i dist/linux/easyrob_<VERSION>_all.deb
+sudo dpkg -i dist/linux/easyrob-<VERSION>.deb
 ```
 
 After installation:

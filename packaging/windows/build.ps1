@@ -12,7 +12,7 @@ if (-not $versionLine) {
 
 $version = [regex]::Match($versionLine, '^#define MyAppVersion "(.+)"$').Groups[1].Value
 $outputDir = Join-Path $root "dist\windows"
-$outputFile = Join-Path $outputDir "EasyRob-Setup-$version.exe"
+$outputFile = Join-Path $outputDir "easyrob-$version.exe"
 
 if (-not (Test-Path -LiteralPath $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null

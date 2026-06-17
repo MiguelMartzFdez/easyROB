@@ -10,8 +10,8 @@ The goal is simple: the user should **download, install, and open EasyRob** with
 
 | Platform | Format | What happens during install |
 | --- | --- | --- |
-| **Windows** | `EasyRob-Setup-<VERSION>.exe` | The installer sets up a private Miniforge-based runtime and creates the EasyRob shortcuts. |
-| **Linux (Ubuntu)** | `easyrob_<VERSION>_all.deb` or `install_easyrob.sh` | The `.deb` installs the full runtime and launcher. The `.sh` installer creates a private user-local environment with *Micromamba*. |
+| **Windows** | `easyrob-<VERSION>.exe` | The installer sets up a private Miniforge-based runtime and creates the EasyRob shortcuts. |
+| **Linux (Ubuntu)** | `easyrob-<VERSION>.deb` or `install_easyrob.sh` | The `.deb` installs the full runtime and launcher. The `.sh` installer creates a private user-local environment with *Micromamba*. |
 
 ---
 
@@ -19,7 +19,7 @@ The goal is simple: the user should **download, install, and open EasyRob** with
 
 ### User installation
 
-1. Download `EasyRob-Setup-<VERSION>.exe`.
+1. Download `easyrob-<VERSION>.exe`.
 2. Double-click the installer.
 3. Follow the setup steps shown on screen.
 4. Open **EasyRob** from the Start Menu, Windows Search, or the Desktop shortcut if you enabled it.
@@ -46,11 +46,11 @@ Remove EasyRob from:
 
 Recommended for **Ubuntu** and Debian-based systems.
 
-1. Download `easyrob_<VERSION>_all.deb`.
+1. Download `easyrob-<VERSION>.deb`.
 2. Install it with:
 
 ```bash
-sudo apt install ./easyrob_<VERSION>_all.deb
+sudo dpkg -i easyrob-<VERSION>.deb
 ```
 
 3. Open **EasyRob** from the applications menu.
@@ -148,8 +148,8 @@ Useful documents:
 
 ### Build outputs
 
-- Windows installer: `dist/windows/EasyRob-Setup-<VERSION>.exe`
-- Linux Debian package: `dist/linux/easyrob_<VERSION>_all.deb`
+- Windows installer: `dist/windows/easyrob-<VERSION>.exe`
+- Linux Debian package: `dist/linux/easyrob-<VERSION>.deb`
 
 ### Windows build
 

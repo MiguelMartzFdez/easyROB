@@ -6,7 +6,7 @@ This document describes how the Windows installer is structured, how it is built
 
 The only file distributed to end users is:
 
-`dist\windows\EasyRob-Setup-<VERSION>.exe`
+`dist\windows\easyrob-<VERSION>.exe`
 
 Users do not need Python, Conda, or Miniforge preinstalled.
 
@@ -27,7 +27,7 @@ Easyrob\
 |           `-- source\
 `-- dist\
     `-- windows\
-        `-- EasyRob-Setup-<VERSION>.exe
+        `-- easyrob-<VERSION>.exe
 ```
 
 ## File responsibilities
@@ -71,7 +71,7 @@ If local script execution is already allowed:
 
 The generated installer is written to:
 
-`dist\windows\EasyRob-Setup-<VERSION>.exe`
+`dist\windows\easyrob-<VERSION>.exe`
 
 ## What the installer does
 
