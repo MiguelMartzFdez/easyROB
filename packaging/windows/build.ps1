@@ -2,8 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $platformRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root = Split-Path -Parent (Split-Path -Parent $platformRoot)
-$installerDir = Join-Path $platformRoot 'installer'
-$scriptFile = Join-Path $installerDir 'EasyRob.iss'
+$scriptFile = Join-Path $platformRoot 'EasyRob.iss'
 $scriptContent = Get-Content -LiteralPath $scriptFile
 $versionLine = $scriptContent | Where-Object { $_ -match '^#define MyAppVersion "(.+)"$' } | Select-Object -First 1
 if (-not $versionLine) {
@@ -24,12 +23,11 @@ $requiredFiles = @(
     'scripts\launch_easyrob.pyw',
     'scripts\uninstall_easyrob.ps1',
     'assets\Miniforge3-Windows-x86_64.exe',
-    'assets\Robert_icon.ico',
-    'source\README.md'
+    'assets\Robert_icon.ico'
 )
 
 foreach ($file in $requiredFiles) {
-    $path = Join-Path $installerDir $file
+    $path = Join-Path $platformRoot $file
     if (-not (Test-Path -LiteralPath $path)) {
         throw "Required installer file is missing: $path"
     }
@@ -56,7 +54,7 @@ if (-not $iscc) {
 }
 
 Write-Host "Compiling EasyRob with: $iscc"
-Push-Location $installerDir
+Push-Location $platformRoot
 try {
     & $iscc $scriptFile
     if ($LASTEXITCODE -ne 0) {

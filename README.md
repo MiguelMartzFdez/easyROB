@@ -2,7 +2,7 @@
 
 EasyRob provides desktop installers that prepare and launch a private runtime for the application.
 
-Today the user-ready installers are:
+Current distribution artifacts are:
 
 - `easyrob-<VERSION>.exe` for Windows
 - `easyrob-<VERSION>.deb` for Ubuntu and Debian-based Linux
@@ -37,9 +37,7 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 ### macOS
 
-Build this on a real Mac, then distribute the generated zip.
-
-User flow:
+When a macOS build is distributed, the user flow is:
 
 1. Download `easyrob-<VERSION>.zip`
 2. Unzip it
@@ -96,6 +94,12 @@ Windows:
 .\build_installer.ps1
 ```
 
+Requirements:
+
+- Windows
+- Inno Setup 6 or 7
+- `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
+
 Linux:
 
 ```bash
@@ -103,12 +107,26 @@ chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
 ```
 
+Requirements:
+
+- Linux
+- `dpkg-deb`
+- standard shell tools such as `install`, `grep`, and `sed`
+- `packaging/linux/assets/micromamba-linux-64`
+
 macOS:
 
 ```bash
 chmod +x packaging/macos/build.sh
 ./packaging/macos/build.sh
 ```
+
+Requirements:
+
+- a real Mac
+- `rsync`
+- `ditto`
+- standard shell tools such as `grep` and `sed`
 
 ### What to change when EasyRob is updated
 

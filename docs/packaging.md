@@ -22,15 +22,11 @@ EasyRob/
 |   |   `-- README.md
 |   |-- windows/
 |   |   |-- build.ps1
-|   |   `-- installer/
-|   |       |-- EasyRob.iss
-|   |       |-- assets/
-|   |       |-- locks/
-|   |       |-- scripts/
-|   |       `-- source/
+|   |   |-- EasyRob.iss
+|   |   |-- assets/
+|   |   `-- scripts/
 |   |-- linux/
 |   |   |-- assets/
-|   |   |-- locks/
 |   |   |-- scripts/
 |   |   |-- source/
 |   |   |-- README.md
@@ -65,6 +61,7 @@ EasyRob/
 - installer format: `.exe`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `.\build_installer.ps1`
+- build host: Windows with Inno Setup 6 or 7
 - end-user result: EasyRob appears in Start Menu, Windows Search, and optionally on the Desktop
 
 ### Linux
@@ -72,6 +69,7 @@ EasyRob/
 - installer format: `.deb`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/linux/build-deb.sh`
+- build host: Linux with `dpkg-deb`
 - end-user result: EasyRob appears in the applications menu and can also create a desktop shortcut
 
 ### macOS
@@ -79,6 +77,7 @@ EasyRob/
 - current distribution formats: `.app` and `.zip`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/macos/build.sh`
+- build host: a real Mac with `rsync` and `ditto`
 - current status: bootstrap-app flow implemented, build and testing must happen on a real Mac
 
 ## What to change
@@ -100,13 +99,3 @@ Then update only the relevant platform folder and docs.
 1. Edit `packaging/shared/env.yaml`
 2. Rebuild the platform installer
 3. Verify a clean installation on that platform
-
-## Role of locks
-
-The `locks/` folders are platform-specific snapshots and support files.
-
-They are not the primary source of truth. The primary source of truth is still:
-
-```text
-packaging/shared/env.yaml
-```

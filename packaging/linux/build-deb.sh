@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WINDOWS_ISS="$REPO_ROOT/packaging/windows/installer/EasyRob.iss"
+WINDOWS_ISS="$REPO_ROOT/packaging/windows/EasyRob.iss"
 DIST_DIR="$REPO_ROOT/dist/linux"
 STAGE_DIR="$SCRIPT_DIR/.build/deb-root"
 DEBIAN_DIR="$STAGE_DIR/DEBIAN"
@@ -66,7 +66,7 @@ install -m 0755 "$SCRIPT_DIR/scripts/install_desktop_shortcut_system.sh" "$STAGE
 install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/launch_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$STAGE_DIR/usr/lib/easyrob/shared/env.yaml"
-install -m 0644 "$REPO_ROOT/packaging/windows/installer/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"
+install -m 0644 "$REPO_ROOT/packaging/windows/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"
 
 cat > "$STAGE_DIR/usr/share/applications/easyrob.desktop" <<EOF
 [Desktop Entry]

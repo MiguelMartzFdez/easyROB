@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LINUX_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SHARED_ROOT="${EASYROB_SHARED_ROOT:-$(cd "$LINUX_ROOT/../shared" && pwd)}"
 ENV_FILE="${EASYROB_ENV_FILE:-$SHARED_ROOT/env.yaml}"
-WINDOWS_ASSETS_DIR="${EASYROB_WINDOWS_ASSETS_DIR:-$(cd "$LINUX_ROOT/../windows/installer/assets" && pwd)}"
+WINDOWS_ASSETS_DIR="${EASYROB_WINDOWS_ASSETS_DIR:-$(cd "$LINUX_ROOT/../windows/assets" && pwd)}"
 
 INSTALL_ROOT="${EASYROB_INSTALL_ROOT:-${XDG_DATA_HOME:-$HOME/.local/share}/easyrob}"
 BIN_DIR="$INSTALL_ROOT/bin"

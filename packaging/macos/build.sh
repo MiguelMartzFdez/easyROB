@@ -3,12 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WINDOWS_ISS="$REPO_ROOT/packaging/windows/installer/EasyRob.iss"
+WINDOWS_ISS="$REPO_ROOT/packaging/windows/EasyRob.iss"
 APP_TEMPLATE="$SCRIPT_DIR/app/EasyRob.app"
 BUILD_ROOT="$SCRIPT_DIR/.build"
 APP_BUILD_DIR="$BUILD_ROOT/EasyRob.app"
 DIST_DIR="$REPO_ROOT/dist/macos"
-ICON_SOURCE="$REPO_ROOT/packaging/windows/installer/assets/Robert_icon.ico"
+ICON_SOURCE="$REPO_ROOT/packaging/windows/assets/Robert_icon.ico"
 ASSETS_DIR="$SCRIPT_DIR/assets"
 APP_DIST_DIR="$DIST_DIR/EasyRob.app"
 

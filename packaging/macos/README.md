@@ -1,6 +1,6 @@
 # EasyRob macOS Packaging
 
-This folder contains the macOS packaging scaffold for EasyRob.
+This folder contains the macOS bootstrap-app packaging for EasyRob.
 
 ## Current outputs
 
@@ -19,6 +19,13 @@ Run on a real Mac:
 chmod +x packaging/macos/build.sh
 ./packaging/macos/build.sh
 ```
+
+Requirements:
+
+- `rsync`
+- `ditto`
+- `grep`
+- `sed`
 
 ## Dependency source
 

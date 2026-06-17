@@ -21,6 +21,15 @@ chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
 ```
 
+## Build requirements
+
+- Linux
+- `dpkg-deb`
+- `install`
+- `grep`
+- `sed`
+- `packaging/linux/assets/micromamba-linux-64`
+
 ## Source of truth
 
 Linux packaging is driven by:
@@ -65,6 +74,14 @@ If dependencies change, edit that file first.
 sudo apt install ./easyrob-<VERSION>.deb
 ```
 
+## Log location
+
+During package installation, logs are written under:
+
+```text
+/opt/easyrob/logs
+```
+
 ## User removal
 
 Remove the package:
@@ -102,9 +119,5 @@ Then rebuild the package:
 1. Edit `packaging/shared/env.yaml`
 2. Rebuild the package
 3. Test the package on Ubuntu or another Debian-based system
-
-## Notes about locks
-
-The folder `packaging/linux/locks/` is kept only for future Linux-specific snapshots if they are ever needed.
 
 The current Linux package resolves from `packaging/shared/env.yaml`.

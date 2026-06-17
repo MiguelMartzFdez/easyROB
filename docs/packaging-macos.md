@@ -1,6 +1,6 @@
 # EasyRob macOS Packaging
 
-This document explains the current macOS packaging scaffold and the next step required to turn it into a real installer.
+This document explains the current macOS bootstrap-app packaging for EasyRob.
 
 ## Current outputs
 
@@ -22,6 +22,14 @@ chmod +x packaging/macos/build.sh
 ./packaging/macos/build.sh
 ```
 
+## Build requirements
+
+- a real Mac
+- `rsync`
+- `ditto`
+- `grep`
+- `sed`
+
 ## Source of truth
 
 macOS packaging should use the same dependency source as the other platforms:
@@ -39,7 +47,7 @@ packaging/shared/env.yaml
 - `packaging/macos/scripts/bootstrap_easyrob_macos.sh`
 - `packaging/macos/scripts/launch_easyrob_macos.sh`
 
-## What the current scaffold does
+## What the current build does
 
 1. Reads the version from the Windows installer definition
 2. Creates a staged `EasyRob.app`
@@ -74,6 +82,13 @@ That location contains:
 - `envs/easyrob`
 - `logs/`
 - `state/`
+
+## User removal
+
+To remove EasyRob on macOS:
+
+1. Delete `EasyRob.app` from `Applications`
+2. Remove `~/Library/Application Support/EasyRob` if you also want to remove the installed runtime and logs
 
 ## What is still missing
 

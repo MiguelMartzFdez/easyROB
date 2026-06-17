@@ -22,6 +22,13 @@ That wrapper calls:
 packaging/windows/build.ps1
 ```
 
+## Build requirements
+
+- Windows
+- Inno Setup 6 or 7
+- `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
+- `packaging/shared/env.yaml`
+
 ## Source of truth
 
 Windows packaging is driven by:
@@ -35,12 +42,11 @@ If dependencies change, edit that file first.
 ## Relevant files
 
 - `packaging/windows/build.ps1`
-- `packaging/windows/installer/EasyRob.iss`
-- `packaging/windows/installer/assets/`
-- `packaging/windows/installer/scripts/install_easyrob.ps1`
-- `packaging/windows/installer/scripts/launch_easyrob.pyw`
-- `packaging/windows/installer/scripts/uninstall_easyrob.ps1`
-- `packaging/windows/installer/source/README.md`
+- `packaging/windows/EasyRob.iss`
+- `packaging/windows/assets/`
+- `packaging/windows/scripts/install_easyrob.ps1`
+- `packaging/windows/scripts/launch_easyrob.pyw`
+- `packaging/windows/scripts/uninstall_easyrob.ps1`
 
 ## What the installer does
 
@@ -59,6 +65,22 @@ After installation, EasyRob should be available from:
 - Desktop shortcut, if enabled
 
 When startup takes a moment, the launcher shows an opening message so the user does not click repeatedly.
+
+## Runtime location
+
+The private runtime is created here:
+
+```text
+%LOCALAPPDATA%\Programs\EasyRob\miniforge\envs\easyrob
+```
+
+## Log location
+
+Installer logs are written under:
+
+```text
+%LOCALAPPDATA%\Programs\EasyRob\logs
+```
 
 ## When to update Windows packaging
 
@@ -83,12 +105,3 @@ Then rebuild the installer:
 1. Edit `packaging/shared/env.yaml`
 2. Rebuild the installer
 3. Test a clean install on Windows
-
-## Notes about locks
-
-The repository still contains:
-
-- `packaging/windows/installer/locks/conda-explicit.txt`
-- `packaging/windows/installer/locks/requirements.txt`
-
-Treat them as Windows-specific support artifacts, not as the main editable dependency definition.

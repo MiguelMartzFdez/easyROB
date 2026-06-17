@@ -5,7 +5,7 @@
 #define MiniforgeInstaller "assets\Miniforge3-Windows-x86_64.exe"
 #define DependencyHelper "scripts\install_easyrob.ps1"
 #define UninstallHelper "scripts\uninstall_easyrob.ps1"
-#define SharedEnvFile "..\..\shared\env.yaml"
+#define SharedEnvFile "..\shared\env.yaml"
 #define GuiLauncher "scripts\launch_easyrob.pyw"
 #define MyAppIconName "Robert_icon.ico"
 #define MiniforgeInstallerName "Miniforge3-Windows-x86_64.exe"
@@ -26,7 +26,7 @@ DisableDirPage=no
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\..\..\dist\windows
+OutputDir=..\..\dist\windows
 OutputBaseFilename=easyrob-{#MyAppVersion}
 SetupIconFile={#MyAppIcon}
 Compression=lzma2/max
