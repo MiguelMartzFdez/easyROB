@@ -100,6 +100,7 @@ The current Ubuntu-focused installer:
 The current `.deb` package:
 
 - installs a system launcher at `/usr/bin/easyrob`
+- bundles a `micromamba` binary inside the package
 - installs the shared environment file under `/usr/lib/easyrob/shared/env.yaml`
 - installs a system menu entry under `/usr/share/applications/easyrob.desktop`
 - creates the full runtime under `/opt/easyrob` during package installation

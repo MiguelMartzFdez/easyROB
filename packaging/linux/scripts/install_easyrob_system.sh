@@ -11,6 +11,7 @@ SCRIPT_ROOT="${EASYROB_SCRIPT_ROOT:-/usr/lib/easyrob}"
 ENV_FILE="${EASYROB_ENV_FILE:-$SCRIPT_ROOT/shared/env.yaml}"
 ICON_SOURCE="${EASYROB_ICON_SOURCE:-/usr/share/pixmaps/easyrob.ico}"
 ICON_TARGET="$ICON_DIR/easyrob.ico"
+BOOTSTRAP_MICROMAMBA="${EASYROB_BUNDLED_MICROMAMBA:-$SCRIPT_ROOT/bootstrap/micromamba}"
 MICROMAMBA_TARBALL_URL="${MICROMAMBA_TARBALL_URL:-https://micro.mamba.pm/api/micromamba/linux-64/latest}"
 
 require_command() {
@@ -59,23 +60,28 @@ trap cleanup EXIT
 
 log "Installing EasyRob system runtime into $SYSTEM_ROOT"
 log "Logs: $INSTALL_LOG"
-log "Downloading Micromamba bootstrap..."
-
-MICROMAMBA_ARCHIVE="$TMP_DIR/micromamba.tar.bz2"
-if [[ "$DOWNLOAD_TOOL" == "curl" ]]; then
-  run_and_log curl -L "$MICROMAMBA_TARBALL_URL" -o "$MICROMAMBA_ARCHIVE"
+if [[ -x "$BOOTSTRAP_MICROMAMBA" ]]; then
+  log "Using bundled Micromamba bootstrap from $BOOTSTRAP_MICROMAMBA"
+  install -m 0755 "$BOOTSTRAP_MICROMAMBA" "$BIN_DIR/micromamba"
 else
-  run_and_log wget -O "$MICROMAMBA_ARCHIVE" "$MICROMAMBA_TARBALL_URL"
+  log "Downloading Micromamba bootstrap..."
+
+  MICROMAMBA_ARCHIVE="$TMP_DIR/micromamba.tar.bz2"
+  if [[ "$DOWNLOAD_TOOL" == "curl" ]]; then
+    run_and_log curl -L "$MICROMAMBA_TARBALL_URL" -o "$MICROMAMBA_ARCHIVE"
+  else
+    run_and_log wget -O "$MICROMAMBA_ARCHIVE" "$MICROMAMBA_TARBALL_URL"
+  fi
+
+  run_and_log tar -xjf "$MICROMAMBA_ARCHIVE" -C "$TMP_DIR"
+
+  if [[ ! -f "$TMP_DIR/bin/micromamba" ]]; then
+    echo "Micromamba archive did not contain bin/micromamba" >&2
+    exit 1
+  fi
+
+  install -m 0755 "$TMP_DIR/bin/micromamba" "$BIN_DIR/micromamba"
 fi
-
-run_and_log tar -xjf "$MICROMAMBA_ARCHIVE" -C "$TMP_DIR"
-
-if [[ ! -f "$TMP_DIR/bin/micromamba" ]]; then
-  echo "Micromamba archive did not contain bin/micromamba" >&2
-  exit 1
-fi
-
-install -m 0755 "$TMP_DIR/bin/micromamba" "$BIN_DIR/micromamba"
 
 log "Creating EasyRob environment..."
 run_and_log "$BIN_DIR/micromamba" create -y -p "$ENV_PREFIX" -f "$ENV_FILE"
