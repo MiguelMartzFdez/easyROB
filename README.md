@@ -67,9 +67,6 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 # 📝 Notes
 
-* EasyRob installs its own **private runtime**
-* No Python installation is required
-* No Conda installation is required
 * The first installation may take a few minutes
 * The first launch may be slightly slower while the environment is prepared
 * During startup, EasyRob displays an **"EasyRob is opening..."** message so you know the application is launching
