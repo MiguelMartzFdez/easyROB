@@ -1,62 +1,109 @@
-# EasyRob
+# 🚀 EasyRob
 
-EasyRob provides desktop installers that prepare and launch a private runtime for the application.
+**EasyRob** provides simple desktop installers that prepare and launch a fully private runtime environment for the application.
 
-Current user-ready installers are:
+<p align="center">
+  <img src="docs/assets/logo.png" width="180" alt="EasyRob Logo">
+</p>
 
-- `easyrob-<VERSION>.exe` for Windows
-- `easyrob-<VERSION>.deb` for Ubuntu and Debian-based Linux
+---
 
-The repository also includes macOS bootstrap-app packaging that can produce:
+## 📦 Available Installers
 
-- `EasyRob.app`
-- `easyrob-<VERSION>.zip`
+| Platform                 | Package                                 |
+| ------------------------ | --------------------------------------- |
+| 🪟 Windows               | `easyrob-<VERSION>.exe`                 |
+| 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb`                 |
+| 🍎 macOS                 | `EasyRob.app` + `easyrob-<VERSION>.zip` |
 
-## For Users
+---
 
-### Windows
+# 👤 For Users
+
+## 🪟 Windows
 
 1. Download `easyrob-<VERSION>.exe`
 2. Double-click the installer
 3. Follow the setup wizard
-4. Open **EasyRob** from the Start Menu, Windows Search, or the Desktop shortcut if enabled
+4. Launch **EasyRob** from:
 
-### Linux
+   * Start Menu
+   * Windows Search
+   * Desktop Shortcut (optional)
 
-Recommended for Ubuntu and other Debian-based distributions.
+---
+
+## 🐧 Linux
+
+Recommended for Ubuntu and Debian-based distributions.
+
+### Graphical Installation
 
 1. Download `easyrob-<VERSION>.deb`
-2. Double-click the package and install it with the system package installer
-3. Open **EasyRob** from the applications menu or the desktop shortcut when available
+2. Open it with your system package installer
+3. Launch **EasyRob** from:
 
-Alternative terminal install:
+   * Applications Menu
+   * Desktop Shortcut (if available)
+
+### Terminal Installation
 
 ```bash
 sudo apt install ./easyrob-<VERSION>.deb
 ```
 
-### macOS
+---
 
-When you generate and distribute a macOS build, the user flow is:
+## 🍎 macOS
+
+After generating a macOS release:
 
 1. Download `easyrob-<VERSION>.zip`
-2. Unzip it
-3. Move `EasyRob.app` to `Applications`
-4. Open **EasyRob** from Applications, Launchpad, or Spotlight
-5. On first launch, EasyRob installs Micromamba and creates its private runtime under `~/Library/Application Support/EasyRob`
+2. Extract the archive
+3. Move `EasyRob.app` into `/Applications`
+4. Open **EasyRob** using:
 
-## Runtime Behavior
+   * Applications
+   * Launchpad
+   * Spotlight
 
-- EasyRob installs its own private runtime
-- No separate Python installation is required
-- No separate Conda installation is required
-- Installation can take a few minutes
-- First launch can also take a bit longer
-- When launch is slow, EasyRob shows an opening message so the user knows the application is starting
+### First Launch
 
-## For Maintainers
+EasyRob automatically:
 
-### Source of truth
+* 📥 Installs Micromamba
+* 🐍 Creates its private runtime
+* ⚙️ Configures required dependencies
+
+Runtime files are stored in:
+
+```text
+~/Library/Application Support/EasyRob
+```
+
+---
+
+# ⚡ Runtime Behavior
+
+EasyRob manages everything automatically.
+
+✅ No Python installation required
+
+✅ No Conda installation required
+
+✅ Fully isolated runtime
+
+⏳ Initial installation may take a few minutes
+
+⏳ First launch may be slower while the environment is prepared
+
+💬 A startup message is displayed during longer launches
+
+---
+
+# 🛠️ For Maintainers
+
+## 📍 Source of Truth
 
 Shared dependencies are defined in:
 
@@ -64,9 +111,11 @@ Shared dependencies are defined in:
 packaging/shared/env.yaml
 ```
 
-If EasyRob dependencies change, edit that file first.
+When dependencies change, update this file first.
 
-### Packaging layout
+---
+
+## 📂 Packaging Layout
 
 ```text
 EasyRob/
@@ -80,72 +129,110 @@ EasyRob/
 └── build_installer.ps1
 ```
 
-### Build outputs
+---
 
-- Windows: `dist/windows/easyrob-<VERSION>.exe`
-- Linux: `dist/linux/easyrob-<VERSION>.deb`
-- macOS: `dist/macos/EasyRob.app` and `dist/macos/easyrob-<VERSION>.zip`
+## 📦 Build Outputs
 
-### Build commands
+| Platform   | Output                               |
+| ---------- | ------------------------------------ |
+| 🪟 Windows | `dist/windows/easyrob-<VERSION>.exe` |
+| 🐧 Linux   | `dist/linux/easyrob-<VERSION>.deb`   |
+| 🍎 macOS   | `dist/macos/EasyRob.app`             |
+| 🍎 macOS   | `dist/macos/easyrob-<VERSION>.zip`   |
 
-Windows:
+---
+
+# 🔨 Building Packages
+
+## 🪟 Windows
 
 ```powershell
 .\build_installer.ps1
 ```
 
-Requirements:
+### Requirements
 
-- Windows
-- Inno Setup 6 or 7
-- `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
+* Windows
+* Inno Setup 6 or 7
+* `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
 
-Linux:
+---
+
+## 🐧 Linux
 
 ```bash
 chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
 ```
 
-Requirements:
+### Requirements
 
-- Linux
-- `dpkg-deb`
-- standard shell tools such as `install`, `grep`, and `sed`
-- `packaging/linux/assets/micromamba-linux-64`
+* Linux
+* `dpkg-deb`
+* `install`
+* `grep`
+* `sed`
+* `packaging/linux/assets/micromamba-linux-64`
 
-macOS:
+---
+
+## 🍎 macOS
 
 ```bash
 chmod +x packaging/macos/build.sh
 ./packaging/macos/build.sh
 ```
 
-Requirements:
+### Requirements
 
-- a real Mac
-- `rsync`
-- `ditto`
-- standard shell tools such as `grep` and `sed`
+* A real Mac
+* `rsync`
+* `ditto`
+* `grep`
+* `sed`
 
-### What to change when EasyRob is updated
+---
 
-If only installer behavior changed, update only the platform-specific packaging files:
+# 🔄 Updating EasyRob
 
-- `packaging/windows/...`
-- `packaging/linux/...`
-- `packaging/macos/...`
-- `docs/...`
+## Only Packaging Changes
 
-If dependencies changed:
+Update:
 
-1. Edit `packaging/shared/env.yaml`
-2. Rebuild the installer or package for the platform you want to ship
-3. Test a clean install on that platform
+```text
+packaging/windows/
+packaging/linux/
+packaging/macos/
+docs/
+```
 
-## Documentation
+No dependency rebuild required.
 
-- [Packaging overview](docs/packaging.md)
-- [Windows packaging](docs/packaging-windows.md)
-- [Linux packaging](docs/packaging-linux.md)
-- [macOS packaging](docs/packaging-macos.md)
+---
+
+## Dependency Changes
+
+1. Edit:
+
+```text
+packaging/shared/env.yaml
+```
+
+2. Rebuild the installer/package
+
+3. Test on a clean machine
+
+---
+
+# 📚 Documentation
+
+* 📘 Packaging Overview → `docs/packaging.md`
+* 🪟 Windows Packaging → `docs/packaging-windows.md`
+* 🐧 Linux Packaging → `docs/packaging-linux.md`
+* 🍎 macOS Packaging → `docs/packaging-macos.md`
+
+---
+
+<p align="center">
+  Built with ❤️ using Micromamba, Python and platform-native installers.
+</p>
