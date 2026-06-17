@@ -1,5 +1,5 @@
 #define MyAppName "EasyRob"
-#define MyAppVersion "2.1.2"
+#define MyAppVersion "2.1.5"
 #define MyAppPublisher "The Alegre Group"
 #define MyAppIcon "assets\Robert_icon.ico"
 #define MiniforgeInstaller "assets\Miniforge3-Windows-x86_64.exe"
@@ -43,7 +43,7 @@ RestartApplications=no
 ChangesEnvironment=no
 ChangesAssociations=no
 AllowCancelDuringInstall=yes
-ExtraDiskSpaceRequired=400000000
+ExtraDiskSpaceRequired=4000000000
 
 [Dirs]
 Name: "{app}\logs"
@@ -94,6 +94,7 @@ var
   DependencyPhaseFile: String;
   DependencySuccessFile: String;
   DependencyFailureFile: String;
+  FinishedWarningLabel: TNewStaticText;
   UninstallCleanupRunning: Boolean;
   UninstallCleanupStateDir: String;
   UninstallCleanupSuccessFile: String;
@@ -138,6 +139,15 @@ begin
   else
     DependencyProgress.State := npbsNormal;
   DependencyProgress.Update;
+end;
+
+procedure SetUninstallProgressMarquee;
+begin
+  UninstallProgressForm.ProgressBar.Style := npbstMarquee;
+  UninstallProgressForm.ProgressBar.Min := 0;
+  UninstallProgressForm.ProgressBar.Max := 100;
+  UninstallProgressForm.ProgressBar.Position := 0;
+  UninstallProgressForm.ProgressBar.Update;
 end;
 
 function Quote(const Value: String): String;
@@ -263,7 +273,7 @@ begin
   SetDependencyProgressMarquee;
   DependencyStatusLabel.Caption := 'Installing EasyRob dependencies...';
   DependencyDetailLabel.Caption :=
-    'Please wait. Installation can take 5 to 10 minutes on some systems. You can safely stop this process using Cancel.';
+    'Please wait. Installation can take 5 to 10 minutes on some systems and requires at least 4 GB of free disk space. You can safely stop this process using Cancel.';
 
   PowerShellExe := ExpandConstant(
     '{sys}\WindowsPowerShell\v1.0\powershell.exe');
@@ -392,7 +402,19 @@ begin
   DependencyDetailLabel.WordWrap := True;
   DependencyDetailLabel.Height := ScaleY(48);
   DependencyDetailLabel.Caption :=
-    'All installation steps will run in this window. Installation can take 5 to 10 minutes on some systems.';
+    'All installation steps will run in this window. Installation can take 5 to 10 minutes on some systems and requires at least 4 GB of free disk space.';
+
+  FinishedWarningLabel := TNewStaticText.Create(WizardForm);
+  FinishedWarningLabel.Parent := WizardForm.FinishedLabel.Parent;
+  FinishedWarningLabel.Left := WizardForm.FinishedLabel.Left;
+  FinishedWarningLabel.Top :=
+    WizardForm.FinishedLabel.Top + WizardForm.FinishedLabel.Height + ScaleY(20);
+  FinishedWarningLabel.Width := WizardForm.FinishedLabel.Width;
+  FinishedWarningLabel.Height := ScaleY(44);
+  FinishedWarningLabel.AutoSize := False;
+  FinishedWarningLabel.WordWrap := True;
+  FinishedWarningLabel.Font.Style := [fsBold];
+  FinishedWarningLabel.Caption := '';
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -411,10 +433,13 @@ begin
   end;
 
   if CurPageID = wpFinished then
+  begin
     WizardForm.FinishedLabel.Caption :=
       'Setup has finished installing EasyRob on your computer.' + #13#10#13#10 +
-      'You can launch it from the Start menu or by searching for "EasyRob" in Windows.' + #13#10#13#10 +
-      'Note: the first launch can also take a little longer while Windows finishes preparing the new environment.';
+      'You can launch it from the Start menu or by searching for "EasyRob" in Windows.';
+    FinishedWarningLabel.Caption :=
+      'IMPORTANT: The first launch of EasyRob may take a little longer while Windows prepares and scans the new environment.';
+  end;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -589,6 +614,7 @@ begin
     AddBackslash(UninstallCleanupStateDir) + 'success.flag';
   UninstallCleanupFailureFile :=
     AddBackslash(UninstallCleanupStateDir) + 'failure.txt';
+  SetUninstallProgressMarquee;
 end;
 
 procedure DeinitializeUninstall;
