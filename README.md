@@ -12,12 +12,12 @@ No manual Python setup. No Conda configuration. No environment management.
 
 ---
 
-# 📦 Available Packages
+# 📥 Downloads
 
-| Platform                   | Package                       |
-| -------------------------- | ----------------------------- |
+| Platform                   | Package                 |
+| -------------------------- | ----------------------- |
 | 🪟 Windows                 | `easyrob-<VERSION>.exe` |
-| 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb`   |
+| 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb` |
 
 ---
 
@@ -34,52 +34,29 @@ No manual Python setup. No Conda configuration. No environment management.
    * Windows Search
    * Desktop shortcut (if enabled)
 
-## Notes
-
-* EasyRob installs its own **private runtime**
-* No Python installation is required
-* No Conda installation is required
-* The first installation may take a few minutes
-* The first launch may be slightly slower while the environment is prepared
-* During startup, EasyRob displays an **"EasyRob is opening..."** message so you know the application is launching
-
-## Uninstall
-
-Open:
-
-**Settings → Apps → Installed Apps**
-
-Then select **EasyRob** and click **Uninstall**.
-
 ---
 
 # 🐧 Linux
 
-## Option A — Debian Package (Recommended)
+## Installation
 
-Recommended for Ubuntu and other Debian-based distributions.
-
-### Installation
+Recommended for **Ubuntu** and other Debian-based distributions.
 
 1. Download `easyrob-<VERSION>.deb`
+2. Double-click the downloaded package
+3. Install EasyRob using your system's package installer
+4. Launch **EasyRob** from:
 
-2. Install it:
+   * Applications menu
+   * Desktop shortcut (when available)
+
+### Alternative Terminal Installation
 
 ```bash
 sudo apt install ./easyrob-<VERSION>.deb
 ```
 
-3. Launch EasyRob from:
-
-   * Applications menu
-   * Desktop shortcut (when available)
-   * Terminal:
-
-```bash
-easyrob
-```
-
-### What Gets Installed
+## What Gets Installed
 
 * Runtime: `/opt/easyrob`
 * Launcher: `/usr/bin/easyrob`
@@ -88,61 +65,14 @@ easyrob
 
 ---
 
-## Option B — Shell Installer
+# 📝 Notes
 
-Useful for testing or installing directly from the repository.
-
-### Installation
-
-Make the installer executable:
-
-```bash
-chmod +x packaging/linux/scripts/install_easyrob.sh
-```
-
-Run it:
-
-```bash
-./packaging/linux/scripts/install_easyrob.sh
-```
-
-Launch EasyRob:
-
-```bash
-~/.local/share/easyrob/bin/easyrob
-```
-
-Or open it from your Applications menu.
-
-### What Gets Installed
-
-EasyRob creates a private user environment under:
-
-```text
-~/.local/share/easyrob
-```
-
-It also creates:
-
-* Application entry in `~/.local/share/applications`
-* Desktop shortcut in `~/Desktop` (when available)
-* Log files in `~/.local/share/easyrob/logs`
-
----
-
-# 🗑️ Uninstall
-
-## Debian Package
-
-```bash
-sudo dpkg -r easyrob
-```
-
-## Shell Installer
-
-```bash
-./packaging/linux/scripts/uninstall_easyrob.sh
-```
+* EasyRob installs its own **private runtime**
+* No Python installation is required
+* No Conda installation is required
+* The first installation may take a few minutes
+* The first launch may be slightly slower while the environment is prepared
+* During startup, EasyRob displays an **"EasyRob is opening..."** message so you know the application is launching
 
 ---
 
