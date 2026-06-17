@@ -16,9 +16,8 @@ No manual Python setup. No Conda configuration. No environment management.
 
 | Platform                   | Package                       |
 | -------------------------- | ----------------------------- |
-| 🪟 Windows                 | `EasyRob-Setup-<VERSION>.exe` |
-| 🐧 Linux (Ubuntu / Debian) | `easyrob_<VERSION>_all.deb`   |
-| 🛠️ Linux (Manual)         | `install_easyrob.sh`          |
+| 🪟 Windows                 | `easyrob-<VERSION>.exe` |
+| 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb`   |
 
 ---
 
@@ -26,7 +25,7 @@ No manual Python setup. No Conda configuration. No environment management.
 
 ## Installation
 
-1. Download `EasyRob-Setup-<VERSION>.exe`
+1. Download `easyrob-<VERSION>.exe`
 2. Double-click the installer
 3. Follow the setup wizard
 4. Launch **EasyRob** from:
@@ -62,12 +61,12 @@ Recommended for Ubuntu and other Debian-based distributions.
 
 ### Installation
 
-1. Download `easyrob_<VERSION>_all.deb`
+1. Download `easyrob-<VERSION>.deb`
 
 2. Install it:
 
 ```bash
-sudo apt install ./easyrob_<VERSION>_all.deb
+sudo apt install ./easyrob-<VERSION>.deb
 ```
 
 3. Launch EasyRob from:
@@ -191,13 +190,13 @@ packaging/shared/env.yaml
 ### Windows
 
 ```text
-dist/windows/EasyRob-Setup-<VERSION>.exe
+dist/windows/easyrob-<VERSION>.exe
 ```
 
 ### Linux
 
 ```text
-dist/linux/easyrob_<VERSION>_all.deb
+dist/linux/easyrob-<VERSION>.deb
 ```
 
 ## Build Commands
