@@ -183,6 +183,14 @@ External Python and Conda installations are not touched.
 
 `packaging\shared\env.yaml` is the editable source definition.
 
+When EasyRob dependencies change, this is the file you edit first.
+
+The Windows installer does not solve from `env.yaml` on the user machine.
+It installs strictly from these two files:
+
+- `packaging\windows\installer\locks\conda-explicit.txt`
+- `packaging\windows\installer\locks\requirements.txt`
+
 Typical maintenance workflow:
 
 1. Create a clean environment from `packaging\shared\env.yaml`
@@ -217,3 +225,37 @@ After regenerating the lock files:
 1. Review `installer\locks\requirements.txt` for unexpected pip packages
 2. Keep `packaging\shared\env.yaml` as the editable source of truth
 3. Rebuild the installer with `build_installer.ps1`
+
+## When you need to regenerate Windows locks
+
+Regenerate the Windows lock files only when dependencies changed.
+
+Examples:
+
+- changed Python version
+- changed `robert` version
+- added or removed Conda packages
+- added or removed pip packages
+
+You do not need to regenerate them for:
+
+- installer text changes
+- splash or popup changes
+- desktop shortcut changes
+- launcher UI behavior changes
+
+## Windows update checklist
+
+### If only the installer changed
+
+1. edit the relevant files under `packaging\windows\installer\`
+2. run `.\build_installer.ps1`
+
+### If dependencies changed
+
+1. edit `packaging\shared\env.yaml`
+2. regenerate:
+   `packaging\windows\installer\locks\conda-explicit.txt`
+3. regenerate:
+   `packaging\windows\installer\locks\requirements.txt`
+4. run `.\build_installer.ps1`

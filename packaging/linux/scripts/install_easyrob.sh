@@ -3,8 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LINUX_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ENV_FILE="$(cd "$LINUX_ROOT/../shared" && pwd)/env.yaml"
-WINDOWS_ASSETS_DIR="$(cd "$LINUX_ROOT/../windows/installer/assets" && pwd)"
+SHARED_ROOT="${EASYROB_SHARED_ROOT:-$(cd "$LINUX_ROOT/../shared" && pwd)}"
+ENV_FILE="${EASYROB_ENV_FILE:-$SHARED_ROOT/env.yaml}"
+WINDOWS_ASSETS_DIR="${EASYROB_WINDOWS_ASSETS_DIR:-$(cd "$LINUX_ROOT/../windows/installer/assets" && pwd)}"
 
 INSTALL_ROOT="${EASYROB_INSTALL_ROOT:-${XDG_DATA_HOME:-$HOME/.local/share}/easyrob}"
 BIN_DIR="$INSTALL_ROOT/bin"
@@ -12,11 +13,16 @@ ENV_PREFIX="$INSTALL_ROOT/envs/easyrob"
 LOG_DIR="$INSTALL_ROOT/logs"
 SHARE_DIR="$INSTALL_ROOT/share"
 ICON_DIR="$SHARE_DIR/icons"
-ICON_SOURCE="$WINDOWS_ASSETS_DIR/Robert_icon.ico"
+ICON_SOURCE="${EASYROB_ICON_SOURCE:-$WINDOWS_ASSETS_DIR/Robert_icon.ico}"
 ICON_TARGET="$ICON_DIR/easyrob.ico"
 LAUNCHER_TARGET="$BIN_DIR/easyrob"
-DESKTOP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/applications/easyrob.desktop"
+APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+DESKTOP_FILE="$APPLICATIONS_DIR/easyrob.desktop"
+DESKTOP_SHORTCUT_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
+DESKTOP_SHORTCUT_FILE="$DESKTOP_SHORTCUT_DIR/EasyRob.desktop"
 MICROMAMBA_TARBALL_URL="${MICROMAMBA_TARBALL_URL:-https://micro.mamba.pm/api/micromamba/linux-64/latest}"
+SKIP_APPLICATION_DESKTOP="${EASYROB_SKIP_APPLICATION_DESKTOP:-0}"
+SKIP_DESKTOP_SHORTCUT="${EASYROB_SKIP_DESKTOP_SHORTCUT:-0}"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -37,7 +43,13 @@ else
   exit 1
 fi
 
-mkdir -p "$BIN_DIR" "$LOG_DIR" "$ICON_DIR" "$(dirname "$DESKTOP_FILE")"
+mkdir -p "$BIN_DIR" "$LOG_DIR" "$ICON_DIR"
+if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]]; then
+  mkdir -p "$APPLICATIONS_DIR"
+fi
+if [[ "$SKIP_DESKTOP_SHORTCUT" != "1" && -d "$DESKTOP_SHORTCUT_DIR" ]]; then
+  mkdir -p "$DESKTOP_SHORTCUT_DIR"
+fi
 
 INSTALL_LOG="$LOG_DIR/install.log"
 ERROR_LOG="$LOG_DIR/install-error.log"
@@ -93,7 +105,8 @@ if [[ -f "$ICON_SOURCE" ]]; then
   install -m 0644 "$ICON_SOURCE" "$ICON_TARGET"
 fi
 
-cat > "$DESKTOP_FILE" <<EOF
+if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]]; then
+  cat > "$DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Name=EasyRob
@@ -106,13 +119,40 @@ Icon=$ICON_TARGET
 Categories=Science;
 EOF
 
-chmod 0644 "$DESKTOP_FILE"
+  chmod 0644 "$DESKTOP_FILE"
+fi
 
-if command -v update-desktop-database >/dev/null 2>&1; then
+if [[ "$SKIP_DESKTOP_SHORTCUT" != "1" && -d "$DESKTOP_SHORTCUT_DIR" ]]; then
+  log "Creating desktop shortcut..."
+  if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]]; then
+    install -m 0755 "$DESKTOP_FILE" "$DESKTOP_SHORTCUT_FILE"
+  else
+    cat > "$DESKTOP_SHORTCUT_FILE" <<EOF
+[Desktop Entry]
+Type=Application
+Name=EasyRob
+Comment=Launch EasyRob with its private environment
+Exec=$LAUNCHER_TARGET
+TryExec=$LAUNCHER_TARGET
+Terminal=false
+Path=$INSTALL_ROOT
+Icon=$ICON_TARGET
+Categories=Science;
+EOF
+    chmod 0755 "$DESKTOP_SHORTCUT_FILE"
+  fi
+fi
+
+if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]] && command -v update-desktop-database >/dev/null 2>&1; then
   run_and_log update-desktop-database "$(dirname "$DESKTOP_FILE")"
 fi
 
 log "EasyRob installation completed."
 log "Launcher: $LAUNCHER_TARGET"
-log "Desktop entry: $DESKTOP_FILE"
+if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]]; then
+  log "Desktop entry: $DESKTOP_FILE"
+fi
+if [[ "$SKIP_DESKTOP_SHORTCUT" != "1" && -d "$DESKTOP_SHORTCUT_DIR" ]]; then
+  log "Desktop shortcut: $DESKTOP_SHORTCUT_FILE"
+fi
 log "Error log: $ERROR_LOG"
