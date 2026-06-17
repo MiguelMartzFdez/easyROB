@@ -1,6 +1,6 @@
 # 🚀 EasyRob
 
-*EasyRob* includes guided installers for **Windows** and **Linux**.
+*EasyRob* includes guided installers for **Windows** and **Linux**, plus a prepared **macOS packaging scaffold**.
 
 The goal is simple:
 
@@ -18,6 +18,7 @@ No manual Python setup. No Conda configuration. No environment management.
 | -------------------------- | ----------------------- |
 | 🪟 Windows                 | `easyrob-<VERSION>.exe` |
 | 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb` |
+| 🍎 macOS                   | `easyrob-<VERSION>.dmg` |
 
 ---
 
@@ -65,6 +66,36 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 ---
 
+# 🍎 macOS
+
+## Planned Installation Flow
+
+The macOS packaging structure is now prepared in the workspace.
+
+Target user flow:
+
+1. Download `easyrob-<VERSION>.dmg`
+2. Open the disk image
+3. Install or drag **EasyRob.app**
+4. Launch **EasyRob** from:
+
+   * Applications
+   * Launchpad
+   * Spotlight
+
+## Current Status
+
+The repository already includes:
+
+* a dedicated `packaging/macos/` folder
+* a first `.app` scaffold
+* a macOS launcher script
+* a dedicated macOS packaging document
+
+The final `.dmg` must be built on a real Mac.
+
+---
+
 # 📝 Notes
 
 * EasyRob installs its own **private runtime**
@@ -97,7 +128,8 @@ EasyRob/
 ├── packaging/
 │   ├── shared/
 │   ├── windows/
-│   └── linux/
+│   ├── linux/
+│   └── macos/
 ├── docs/
 ├── dist/
 └── build_installer.ps1
@@ -108,6 +140,7 @@ EasyRob/
 * `docs/packaging.md`
 * `docs/packaging-windows.md`
 * `docs/packaging-linux.md`
+* `docs/packaging-macos.md`
 
 ## Source of Truth
 
@@ -129,6 +162,12 @@ dist/windows/easyrob-<VERSION>.exe
 dist/linux/easyrob-<VERSION>.deb
 ```
 
+### macOS
+
+```text
+dist/macos/easyrob-<VERSION>.dmg
+```
+
 ## Build Commands
 
 ### Windows
@@ -142,4 +181,11 @@ dist/linux/easyrob-<VERSION>.deb
 ```bash
 chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
+```
+
+### macOS
+
+```bash
+chmod +x packaging/macos/build.sh
+./packaging/macos/build.sh
 ```

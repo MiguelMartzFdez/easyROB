@@ -142,7 +142,7 @@ EOF
 
 chmod 0755 "$DEBIAN_DIR/postinst" "$DEBIAN_DIR/postrm"
 
-OUTPUT_FILE="$DIST_DIR/${PACKAGE_NAME}_${VERSION}_all.deb"
+OUTPUT_FILE="$DIST_DIR/${PACKAGE_NAME}-${VERSION}.deb"
 dpkg-deb --build "$STAGE_DIR" "$OUTPUT_FILE"
 
 echo "Debian package created:"
