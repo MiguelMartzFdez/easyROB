@@ -1,40 +1,165 @@
-# EasyRob Packaging
+# EasyRob
 
-This repository contains the packaging and installer assets for EasyRob.
+*EasyRob* is distributed with guided installers for **Windows** and **Linux**.
 
-The workspace is now organized by operating system so each platform can keep its own installer scripts, assets, locks, and release instructions.
+The goal is simple: the user should **download, install, and open EasyRob** without manually creating Conda environments or installing Python.
 
-## Layout
+---
+
+## Overview
+
+| Platform | Format | What happens during install |
+| --- | --- | --- |
+| **Windows** | `EasyRob-Setup-<VERSION>.exe` | The installer sets up a private Miniforge-based runtime and creates the EasyRob shortcuts. |
+| **Linux (Ubuntu)** | `easyrob_<VERSION>_all.deb` or `install_easyrob.sh` | The `.deb` installs the full runtime and launcher. The `.sh` installer creates a private user-local environment with *Micromamba*. |
+
+---
+
+## Windows
+
+### User installation
+
+1. Download `EasyRob-Setup-<VERSION>.exe`.
+2. Double-click the installer.
+3. Follow the setup steps shown on screen.
+4. Open **EasyRob** from the Start Menu, Windows Search, or the Desktop shortcut if you enabled it.
+
+### Notes
+
+- The installer creates a **private runtime** just for EasyRob.
+- No separate Python or Conda installation is required.
+- The first installation can take a few minutes.
+- The first launch can also be a bit slower while Windows finishes preparing the environment.
+- During startup, EasyRob shows a short **"EasyRob is opening..."** message so the user knows the app is starting.
+
+### Uninstall
+
+Remove EasyRob from:
+
+- *Settings* -> *Apps* -> *Installed apps*
+
+---
+
+## Linux
+
+### Option A: Debian package
+
+Recommended for **Ubuntu** and Debian-based systems.
+
+1. Download `easyrob_<VERSION>_all.deb`.
+2. Install it with:
+
+```bash
+sudo apt install ./easyrob_<VERSION>_all.deb
+```
+
+3. Open **EasyRob** from the applications menu.
+4. Open **EasyRob** from the applications menu, the desktop shortcut, or by running `easyrob`.
+
+### Option B: Shell installer
+
+Useful for manual testing or direct installation from the repository.
+
+1. Make the installer executable:
+
+```bash
+chmod +x packaging/linux/scripts/install_easyrob.sh
+```
+
+2. Run it:
+
+```bash
+./packaging/linux/scripts/install_easyrob.sh
+```
+
+3. Open EasyRob from the applications menu, the desktop shortcut, or:
+
+```bash
+~/.local/share/easyrob/bin/easyrob
+```
+
+### Notes
+
+- Linux uses a **private user-local environment** under:
+
+```text
+~/.local/share/easyrob
+```
+
+- The current shell installer creates:
+  - an application entry in `~/.local/share/applications`
+  - a desktop shortcut in `~/Desktop` when that folder exists
+  - logs in `~/.local/share/easyrob/logs`
+
+- The current `.deb` installer creates:
+  - a global runtime under `/opt/easyrob`
+  - a launcher at `/usr/bin/easyrob`
+  - an application entry in `/usr/share/applications`
+  - a desktop shortcut for the installing user when the desktop directory can be resolved
+
+### Uninstall
+
+If installed with the `.deb` package:
+
+```bash
+sudo dpkg -r easyrob
+```
+
+If installed with the shell installer:
+
+```bash
+./packaging/linux/scripts/uninstall_easyrob.sh
+```
+
+---
+
+## What Users Need To Know
+
+**EasyRob does not depend on a preconfigured Python or Conda installation.**
+
+EasyRob installs and uses its own private environment so it does not interfere with the user's existing setup.
+
+---
+
+## For Developers
+
+The packaging workspace is separated by platform:
 
 ```text
 Easyrob/
 |-- packaging/
 |   |-- shared/
-|   |   |-- env.yaml
-|   |   `-- README.md
 |   |-- windows/
-|   |   |-- build.ps1
-|   |   `-- installer/
 |   `-- linux/
-|       |-- scripts/
-|       |-- source/
-|       `-- locks/
 |-- docs/
-|   |-- packaging.md
-|   |-- packaging-windows.md
-|   `-- packaging-linux.md
 |-- dist/
 `-- build_installer.ps1
 ```
 
-## Current status
+Useful documents:
 
-- `Windows`: implemented with Inno Setup and a private Miniforge-based runtime.
-- `Linux`: initial lightweight installer structure prepared. The intended model is a small installer script that downloads Micromamba, creates the local environment, and writes a launcher.
-- `Shared inputs`: the common environment definition now lives in `packaging/shared/env.yaml`, while `locks/` remain separate by platform.
+- [Packaging overview](docs/packaging.md)
+- [Windows packaging](docs/packaging-windows.md)
+- [Linux packaging](docs/packaging-linux.md)
 
-## For developers
+### Source of truth
 
-- [Packaging overview](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging.md)
-- [Windows packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-windows.md)
-- [Linux packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-linux.md)
+- Shared dependency definition: `packaging/shared/env.yaml`
+
+### Build outputs
+
+- Windows installer: `dist/windows/EasyRob-Setup-<VERSION>.exe`
+- Linux Debian package: `dist/linux/easyrob_<VERSION>_all.deb`
+
+### Windows build
+
+```powershell
+.\build_installer.ps1
+```
+
+### Linux `.deb` build
+
+```bash
+chmod +x packaging/linux/build-deb.sh
+./packaging/linux/build-deb.sh
+```

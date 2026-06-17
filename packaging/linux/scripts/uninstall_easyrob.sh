@@ -3,7 +3,26 @@ set -euo pipefail
 
 INSTALL_ROOT="${EASYROB_INSTALL_ROOT:-${XDG_DATA_HOME:-$HOME/.local/share}/easyrob}"
 DESKTOP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/applications/easyrob.desktop"
-DESKTOP_SHORTCUT_FILE="${XDG_DESKTOP_DIR:-$HOME/Desktop}/EasyRob.desktop"
+
+resolve_desktop_dir() {
+  if [[ -n "${XDG_DESKTOP_DIR:-}" ]]; then
+    printf '%s\n' "$XDG_DESKTOP_DIR"
+    return
+  fi
+
+  if command -v xdg-user-dir >/dev/null 2>&1; then
+    local detected_dir
+    detected_dir="$(xdg-user-dir DESKTOP 2>/dev/null || true)"
+    if [[ -n "$detected_dir" ]]; then
+      printf '%s\n' "$detected_dir"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$HOME/Desktop"
+}
+
+DESKTOP_SHORTCUT_FILE="$(resolve_desktop_dir)/EasyRob.desktop"
 
 rm -rf "$INSTALL_ROOT"
 rm -f "$DESKTOP_FILE"

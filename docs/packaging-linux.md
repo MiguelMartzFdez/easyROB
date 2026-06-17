@@ -16,7 +16,7 @@ That matches the current Windows behavior more closely:
 ## Current user-facing formats
 
 - `install_easyrob.sh`: direct bootstrap installer for testing and manual installs
-- `.deb`: system package that installs `/usr/bin/easyrob` and bootstraps the user-local environment on first launch
+- `.deb`: system package that installs `/usr/bin/easyrob` and the full runtime during package installation
 
 ## How Linux works right now
 
@@ -32,13 +32,19 @@ Current private environment location:
 
 - `~/.local/share/easyrob/envs/easyrob`
 
-Current bootstrap behavior:
+Current script-installer behavior:
 
 - direct script install: `packaging/linux/scripts/install_easyrob.sh`
-- Debian package install: `/usr/bin/easyrob` triggers bootstrap on first launch
+- user-local environment path: `~/.local/share/easyrob/envs/easyrob`
 
-So right now Linux resolves the environment from `env.yaml` on the Linux machine itself.
-That is different from Windows.
+Current Debian-package behavior:
+
+- package install creates the runtime during `postinst`
+- system runtime path: `/opt/easyrob`
+- launcher path: `/usr/bin/easyrob`
+- the package should leave EasyRob ready to open immediately after installation
+
+Linux still resolves the environment from `env.yaml` on the Linux machine itself, but the `.deb` now does that during package installation instead of on first launch.
 
 ## Initial Linux installation model
 
@@ -87,16 +93,18 @@ The current Ubuntu-focused installer:
 - creates a private environment under `~/.local/share/easyrob`
 - installs a launcher at `~/.local/share/easyrob/bin/easyrob`
 - creates `~/.local/share/applications/easyrob.desktop`
-- creates `~/Desktop/EasyRob.desktop` when a desktop folder exists
+- creates `EasyRob.desktop` in the user's XDG desktop directory when that folder exists
 - stores logs in `~/.local/share/easyrob/logs`
 - reuses the current EasyRob icon asset from the packaging repository
 
-The current `.deb` wrapper:
+The current `.deb` package:
 
 - installs a system launcher at `/usr/bin/easyrob`
 - installs the shared environment file under `/usr/lib/easyrob/shared/env.yaml`
 - installs a system menu entry under `/usr/share/applications/easyrob.desktop`
-- bootstraps the private user environment on first launch
+- creates the full runtime under `/opt/easyrob` during package installation
+- attempts to create `EasyRob.desktop` in the installing user's desktop directory
+- should make EasyRob launchable immediately after package installation
 
 ## Building the .deb
 
@@ -116,14 +124,27 @@ Expected output:
 On Ubuntu:
 
 ```bash
-sudo apt install ./dist/linux/easyrob_<VERSION>_all.deb
+sudo dpkg -i dist/linux/easyrob_<VERSION>_all.deb
 ```
 
 After installation:
 
 - `EasyRob` appears in the applications menu
-- the first launch runs the bootstrap and creates the private environment under `~/.local/share/easyrob`
-- subsequent launches reuse that private environment
+- `EasyRob.desktop` should appear on the installing user's desktop when the desktop directory can be resolved
+- the runtime is already installed under `/opt/easyrob`
+- launching `EasyRob` should open the program immediately
+
+## Uninstalling the .deb
+
+```bash
+sudo dpkg -r easyrob
+```
+
+If you want to remove the installed runtime under `/opt/easyrob` as well:
+
+```bash
+sudo dpkg --purge easyrob
+```
 
 ## What to change when EasyRob is updated
 
@@ -147,7 +168,7 @@ You do not need to touch dependencies.
 ### If dependencies changed
 
 1. edit `packaging/shared/env.yaml`
-2. test the bootstrap again on Ubuntu
+2. test the script installer again on Ubuntu if you still distribute it
 3. rebuild the `.deb` if you distribute the Debian package
 
 At the moment there is no Linux lock refresh step because Linux is still resolving directly from `packaging/shared/env.yaml`.
@@ -165,11 +186,15 @@ At the moment there is no Linux lock refresh step because Linux is still resolvi
 1. edit `packaging/shared/env.yaml` if dependencies changed
 2. run `./packaging/linux/build-deb.sh`
 3. install the resulting `.deb`
-4. verify first launch bootstrap and second launch reuse
+4. verify package installation creates `/opt/easyrob`
+5. verify `easyrob` exists in `/usr/bin/easyrob`
+6. verify the menu entry appears
+7. verify the desktop shortcut appears for the installing user
+8. verify launching `EasyRob` opens immediately
 
 ## Next technical steps
 
 1. Test `install_easyrob.sh` on a real Linux machine
 2. Confirm the GUI entry point works with the private environment
 3. Freeze Linux-specific versions if Linux needs a platform-specific override beyond `packaging/shared/env.yaml`
-4. Test the `.deb` install, first launch, desktop integration, and package removal on Ubuntu
+4. Test the `.deb` install, desktop integration, launch behavior, and package removal on Ubuntu

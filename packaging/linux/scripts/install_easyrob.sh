@@ -18,11 +18,30 @@ ICON_TARGET="$ICON_DIR/easyrob.ico"
 LAUNCHER_TARGET="$BIN_DIR/easyrob"
 APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 DESKTOP_FILE="$APPLICATIONS_DIR/easyrob.desktop"
-DESKTOP_SHORTCUT_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
-DESKTOP_SHORTCUT_FILE="$DESKTOP_SHORTCUT_DIR/EasyRob.desktop"
 MICROMAMBA_TARBALL_URL="${MICROMAMBA_TARBALL_URL:-https://micro.mamba.pm/api/micromamba/linux-64/latest}"
 SKIP_APPLICATION_DESKTOP="${EASYROB_SKIP_APPLICATION_DESKTOP:-0}"
 SKIP_DESKTOP_SHORTCUT="${EASYROB_SKIP_DESKTOP_SHORTCUT:-0}"
+
+resolve_desktop_dir() {
+  if [[ -n "${XDG_DESKTOP_DIR:-}" ]]; then
+    printf '%s\n' "$XDG_DESKTOP_DIR"
+    return
+  fi
+
+  if command -v xdg-user-dir >/dev/null 2>&1; then
+    local detected_dir
+    detected_dir="$(xdg-user-dir DESKTOP 2>/dev/null || true)"
+    if [[ -n "$detected_dir" ]]; then
+      printf '%s\n' "$detected_dir"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$HOME/Desktop"
+}
+
+DESKTOP_SHORTCUT_DIR="$(resolve_desktop_dir)"
+DESKTOP_SHORTCUT_FILE="$DESKTOP_SHORTCUT_DIR/EasyRob.desktop"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
