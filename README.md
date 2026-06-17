@@ -2,12 +2,12 @@
 
 EasyRob provides desktop installers that prepare and launch a private runtime for the application.
 
-Current distribution artifacts are:
+Current user-ready installers are:
 
 - `easyrob-<VERSION>.exe` for Windows
 - `easyrob-<VERSION>.deb` for Ubuntu and Debian-based Linux
 
-The repository also includes the macOS bootstrap-app packaging that produces:
+The repository also includes macOS bootstrap-app packaging that can produce:
 
 - `EasyRob.app`
 - `easyrob-<VERSION>.zip`
@@ -37,7 +37,7 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 ### macOS
 
-When a macOS build is distributed, the user flow is:
+When you generate and distribute a macOS build, the user flow is:
 
 1. Download `easyrob-<VERSION>.zip`
 2. Unzip it
