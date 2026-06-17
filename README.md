@@ -1,127 +1,72 @@
-# 🚀 EasyRob
+# EasyRob
 
-*EasyRob* includes guided installers for **Windows** and **Linux**, plus a prepared **macOS packaging scaffold**.
+EasyRob provides desktop installers that prepare and launch a private runtime for the application.
 
-The goal is simple:
+Today the user-ready installers are:
 
-✅ Download EasyRob
-✅ Install EasyRob
-✅ Open EasyRob
+- `easyrob-<VERSION>.exe` for Windows
+- `easyrob-<VERSION>.deb` for Ubuntu and Debian-based Linux
 
-No manual Python setup. No Conda configuration. No environment management.
+The repository also includes the macOS packaging scaffold that will produce:
 
----
+- `easyrob-<VERSION>.dmg`
 
-# 📥 Downloads
+## For Users
 
-| Platform                   | Package                 |
-| -------------------------- | ----------------------- |
-| 🪟 Windows                 | `easyrob-<VERSION>.exe` |
-| 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb` |
-| 🍎 macOS                   | `easyrob-<VERSION>.dmg` |
-
----
-
-# 🪟 Windows
-
-## Installation
+### Windows
 
 1. Download `easyrob-<VERSION>.exe`
 2. Double-click the installer
 3. Follow the setup wizard
-4. Launch **EasyRob** from:
+4. Open **EasyRob** from the Start Menu, Windows Search, or the Desktop shortcut if enabled
 
-   * Start Menu
-   * Windows Search
-   * Desktop shortcut (if enabled)
+### Linux
 
----
-
-# 🐧 Linux
-
-## Installation
-
-Recommended for **Ubuntu** and other Debian-based distributions.
+Recommended for Ubuntu and other Debian-based distributions.
 
 1. Download `easyrob-<VERSION>.deb`
-2. Double-click the downloaded package
-3. Install EasyRob using your system's package installer
-4. Launch **EasyRob** from:
+2. Double-click the package and install it with the system package installer
+3. Open **EasyRob** from the applications menu or the desktop shortcut when available
 
-   * Applications menu
-   * Desktop shortcut (when available)
-
-### Alternative Terminal Installation
+Alternative terminal install:
 
 ```bash
 sudo apt install ./easyrob-<VERSION>.deb
 ```
 
-## What Gets Installed
+### macOS
 
-* Runtime: `/opt/easyrob`
-* Launcher: `/usr/bin/easyrob`
-* Application entry: `/usr/share/applications`
-* Desktop shortcut (when supported)
+The workspace already contains the macOS packaging structure, but the final `.dmg` still has to be built on a real Mac.
 
----
-
-# 🍎 macOS
-
-## Planned Installation Flow
-
-The macOS packaging structure is now prepared in the workspace.
-
-Target user flow:
+Planned user flow:
 
 1. Download `easyrob-<VERSION>.dmg`
 2. Open the disk image
-3. Install or drag **EasyRob.app**
-4. Launch **EasyRob** from:
+3. Install or drag `EasyRob.app`
+4. Open **EasyRob** from Applications, Launchpad, or Spotlight
 
-   * Applications
-   * Launchpad
-   * Spotlight
+## Runtime Behavior
 
-## Current Status
+- EasyRob installs its own private runtime
+- No separate Python installation is required
+- No separate Conda installation is required
+- Installation can take a few minutes
+- First launch can also take a bit longer
+- When launch is slow, EasyRob shows an opening message so the user knows the application is starting
 
-The repository already includes:
+## For Maintainers
 
-* a dedicated `packaging/macos/` folder
-* a first `.app` scaffold
-* a macOS launcher script
-* a dedicated macOS packaging document
+### Source of truth
 
-The final `.dmg` must be built on a real Mac.
+Shared dependencies are defined in:
 
----
+```text
+packaging/shared/env.yaml
+```
 
-# 📝 Notes
+If EasyRob dependencies change, edit that file first.
 
-* EasyRob installs its own **private runtime**
-* No Python installation is required
-* No Conda installation is required
-* The first installation may take a few minutes
-* The first launch may be slightly slower while the environment is prepared
-* During startup, EasyRob displays an **"EasyRob is opening..."** message so you know the application is launching
-
----
-
-# ℹ️ What You Need To Know
-
-EasyRob is completely self-contained.
-
-✅ No Python installation required
-✅ No Conda installation required
-✅ No interference with existing environments
-
-EasyRob installs and manages its own private runtime so it can run independently of your system configuration.
-
----
-
-# 👨‍💻 Developer Information
-
-## Project Structure
+### Packaging layout
 
 ```text
 EasyRob/
@@ -135,57 +80,52 @@ EasyRob/
 └── build_installer.ps1
 ```
 
-## Documentation
+### Build outputs
 
-* `docs/packaging.md`
-* `docs/packaging-windows.md`
-* `docs/packaging-linux.md`
-* `docs/packaging-macos.md`
+- Windows: `dist/windows/easyrob-<VERSION>.exe`
+- Linux: `dist/linux/easyrob-<VERSION>.deb`
+- macOS: `dist/macos/easyrob-<VERSION>.dmg`
 
-## Source of Truth
+### Build commands
 
-```text
-packaging/shared/env.yaml
-```
-
-## Build Outputs
-
-### Windows
-
-```text
-dist/windows/easyrob-<VERSION>.exe
-```
-
-### Linux
-
-```text
-dist/linux/easyrob-<VERSION>.deb
-```
-
-### macOS
-
-```text
-dist/macos/easyrob-<VERSION>.dmg
-```
-
-## Build Commands
-
-### Windows
+Windows:
 
 ```powershell
 .\build_installer.ps1
 ```
 
-### Linux
+Linux:
 
 ```bash
 chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
 ```
 
-### macOS
+macOS:
 
 ```bash
 chmod +x packaging/macos/build.sh
 ./packaging/macos/build.sh
 ```
+
+### What to change when EasyRob is updated
+
+If only installer behavior changed, update only the platform-specific packaging files:
+
+- `packaging/windows/...`
+- `packaging/linux/...`
+- `packaging/macos/...`
+- `docs/...`
+
+If dependencies changed:
+
+1. Edit `packaging/shared/env.yaml`
+2. Rebuild the installer or package for the platform you want to ship
+3. Test a clean install on that platform
+
+## Documentation
+
+- [Packaging overview](docs/packaging.md)
+- [Windows packaging](docs/packaging-windows.md)
+- [Linux packaging](docs/packaging-linux.md)
+- [macOS packaging](docs/packaging-macos.md)

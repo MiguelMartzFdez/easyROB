@@ -1,18 +1,37 @@
 # EasyRob Linux Packaging
 
-This folder contains the Linux-specific installer assets for EasyRob.
+This folder contains the Linux-specific packaging files for EasyRob.
 
-The first target is a lightweight installer script that:
+## Output
 
-- downloads Micromamba
-- creates a private environment for EasyRob
-- writes a launcher
-- optionally creates a desktop entry
+```text
+dist/linux/easyrob-<VERSION>.deb
+```
 
-The shared environment source lives in:
+## Build
 
-- `packaging/shared/env.yaml`
+Run on Ubuntu or another Debian-based Linux system:
 
-The detailed rationale and workflow are documented in:
+```bash
+chmod +x packaging/linux/build-deb.sh
+./packaging/linux/build-deb.sh
+```
+
+## Dependency source
+
+Linux packaging uses:
+
+```text
+packaging/shared/env.yaml
+```
+
+## Main contents
+
+- `build-deb.sh`: builds the `.deb`
+- `assets/`: bundled Linux packaging assets
+- `scripts/`: install, launch, shortcut, and uninstall logic
+- `source/`: Linux packaging notes
+
+For full details, see:
 
 - [Linux packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-linux.md)

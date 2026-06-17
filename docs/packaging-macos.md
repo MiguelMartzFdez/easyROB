@@ -1,88 +1,77 @@
 # EasyRob macOS Packaging
 
-This document defines the initial macOS packaging target for EasyRob.
+This document explains the current macOS packaging scaffold and the next step required to turn it into a real installer.
 
-## Goal
-
-Match the same user-facing model already used on Windows and Linux:
-
-- double-click installer media
-- install EasyRob
-- open EasyRob from Finder, Launchpad, Spotlight, or Applications
-- keep the application runtime private to EasyRob
-
-## Target artifact
-
-The macOS distributable should be:
-
-- `dist/macos/easyrob-<VERSION>.dmg`
-
-The application bundle inside it should be:
-
-- `EasyRob.app`
-
-## Current scaffold
-
-The repository now includes a first macOS packaging scaffold under:
+## Target output
 
 ```text
-packaging/macos/
-|-- app/
-|   `-- EasyRob.app/
-|       `-- Contents/
-|           `-- Info.plist
-|-- scripts/
-|   `-- launch_easyrob_macos.sh
-|-- build.sh
-`-- README.md
+dist/macos/easyrob-<VERSION>.dmg
 ```
 
-## Build model
+The application inside that disk image should be:
 
-macOS should follow the same dependency source as the other platforms:
+```text
+EasyRob.app
+```
 
-- `packaging/shared/env.yaml`
+## Current status
 
-The intended final model is:
+The repository already contains the macOS scaffold, but the final `.dmg` is not produced yet.
 
-1. prepare the EasyRob runtime from `packaging/shared/env.yaml`
-2. bundle the runtime inside `EasyRob.app`
-3. wrap `EasyRob.app` into `easyrob-<VERSION>.dmg`
+The packaging work must be completed on a real Mac.
 
-## What build.sh does
+## Build command
 
-`packaging/macos/build.sh` currently:
+On macOS:
 
-1. reads the EasyRob version from `packaging/windows/installer/EasyRob.iss`
-2. creates a staged `EasyRob.app`
-3. copies `packaging/shared/env.yaml` into the app resources
-4. installs the macOS launcher script
-5. prepares the app for the final runtime bundling step
+```bash
+chmod +x packaging/macos/build.sh
+./packaging/macos/build.sh
+```
 
-## Expected user experience
+## Source of truth
 
-Once the macOS package is completed, the target behavior should be:
+macOS packaging should use the same dependency source as the other platforms:
 
-- the user opens `easyrob-<VERSION>.dmg`
-- the user installs or drags `EasyRob.app`
-- EasyRob is searchable from Spotlight
-- EasyRob can be launched with a double-click
-- EasyRob shows an opening message when startup takes a moment
-- EasyRob can be deleted like a normal macOS app
+```text
+packaging/shared/env.yaml
+```
 
-## Signing and notarization
+## Relevant files
 
-At this stage, code signing and notarization are intentionally out of scope.
+- `packaging/macos/build.sh`
+- `packaging/macos/README.md`
+- `packaging/macos/app/EasyRob.app/Contents/Info.plist`
+- `packaging/macos/scripts/launch_easyrob_macos.sh`
 
-That means:
+## What the current scaffold does
 
-- the `.app` and `.dmg` can still be built
-- Gatekeeper warnings are expected on unsigned distributions
-- signing can be added later without changing the workspace layout
+1. Reads the version from the Windows installer definition
+2. Creates a staged `EasyRob.app`
+3. Copies `packaging/shared/env.yaml` into the app resources
+4. Installs the macOS launcher script
+5. Prepares the app structure for the final runtime bundle
 
-## Next steps
+## Planned user installation
 
-1. run `packaging/macos/build.sh` on a real Mac
-2. bundle micromamba and the prepared runtime into `EasyRob.app`
-3. create `easyrob-<VERSION>.dmg`
-4. verify launch, Spotlight discovery, and app removal on macOS
+Once the `.dmg` is finished, the intended user flow is:
+
+1. Download `easyrob-<VERSION>.dmg`
+2. Open the disk image
+3. Install or drag `EasyRob.app`
+4. Open EasyRob from Applications, Launchpad, or Spotlight
+
+## What is still missing
+
+To finish macOS packaging:
+
+1. Build on a real Mac
+2. Bundle micromamba and the prepared EasyRob runtime inside `EasyRob.app`
+3. Create the final `easyrob-<VERSION>.dmg`
+4. Test launch, Spotlight discovery, and removal
+
+## Signing
+
+Code signing and notarization are intentionally out of scope for now.
+
+That means Gatekeeper warnings are expected until signing is added later.

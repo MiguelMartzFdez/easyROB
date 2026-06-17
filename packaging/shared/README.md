@@ -1,7 +1,21 @@
 # Shared Packaging Inputs
 
-This folder contains the cross-platform packaging inputs that should be edited in one place.
+This folder contains the packaging inputs shared by Windows, Linux, and macOS.
 
-- `env.yaml`: common Conda environment definition used to generate platform-specific locks.
+## Main file
 
-Platform-specific `locks/` folders must remain separate because final lock outputs are operating-system specific.
+```text
+packaging/shared/env.yaml
+```
+
+This is the dependency source of truth for EasyRob.
+
+## Rule
+
+If the application runtime changes:
+
+1. edit `packaging/shared/env.yaml`
+2. rebuild the installer or package for the platform you want to ship
+3. test a clean install on that platform
+
+Platform-specific support files can still exist in each packaging folder, but they should not replace `env.yaml` as the main editable definition.

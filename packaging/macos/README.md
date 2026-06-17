@@ -1,11 +1,40 @@
+# EasyRob macOS Packaging
+
 This folder contains the macOS packaging scaffold for EasyRob.
 
-Target artifact:
+## Target output
 
-- `dist/macos/easyrob-<VERSION>.dmg`
+```text
+dist/macos/easyrob-<VERSION>.dmg
+```
 
-Contained application bundle:
+The application bundle inside it should be:
 
-- `EasyRob.app`
+```text
+EasyRob.app
+```
 
-The macOS build must run on a real Mac because `.app` and `.dmg` creation depend on macOS tooling.
+## Build
+
+Run on a real Mac:
+
+```bash
+chmod +x packaging/macos/build.sh
+./packaging/macos/build.sh
+```
+
+## Dependency source
+
+macOS packaging should use:
+
+```text
+packaging/shared/env.yaml
+```
+
+## Current status
+
+The scaffold is already in the repository, but the final `.dmg` still has to be completed on macOS by bundling the runtime into `EasyRob.app`.
+
+For the full workflow, see:
+
+- [macOS packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-macos.md)

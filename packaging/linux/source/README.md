@@ -1,7 +1,14 @@
-# Linux Source
+# Linux Source Notes
 
-Linux packaging uses the shared environment source at:
+Linux packaging uses the shared dependency definition:
 
-`packaging/shared/env.yaml`
+```text
+packaging/shared/env.yaml
+```
 
-Keep Linux-specific lock files in `packaging/linux/locks/`.
+Linux-specific packaging behavior lives in:
+
+- `packaging/linux/build-deb.sh`
+- `packaging/linux/scripts/`
+
+Use `packaging/linux/locks/` only if a future Linux-specific snapshot is needed.

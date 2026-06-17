@@ -1,5 +1,11 @@
 # Linux Locks
 
-Linux lock files can be added here once the Linux environment is validated on a target distribution.
+This folder is reserved for Linux-specific lock snapshots if they are needed later.
 
-For the first iteration, the installer uses `packaging/shared/env.yaml` directly so the target machine resolves the environment during installation.
+The current Linux package does not install from these files.
+
+It installs from:
+
+```text
+packaging/shared/env.yaml
+```

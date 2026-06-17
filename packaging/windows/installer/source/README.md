@@ -1,7 +1,15 @@
-# Windows Source
+# Windows Source Notes
 
-Windows packaging uses the shared environment source at:
+Windows packaging uses the shared dependency definition:
 
-`packaging/shared/env.yaml`
+```text
+packaging/shared/env.yaml
+```
 
-Keep Windows-specific lock files in `packaging/windows/installer/locks/`.
+Windows-specific installer behavior lives in:
+
+- `packaging/windows/installer/EasyRob.iss`
+- `packaging/windows/installer/scripts/`
+- `packaging/windows/installer/assets/`
+
+The `locks/` folder can still contain Windows-specific support snapshots, but the main editable dependency file is `packaging/shared/env.yaml`.

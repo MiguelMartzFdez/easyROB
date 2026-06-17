@@ -1,143 +1,110 @@
 # EasyRob Linux Packaging
 
-This document defines the current Linux packaging target for EasyRob.
+This document explains how to generate and maintain the Linux package.
 
-## Current user-facing format
-
-The Linux package distributed to users is:
-
-- `dist/linux/easyrob-<VERSION>.deb`
-
-## How Linux works right now
-
-Linux does not currently use frozen lock files for installation.
-
-Instead:
-
-1. the dependency source is `packaging/shared/env.yaml`
-2. `micromamba` runs on the target Linux machine
-3. the environment is created locally during package installation
-
-Current Debian-package behavior:
-
-- package install creates the runtime during `postinst`
-- system runtime path: `/opt/easyrob`
-- launcher path: `/usr/bin/easyrob`
-- the package should leave EasyRob ready to open immediately after installation
-
-Linux still resolves the environment from `env.yaml` on the Linux machine itself, but the `.deb` does that during package installation instead of on first launch.
-
-## Why Micromamba
-
-Micromamba is a good fit for Linux because:
-
-- the bootstrap payload stays small
-- it avoids assuming a system Conda installation
-- it stays close to the Conda-based workflow already used for Windows
-- it keeps the runtime private to EasyRob
-
-## Current structure
+## Output
 
 ```text
-packaging/linux/
-|-- assets/
-|-- scripts/
-|   |-- install_easyrob.sh
-|   |-- launch_easyrob.sh
-|   `-- uninstall_easyrob.sh
-|-- build-deb.sh
-`-- source/
-    `-- README.md
+dist/linux/easyrob-<VERSION>.deb
 ```
 
-## Ubuntu-first behavior
+## Target platform
 
-The current `.deb` package:
+The current Linux package targets Ubuntu and other Debian-based distributions.
 
-- installs a system launcher at `/usr/bin/easyrob`
-- bundles a `micromamba` binary inside the package
-- installs the shared environment file under `/usr/lib/easyrob/shared/env.yaml`
-- installs a system menu entry under `/usr/share/applications/easyrob.desktop`
-- creates the full runtime under `/opt/easyrob` during package installation
-- attempts to create `EasyRob.desktop` in the installing user's desktop directory
-- should make EasyRob launchable immediately after package installation
+## Build command
 
-## Building the .deb
-
-From the repository root on Ubuntu:
+From the repository root on Linux:
 
 ```bash
 chmod +x packaging/linux/build-deb.sh
 ./packaging/linux/build-deb.sh
 ```
 
-Expected output:
+## Source of truth
 
-`dist/linux/easyrob-<VERSION>.deb`
+Linux packaging is driven by:
 
-## Installing the .deb
-
-On Ubuntu:
-
-```bash
-sudo dpkg -i dist/linux/easyrob-<VERSION>.deb
+```text
+packaging/shared/env.yaml
 ```
 
-After installation:
+If dependencies change, edit that file first.
 
-- `EasyRob` appears in the applications menu
-- `EasyRob.desktop` should appear on the installing user's desktop when the desktop directory can be resolved
-- the runtime is already installed under `/opt/easyrob`
-- launching `EasyRob` should open the program immediately
+## Relevant files
 
-## Uninstalling the .deb
+- `packaging/linux/build-deb.sh`
+- `packaging/linux/assets/micromamba-linux-64`
+- `packaging/linux/scripts/easyrob_bootstrap.sh`
+- `packaging/linux/scripts/install_easyrob_system.sh`
+- `packaging/linux/scripts/install_desktop_shortcut_system.sh`
+- `packaging/linux/scripts/launch_easyrob.sh`
+- `packaging/linux/scripts/uninstall_easyrob.sh`
+- `packaging/linux/source/README.md`
+
+## What the package does
+
+1. Installs the EasyRob launcher under `/usr/bin/easyrob`
+2. Installs the shared environment definition under `/usr/lib/easyrob/shared/env.yaml`
+3. Uses bundled micromamba to create the runtime under `/opt/easyrob`
+4. Creates an applications menu entry
+5. Attempts to create a desktop shortcut for the installing user
+
+## User installation
+
+### Graphical install
+
+1. Download `easyrob-<VERSION>.deb`
+2. Double-click the package
+3. Install it with the system package installer
+4. Open **EasyRob** from the applications menu or desktop shortcut
+
+### Terminal install
+
+```bash
+sudo apt install ./easyrob-<VERSION>.deb
+```
+
+## User removal
+
+Remove the package:
 
 ```bash
 sudo dpkg -r easyrob
 ```
 
-If you want to remove the installed runtime under `/opt/easyrob` as well:
+Remove the package and the runtime under `/opt/easyrob`:
 
 ```bash
 sudo dpkg --purge easyrob
 ```
 
-## What to change when EasyRob is updated
+## When to update Linux packaging
 
-### If only Linux packaging changed
+### Package-only changes
 
-Examples:
+Change Linux packaging files only when you are updating:
 
-- desktop shortcut behavior
 - `.deb` metadata
-- launcher script behavior
-- bootstrap logging
+- shortcut behavior
+- launcher behavior
+- install and uninstall scripts
+- startup message behavior
 
-Then update only:
+Then rebuild the package:
 
-- `packaging/linux/scripts/*`
-- `packaging/linux/build-deb.sh`
-- `docs/packaging-linux.md`
+```bash
+./packaging/linux/build-deb.sh
+```
 
-You do not need to touch dependencies.
+### Dependency changes
 
-### If dependencies changed
+1. Edit `packaging/shared/env.yaml`
+2. Rebuild the package
+3. Test the package on Ubuntu or another Debian-based system
 
-1. edit `packaging/shared/env.yaml`
-2. rebuild the `.deb`
-3. test the package on Ubuntu
+## Notes about locks
 
-At the moment there is no Linux lock refresh step because Linux is still resolving directly from `packaging/shared/env.yaml`.
+The folder `packaging/linux/locks/` is kept only for future Linux-specific snapshots if they are ever needed.
 
-## Linux update checklist
-
-### Debian package
-
-1. edit `packaging/shared/env.yaml` if dependencies changed
-2. run `./packaging/linux/build-deb.sh`
-3. install the resulting `.deb`
-4. verify package installation creates `/opt/easyrob`
-5. verify `easyrob` exists in `/usr/bin/easyrob`
-6. verify the menu entry appears
-7. verify the desktop shortcut appears for the installing user
-8. verify launching `EasyRob` opens immediately
+The current Linux package resolves from `packaging/shared/env.yaml`.
