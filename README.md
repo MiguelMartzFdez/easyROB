@@ -1,163 +1,143 @@
-# EasyRob
+# 🚀 EasyRob
 
-*EasyRob* is distributed with guided installers for **Windows** and **Linux**.
+*EasyRob* includes guided installers for **Windows** and **Linux**.
 
-The goal is simple: the user should **download, install, and open EasyRob** without manually creating Conda environments or installing Python.
+The goal is simple:
 
----
+✅ Download EasyRob
+✅ Install EasyRob
+✅ Open EasyRob
 
-## Overview
-
-| Platform | Format | What happens during install |
-| --- | --- | --- |
-| **Windows** | `easyrob-<VERSION>.exe` | The installer sets up a private Miniforge-based runtime and creates the EasyRob shortcuts. |
-| **Linux (Ubuntu)** | `easyrob-<VERSION>.deb` or `install_easyrob.sh` | The `.deb` installs the full runtime and launcher. The `.sh` installer creates a private user-local environment with *Micromamba*. |
+No manual Python setup. No Conda configuration. No environment management.
 
 ---
 
-## Windows
+# 📥 Downloads
 
-### User installation
-
-1. Download `easyrob-<VERSION>.exe`.
-2. Double-click the installer.
-3. Follow the setup steps shown on screen.
-4. Open **EasyRob** from the Start Menu, Windows Search, or the Desktop shortcut if you enabled it.
-
-### Notes
-
-- The installer creates a **private runtime** just for EasyRob.
-- No separate Python or Conda installation is required.
-- The first installation can take a few minutes.
-- The first launch can also be a bit slower while Windows finishes preparing the environment.
-- During startup, EasyRob shows a short **"EasyRob is opening..."** message so the user knows the app is starting.
-
-### Uninstall
-
-Remove EasyRob from:
-
-- *Settings* -> *Apps* -> *Installed apps*
+| Platform                   | Package                 |
+| -------------------------- | ----------------------- |
+| 🪟 Windows                 | `easyrob-<VERSION>.exe` |
+| 🐧 Linux (Ubuntu / Debian) | `easyrob-<VERSION>.deb` |
 
 ---
 
-## Linux
+# 🪟 Windows
 
-### Option A: Debian package
+## Installation
 
-Recommended for **Ubuntu** and Debian-based systems.
+1. Download `easyrob-<VERSION>.exe`
+2. Double-click the installer
+3. Follow the setup wizard
+4. Launch **EasyRob** from:
 
-1. Download `easyrob-<VERSION>.deb`.
-2. Install it with:
+   * Start Menu
+   * Windows Search
+   * Desktop shortcut (if enabled)
 
-```bash
-sudo dpkg -i easyrob-<VERSION>.deb
-```
+---
 
-3. Open **EasyRob** from the applications menu.
-4. Open **EasyRob** from the applications menu, the desktop shortcut, or by running `easyrob`.
+# 🐧 Linux
 
-### Option B: Shell installer
+## Installation
 
-Useful for manual testing or direct installation from the repository.
+Recommended for **Ubuntu** and other Debian-based distributions.
 
-1. Make the installer executable:
+1. Download `easyrob-<VERSION>.deb`
+2. Double-click the downloaded package
+3. Install EasyRob using your system's package installer
+4. Launch **EasyRob** from:
 
-```bash
-chmod +x packaging/linux/scripts/install_easyrob.sh
-```
+   * Applications menu
+   * Desktop shortcut (when available)
 
-2. Run it:
-
-```bash
-./packaging/linux/scripts/install_easyrob.sh
-```
-
-3. Open EasyRob from the applications menu, the desktop shortcut, or:
+### Alternative Terminal Installation
 
 ```bash
-~/.local/share/easyrob/bin/easyrob
+sudo apt install ./easyrob-<VERSION>.deb
 ```
 
-### Notes
+## What Gets Installed
 
-- Linux uses a **private user-local environment** under:
+* Runtime: `/opt/easyrob`
+* Launcher: `/usr/bin/easyrob`
+* Application entry: `/usr/share/applications`
+* Desktop shortcut (when supported)
+
+---
+
+# 📝 Notes
+
+* EasyRob installs its own **private runtime**
+* No Python installation is required
+* No Conda installation is required
+* The first installation may take a few minutes
+* The first launch may be slightly slower while the environment is prepared
+* During startup, EasyRob displays an **"EasyRob is opening..."** message so you know the application is launching
+
+---
+
+# ℹ️ What You Need To Know
+
+EasyRob is completely self-contained.
+
+✅ No Python installation required
+✅ No Conda installation required
+✅ No interference with existing environments
+
+EasyRob installs and manages its own private runtime so it can run independently of your system configuration.
+
+---
+
+# 👨‍💻 Developer Information
+
+## Project Structure
 
 ```text
-~/.local/share/easyrob
+EasyRob/
+├── packaging/
+│   ├── shared/
+│   ├── windows/
+│   └── linux/
+├── docs/
+├── dist/
+└── build_installer.ps1
 ```
 
-- The current shell installer creates:
-  - an application entry in `~/.local/share/applications`
-  - a desktop shortcut in `~/Desktop` when that folder exists
-  - logs in `~/.local/share/easyrob/logs`
+## Documentation
 
-- The current `.deb` installer creates:
-  - a global runtime under `/opt/easyrob`
-  - a launcher at `/usr/bin/easyrob`
-  - an application entry in `/usr/share/applications`
-  - a desktop shortcut for the installing user when the desktop directory can be resolved
+* `docs/packaging.md`
+* `docs/packaging-windows.md`
+* `docs/packaging-linux.md`
 
-### Uninstall
-
-If installed with the `.deb` package:
-
-```bash
-sudo dpkg -r easyrob
-```
-
-If installed with the shell installer:
-
-```bash
-./packaging/linux/scripts/uninstall_easyrob.sh
-```
-
----
-
-## What Users Need To Know
-
-**EasyRob does not depend on a preconfigured Python or Conda installation.**
-
-EasyRob installs and uses its own private environment so it does not interfere with the user's existing setup.
-
----
-
-## For Developers
-
-The packaging workspace is separated by platform:
+## Source of Truth
 
 ```text
-Easyrob/
-|-- packaging/
-|   |-- shared/
-|   |-- windows/
-|   `-- linux/
-|-- docs/
-|-- dist/
-`-- build_installer.ps1
+packaging/shared/env.yaml
 ```
 
-Useful documents:
+## Build Outputs
 
-- [Packaging overview](docs/packaging.md)
-- [Windows packaging](docs/packaging-windows.md)
-- [Linux packaging](docs/packaging-linux.md)
+### Windows
 
-### Source of truth
+```text
+dist/windows/easyrob-<VERSION>.exe
+```
 
-- Shared dependency definition: `packaging/shared/env.yaml`
+### Linux
 
-### Build outputs
+```text
+dist/linux/easyrob-<VERSION>.deb
+```
 
-- Windows installer: `dist/windows/easyrob-<VERSION>.exe`
-- Linux Debian package: `dist/linux/easyrob-<VERSION>.deb`
+## Build Commands
 
-### Windows build
+### Windows
 
 ```powershell
 .\build_installer.ps1
 ```
 
-### Linux `.deb` build
+### Linux
 
 ```bash
 chmod +x packaging/linux/build-deb.sh
