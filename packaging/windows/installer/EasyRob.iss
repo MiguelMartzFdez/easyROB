@@ -28,7 +28,7 @@ DisableDirPage=no
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-OutputDir=..\dist
+OutputDir=..\..\..\dist\windows
 OutputBaseFilename=EasyRob-Setup-{#MyAppVersion}
 SetupIconFile={#MyAppIcon}
 Compression=lzma2/max
@@ -368,6 +368,11 @@ end;
 
 procedure InitializeWizard;
 begin
+  WizardForm.WelcomeLabel2.Caption :=
+    'EasyRob installs its own private runtime automatically.' + #13#10#13#10 +
+    'After you continue, setup and the first launch can take a few minutes on some systems.' + #13#10 +
+    'If Windows takes a moment to respond, please wait and do not click again.';
+
   DependencyStateDir := ExpandConstant('{tmp}\EasyRobDependencyState');
   DependencyPidFile := AddBackslash(DependencyStateDir) + 'pid.txt';
   DependencyPhaseFile := AddBackslash(DependencyStateDir) + 'phase.txt';
@@ -438,7 +443,7 @@ begin
       'Setup has finished installing EasyRob on your computer.' + #13#10#13#10 +
       'You can launch it from the Start menu or by searching for "EasyRob" in Windows.';
     FinishedWarningLabel.Caption :=
-      'IMPORTANT: The first launch of EasyRob may take a little longer while Windows prepares and scans the new environment.';
+      'IMPORTANT: The first launch of EasyRob may take a little longer while Windows prepares and scans the new environment. When you open it, an "EasyRob is opening..." message will appear and close automatically when the app is ready.';
   end;
 end;
 

@@ -1,47 +1,40 @@
-# easyROB for Windows
+# EasyRob Packaging
 
-easyROB is distributed as a standard Windows installer.
+This repository contains the packaging and installer assets for EasyRob.
 
-Download the installer from the latest GitHub release, run it, follow the setup steps, and launch easyROB from the Start menu.
+The workspace is now organized by operating system so each platform can keep its own installer scripts, assets, locks, and release instructions.
 
-No manual extraction, Conda setup, or Python installation is required.
-
-## Download
-
-Get the latest Windows installer from the GitHub Releases page.
-
-Distributed file:
+## Layout
 
 ```text
-EasyRob-Setup-<VERSION>.exe
+Easyrob/
+|-- packaging/
+|   |-- shared/
+|   |   |-- env.yaml
+|   |   `-- README.md
+|   |-- windows/
+|   |   |-- build.ps1
+|   |   `-- installer/
+|   `-- linux/
+|       |-- scripts/
+|       |-- source/
+|       `-- locks/
+|-- docs/
+|   |-- packaging.md
+|   |-- packaging-windows.md
+|   `-- packaging-linux.md
+|-- dist/
+`-- build_installer.ps1
 ```
 
-## Installation
+## Current status
 
-1. Download `EasyRob-Setup-<VERSION>.exe`
-2. Double-click the installer
-3. Follow the installation steps
-4. Open `EasyRob` from the Start menu or Windows Search
-
-The installer sets up the full private runtime automatically.
-
-## Updating
-
-If EasyRob is already installed, running a newer installer will update or reinstall the existing installation in the same location.
-
-You do not need to remove the previous version manually.
-
-## Notes
-
-- Windows only
-- No Conda or Python setup required
-- First installation can take several minutes
-- First launch can be slightly slower while Windows finishes preparing the application
-
-## Uninstall
-
-EasyRob can be removed from `Settings > Apps > Installed apps`.
+- `Windows`: implemented with Inno Setup and a private Miniforge-based runtime.
+- `Linux`: initial lightweight installer structure prepared. The intended model is a small installer script that downloads Micromamba, creates the local environment, and writes a launcher.
+- `Shared inputs`: the common environment definition now lives in `packaging/shared/env.yaml`, while `locks/` remain separate by platform.
 
 ## For developers
 
-Technical notes for how the installer is structured, built, and maintained are in [INSTALLER.md](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/exe_env_robert/INSTALLER.md).
+- [Packaging overview](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging.md)
+- [Windows packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-windows.md)
+- [Linux packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-linux.md)
