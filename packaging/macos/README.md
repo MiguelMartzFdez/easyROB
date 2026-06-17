@@ -2,17 +2,14 @@
 
 This folder contains the macOS packaging scaffold for EasyRob.
 
-## Target output
+## Current outputs
 
 ```text
-dist/macos/easyrob-<VERSION>.dmg
+dist/macos/EasyRob.app
+dist/macos/easyrob-<VERSION>.zip
 ```
 
-The application bundle inside it should be:
-
-```text
-EasyRob.app
-```
+The `.zip` is the distribution artifact and `EasyRob.app` is the actual application bundle.
 
 ## Build
 
@@ -33,7 +30,14 @@ packaging/shared/env.yaml
 
 ## Current status
 
-The scaffold is already in the repository, but the final `.dmg` still has to be completed on macOS by bundling the runtime into `EasyRob.app`.
+The macOS package now follows the same lightweight model as Windows and Linux:
+
+- `EasyRob.app` is a bootstrap launcher
+- first launch installs Micromamba and creates the environment
+- the runtime is stored under `~/Library/Application Support/EasyRob`
+- later launches reuse that installed runtime
+
+The `.dmg` can still be added later if you want a more polished distribution container.
 
 For the full workflow, see:
 

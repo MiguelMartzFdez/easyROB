@@ -7,9 +7,10 @@ Today the user-ready installers are:
 - `easyrob-<VERSION>.exe` for Windows
 - `easyrob-<VERSION>.deb` for Ubuntu and Debian-based Linux
 
-The repository also includes the macOS packaging scaffold that will produce:
+The repository also includes the macOS bootstrap-app packaging that produces:
 
-- `easyrob-<VERSION>.dmg`
+- `EasyRob.app`
+- `easyrob-<VERSION>.zip`
 
 ## For Users
 
@@ -36,14 +37,15 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 ### macOS
 
-The workspace already contains the macOS packaging structure, but the final `.dmg` still has to be built on a real Mac.
+Build this on a real Mac, then distribute the generated zip.
 
-Planned user flow:
+User flow:
 
-1. Download `easyrob-<VERSION>.dmg`
-2. Open the disk image
-3. Install or drag `EasyRob.app`
+1. Download `easyrob-<VERSION>.zip`
+2. Unzip it
+3. Move `EasyRob.app` to `Applications`
 4. Open **EasyRob** from Applications, Launchpad, or Spotlight
+5. On first launch, EasyRob installs Micromamba and creates its private runtime under `~/Library/Application Support/EasyRob`
 
 ## Runtime Behavior
 
@@ -84,7 +86,7 @@ EasyRob/
 
 - Windows: `dist/windows/easyrob-<VERSION>.exe`
 - Linux: `dist/linux/easyrob-<VERSION>.deb`
-- macOS: `dist/macos/easyrob-<VERSION>.dmg`
+- macOS: `dist/macos/EasyRob.app` and `dist/macos/easyrob-<VERSION>.zip`
 
 ### Build commands
 

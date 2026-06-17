@@ -9,6 +9,8 @@ BUILD_ROOT="$SCRIPT_DIR/.build"
 APP_BUILD_DIR="$BUILD_ROOT/EasyRob.app"
 DIST_DIR="$REPO_ROOT/dist/macos"
 ICON_SOURCE="$REPO_ROOT/packaging/windows/installer/assets/Robert_icon.ico"
+ASSETS_DIR="$SCRIPT_DIR/assets"
+APP_DIST_DIR="$DIST_DIR/EasyRob.app"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -20,6 +22,7 @@ require_command() {
 require_command grep
 require_command sed
 require_command rsync
+require_command ditto
 
 VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
 if [[ -z "$VERSION" ]]; then
@@ -27,28 +30,50 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-rm -rf "$APP_BUILD_DIR"
+rm -rf "$APP_BUILD_DIR" "$APP_DIST_DIR"
 mkdir -p "$BUILD_ROOT" "$DIST_DIR"
 rsync -a "$APP_TEMPLATE/" "$APP_BUILD_DIR/"
 
 mkdir -p \
   "$APP_BUILD_DIR/Contents/MacOS" \
   "$APP_BUILD_DIR/Contents/Resources/shared" \
-  "$APP_BUILD_DIR/Contents/Resources/runtime"
+  "$APP_BUILD_DIR/Contents/Resources/scripts" \
+  "$APP_BUILD_DIR/Contents/Resources/bootstrap"
 
 install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob_macos.sh" "$APP_BUILD_DIR/Contents/MacOS/EasyRob"
+install -m 0755 "$SCRIPT_DIR/scripts/bootstrap_easyrob_macos.sh" "$APP_BUILD_DIR/Contents/Resources/scripts/bootstrap_easyrob_macos.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$APP_BUILD_DIR/Contents/Resources/shared/env.yaml"
+printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt"
 
 if [[ -f "$ICON_SOURCE" ]]; then
   install -m 0644 "$ICON_SOURCE" "$APP_BUILD_DIR/Contents/Resources/easyrob.icns"
 fi
 
+for asset_name in micromamba-osx-64 micromamba-osx-arm64; do
+  if [[ -f "$ASSETS_DIR/$asset_name" ]]; then
+    install -m 0755 "$ASSETS_DIR/$asset_name" "$APP_BUILD_DIR/Contents/Resources/bootstrap/$asset_name"
+  fi
+done
+
 sed -i.bak "s/__EASYROB_VERSION__/$VERSION/g" "$APP_BUILD_DIR/Contents/Info.plist"
 rm -f "$APP_BUILD_DIR/Contents/Info.plist.bak"
 
-echo "macOS app scaffold created:"
-echo "  $APP_BUILD_DIR"
+rsync -a "$APP_BUILD_DIR/" "$APP_DIST_DIR/"
+
+ZIP_OUTPUT="$DIST_DIR/easyrob-$VERSION.zip"
+rm -f "$ZIP_OUTPUT"
+(
+  cd "$DIST_DIR"
+  ditto -c -k --sequesterRsrc --keepParent "EasyRob.app" "$(basename "$ZIP_OUTPUT")"
+)
+
+echo "macOS app bundle created:"
+echo "  $APP_DIST_DIR"
 echo
-echo "Next step on macOS:"
-echo "  1. Bundle micromamba and the private runtime into Contents/Resources/runtime"
-echo "  2. Build dist/macos/easyrob-$VERSION.dmg from EasyRob.app"
+echo "macOS distributable created:"
+echo "  $ZIP_OUTPUT"
+echo
+echo "First launch behavior:"
+echo "  - copies or downloads Micromamba on demand"
+echo "  - creates the private runtime under ~/Library/Application Support/EasyRob"
+echo "  - launches EasyRob and reuses that runtime on future launches"

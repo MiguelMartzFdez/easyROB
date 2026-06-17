@@ -2,23 +2,16 @@
 
 This document explains the current macOS packaging scaffold and the next step required to turn it into a real installer.
 
-## Target output
+## Current outputs
 
 ```text
-dist/macos/easyrob-<VERSION>.dmg
-```
-
-The application inside that disk image should be:
-
-```text
-EasyRob.app
+dist/macos/EasyRob.app
+dist/macos/easyrob-<VERSION>.zip
 ```
 
 ## Current status
 
-The repository already contains the macOS scaffold, but the final `.dmg` is not produced yet.
-
-The packaging work must be completed on a real Mac.
+The bootstrap app workflow is now defined in the repository, but it still has to be built and tested on a real Mac.
 
 ## Build command
 
@@ -41,7 +34,9 @@ packaging/shared/env.yaml
 
 - `packaging/macos/build.sh`
 - `packaging/macos/README.md`
+- `packaging/macos/assets/`
 - `packaging/macos/app/EasyRob.app/Contents/Info.plist`
+- `packaging/macos/scripts/bootstrap_easyrob_macos.sh`
 - `packaging/macos/scripts/launch_easyrob_macos.sh`
 
 ## What the current scaffold does
@@ -49,26 +44,45 @@ packaging/shared/env.yaml
 1. Reads the version from the Windows installer definition
 2. Creates a staged `EasyRob.app`
 3. Copies `packaging/shared/env.yaml` into the app resources
-4. Installs the macOS launcher script
-5. Prepares the app structure for the final runtime bundle
+4. Copies the bootstrap and launcher scripts
+5. Optionally bundles predownloaded Micromamba binaries
+6. Copies `EasyRob.app` into `dist/macos/`
+7. Creates `dist/macos/easyrob-<VERSION>.zip`
 
-## Planned user installation
+## User installation model
 
-Once the `.dmg` is finished, the intended user flow is:
+The intended user flow is:
 
-1. Download `easyrob-<VERSION>.dmg`
-2. Open the disk image
-3. Install or drag `EasyRob.app`
+1. Download `easyrob-<VERSION>.zip`
+2. Extract the downloaded archive
+3. Move `EasyRob.app` to `Applications`
 4. Open EasyRob from Applications, Launchpad, or Spotlight
+5. On first launch, EasyRob installs Micromamba and creates the environment under `~/Library/Application Support/EasyRob`
+6. Later launches reuse the installed runtime
+
+## Runtime location
+
+The macOS bootstrapper stores its runtime here:
+
+```text
+~/Library/Application Support/EasyRob
+```
+
+That location contains:
+
+- `bin/micromamba`
+- `envs/easyrob`
+- `logs/`
+- `state/`
 
 ## What is still missing
 
-To finish macOS packaging:
+To finish hardening macOS packaging:
 
 1. Build on a real Mac
-2. Bundle micromamba and the prepared EasyRob runtime inside `EasyRob.app`
-3. Create the final `easyrob-<VERSION>.dmg`
-4. Test launch, Spotlight discovery, and removal
+2. Test both Intel and Apple Silicon
+3. Decide whether to keep `.zip` only or also add a `.dmg`
+4. Test launch, Spotlight discovery, updates, and removal
 
 ## Signing
 

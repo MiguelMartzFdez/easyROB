@@ -36,6 +36,7 @@ EasyRob/
 |   |   |-- README.md
 |   |   `-- build-deb.sh
 |   `-- macos/
+|       |-- assets/
 |       |-- app/
 |       |-- scripts/
 |       |-- README.md
@@ -55,7 +56,7 @@ EasyRob/
 
 - Windows: `dist/windows/easyrob-<VERSION>.exe`
 - Linux: `dist/linux/easyrob-<VERSION>.deb`
-- macOS: `dist/macos/easyrob-<VERSION>.dmg`
+- macOS: `dist/macos/EasyRob.app` and `dist/macos/easyrob-<VERSION>.zip`
 
 ## Platform model
 
@@ -75,10 +76,10 @@ EasyRob/
 
 ### macOS
 
-- target installer format: `.dmg`
+- current distribution formats: `.app` and `.zip`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/macos/build.sh`
-- current status: scaffold prepared, final packaging must be completed on a real Mac
+- current status: bootstrap-app flow implemented, build and testing must happen on a real Mac
 
 ## What to change
 
