@@ -6,10 +6,7 @@ param(
     [string]$MiniforgeInstaller,
 
     [Parameter(Mandatory = $true)]
-    [string]$CondaExplicitFile,
-
-    [Parameter(Mandatory = $true)]
-    [string]$PipRequirementsFile,
+    [string]$EnvFile,
 
     [Parameter(Mandatory = $true)]
     [string]$StateDir
@@ -25,8 +22,7 @@ $condaExe = Join-Path $miniforgeDir 'Scripts\conda.exe'
 $envPython = Join-Path $miniforgeDir 'envs\easyrob\python.exe'
 $envPythonw = Join-Path $miniforgeDir 'envs\easyrob\pythonw.exe'
 $easyrobExe = Join-Path $miniforgeDir 'envs\easyrob\Scripts\easyrob.exe'
-$condaExplicitLockFile = Join-Path $StateDir 'conda-explicit.txt'
-$pipRequirementsLockFile = Join-Path $StateDir 'requirements.txt'
+$sharedEnvFile = Join-Path $StateDir 'env.yaml'
 
 $pidFile = Join-Path $StateDir 'pid.txt'
 $phaseFile = Join-Path $StateDir 'phase.txt'
@@ -36,7 +32,6 @@ $script:lastProcessExitCode = -1
 $script:phaseDurations = [ordered]@{}
 $script:installStartedAt = Get-Date
 $script:utf8Encoding = New-Object System.Text.UTF8Encoding($false)
-$script:removedPipRequirements = New-Object System.Collections.Generic.List[string]
 
 function Format-Duration {
     param(
@@ -119,26 +114,6 @@ function Normalize-LogText {
     return $normalized
 }
 
-function Get-SanitizedPipRequirements {
-    $rawLines = Get-Content -LiteralPath $pipRequirementsLockFile
-    $cleanLines = New-Object System.Collections.Generic.List[string]
-    foreach ($line in $rawLines) {
-        $trimmed = $line.Trim()
-        if ($trimmed -eq '') {
-            continue
-        }
-
-        if ($trimmed -match '@\s+file:///' -or $trimmed -match 'feedstock_root') {
-            $script:removedPipRequirements.Add($trimmed)
-            continue
-        }
-
-        $cleanLines.Add($trimmed)
-    }
-
-    return $cleanLines
-}
-
 function Remove-PrivateRuntime {
     if (Test-Path -LiteralPath $miniforgeDir) {
         Remove-Item -LiteralPath $miniforgeDir -Recurse -Force
@@ -196,9 +171,8 @@ function Invoke-LoggedProcess {
     $process.Dispose()
 }
 
-function Copy-LockFiles {
-    Copy-Item -LiteralPath $CondaExplicitFile -Destination $condaExplicitLockFile -Force
-    Copy-Item -LiteralPath $PipRequirementsFile -Destination $pipRequirementsLockFile -Force
+function Copy-EnvironmentFile {
+    Copy-Item -LiteralPath $EnvFile -Destination $sharedEnvFile -Force
 }
 
 try {
@@ -211,7 +185,7 @@ try {
         Remove-Item -LiteralPath $logsDir -Recurse -Force
     }
     New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
-    Copy-LockFiles
+    Copy-EnvironmentFile
 
     Set-Content -LiteralPath $phaseFile -Value 'miniforge' -Encoding ASCII
     $miniforgeArgs = "/S /InstallationType=JustMe /AddToPath=0 /RegisterPython=0 /D=$miniforgeDir"
@@ -228,7 +202,9 @@ try {
     }
 
     Set-Content -LiteralPath $phaseFile -Value 'environment' -Encoding ASCII
-    $condaArgs = "create --name easyrob --yes --file `"$condaExplicitLockFile`""
+    $quotedEnvFile = "`"$sharedEnvFile`""
+    $quotedEnvPrefix = "`"$($miniforgeDir)\envs\easyrob`""
+    $condaArgs = "env create --prefix $quotedEnvPrefix --yes --file $quotedEnvFile"
     Invoke-LoggedProcess `
         -FilePath $condaExe `
         -Arguments $condaArgs `
@@ -236,32 +212,6 @@ try {
     $exitCode = $script:lastProcessExitCode
     if ($exitCode -ne 0) {
         throw "Conda environment creation failed with exit code $exitCode."
-    }
-
-    Set-Content -LiteralPath $phaseFile -Value 'pip' -Encoding ASCII
-    $pipPackages = Get-SanitizedPipRequirements
-    if ($pipPackages.Count -gt 0) {
-        [System.IO.File]::WriteAllLines($pipRequirementsLockFile, $pipPackages, $script:utf8Encoding)
-        $quotedPipFile = "`"$pipRequirementsLockFile`""
-        $pipArgs = "-m pip install --disable-pip-version-check -r $quotedPipFile"
-        Invoke-LoggedProcess `
-            -FilePath $envPython `
-            -Arguments $pipArgs `
-            -LogBaseName 'pip-install'
-        if ($script:removedPipRequirements.Count -gt 0) {
-            $warningLines = New-Object System.Collections.Generic.List[string]
-            $warningLines.Add('')
-            $warningLines.Add('--- EasyRob pip lock cleanup ---')
-            $warningLines.Add('Removed invalid local-path requirements before pip install:')
-            foreach ($entry in $script:removedPipRequirements) {
-                $warningLines.Add("- $entry")
-            }
-            Add-Content -LiteralPath (Join-Path $logsDir 'pip-install.log') -Value $warningLines -Encoding UTF8
-        }
-        $exitCode = $script:lastProcessExitCode
-        if ($exitCode -ne 0) {
-            throw "pip package installation failed with exit code $exitCode."
-        }
     }
 
     Set-Content -LiteralPath $phaseFile -Value 'validate' -Encoding ASCII

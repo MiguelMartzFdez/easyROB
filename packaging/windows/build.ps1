@@ -20,8 +20,6 @@ if (-not (Test-Path -LiteralPath $outputDir)) {
 
 $requiredFiles = @(
     'EasyRob.iss',
-    'locks\conda-explicit.txt',
-    'locks\requirements.txt',
     'scripts\install_easyrob.ps1',
     'scripts\launch_easyrob.pyw',
     'scripts\uninstall_easyrob.ps1',
@@ -35,6 +33,11 @@ foreach ($file in $requiredFiles) {
     if (-not (Test-Path -LiteralPath $path)) {
         throw "Required installer file is missing: $path"
     }
+}
+
+$sharedEnvFile = Join-Path $root 'packaging\shared\env.yaml'
+if (-not (Test-Path -LiteralPath $sharedEnvFile)) {
+    throw "Required shared environment file is missing: $sharedEnvFile"
 }
 
 $isccCandidates = @(

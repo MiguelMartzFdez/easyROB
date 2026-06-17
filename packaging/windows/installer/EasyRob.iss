@@ -5,15 +5,13 @@
 #define MiniforgeInstaller "assets\Miniforge3-Windows-x86_64.exe"
 #define DependencyHelper "scripts\install_easyrob.ps1"
 #define UninstallHelper "scripts\uninstall_easyrob.ps1"
-#define CondaExplicitLock "locks\conda-explicit.txt"
-#define PipRequirementsLock "locks\requirements.txt"
+#define SharedEnvFile "..\..\shared\env.yaml"
 #define GuiLauncher "scripts\launch_easyrob.pyw"
 #define MyAppIconName "Robert_icon.ico"
 #define MiniforgeInstallerName "Miniforge3-Windows-x86_64.exe"
 #define DependencyHelperName "install_easyrob.ps1"
 #define UninstallHelperName "uninstall_easyrob.ps1"
-#define CondaExplicitLockName "conda-explicit.txt"
-#define PipRequirementsLockName "requirements.txt"
+#define SharedEnvFileName "env.yaml"
 #define GuiLauncherName "launch_easyrob.pyw"
 
 [Setup]
@@ -53,8 +51,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 
 [Files]
 Source: "{#MiniforgeInstaller}"; Flags: dontcopy
-Source: "{#CondaExplicitLock}"; Flags: dontcopy
-Source: "{#PipRequirementsLock}"; Flags: dontcopy
+Source: "{#SharedEnvFile}"; Flags: dontcopy
 Source: "{#DependencyHelper}"; Flags: dontcopy
 Source: "{#GuiLauncher}"; DestDir: "{app}"; DestName: "{#GuiLauncherName}"; Flags: ignoreversion
 Source: "{#UninstallHelper}"; DestDir: "{app}"; DestName: "{#UninstallHelperName}"; Flags: ignoreversion
@@ -219,21 +216,14 @@ begin
   else if Phase = 'environment' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 2 of 4: Creating the Conda environment from the locked package list...';
+      'Step 2 of 3: Creating the Conda environment from env.yaml...';
     DependencyDetailLabel.Caption :=
-      'Conda is installing the exact locked packages required by EasyRob.';
-  end
-  else if Phase = 'pip' then
-  begin
-    DependencyStatusLabel.Caption :=
-      'Step 3 of 4: Installing pip packages for EasyRob...';
-    DependencyDetailLabel.Caption :=
-      'Python packages are now being installed into the easyrob environment.';
+      'Conda is creating the EasyRob environment directly from the shared environment definition.';
   end
   else if Phase = 'validate' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 4 of 4: Validating the EasyRob launcher...';
+      'Step 3 of 3: Validating the EasyRob launcher...';
     DependencyDetailLabel.Caption :=
       'Checking that the GUI entry point was created correctly.';
   end;
@@ -253,8 +243,7 @@ begin
   RemovePrivateRuntime(True);
 
   ExtractTemporaryFile('{#MiniforgeInstallerName}');
-  ExtractTemporaryFile('{#CondaExplicitLockName}');
-  ExtractTemporaryFile('{#PipRequirementsLockName}');
+  ExtractTemporaryFile('{#SharedEnvFileName}');
   ExtractTemporaryFile('{#DependencyHelperName}');
 
   DependencyRunning := True;
@@ -284,8 +273,7 @@ begin
     ' -InstallDir ' + Quote(WizardForm.DirEdit.Text) +
     ' -MiniforgeInstaller ' +
       Quote(ExpandConstant('{tmp}\{#MiniforgeInstallerName}')) +
-    ' -CondaExplicitFile ' + Quote(ExpandConstant('{tmp}\{#CondaExplicitLockName}')) +
-    ' -PipRequirementsFile ' + Quote(ExpandConstant('{tmp}\{#PipRequirementsLockName}')) +
+    ' -EnvFile ' + Quote(ExpandConstant('{tmp}\{#SharedEnvFileName}')) +
     ' -StateDir ' + Quote(DependencyStateDir);
 
   Log('Starting clean EasyRob dependency installation.');
