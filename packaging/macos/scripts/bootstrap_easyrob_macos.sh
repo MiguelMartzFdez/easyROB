@@ -32,6 +32,15 @@ runtime_log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$RUNTIME_LOG"
 }
 
+configure_private_environment() {
+  local existing_path
+  existing_path="${PATH:-}"
+  export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
+  export CONDA_PREFIX="$ENV_PREFIX"
+  export CONDA_DEFAULT_ENV="easyrob"
+  export CONDA_SHLVL="1"
+}
+
 show_error_dialog() {
   local message="$1"
   osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
@@ -192,6 +201,7 @@ install_runtime() {
 launch_easyrob() {
   runtime_log "Launching EasyRob from $ENV_PREFIX"
   runtime_log "Using Micromamba at $MICROMAMBA_BIN"
+  configure_private_environment
   "$MICROMAMBA_BIN" run -p "$ENV_PREFIX" \
     python -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"

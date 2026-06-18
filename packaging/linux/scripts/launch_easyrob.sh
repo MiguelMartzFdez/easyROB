@@ -16,6 +16,15 @@ log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >> "$RUNTIME_LOG"
 }
 
+configure_private_environment() {
+  local existing_path
+  existing_path="${PATH:-}"
+  export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
+  export CONDA_PREFIX="$ENV_PREFIX"
+  export CONDA_DEFAULT_ENV="easyrob"
+  export CONDA_SHLVL="1"
+}
+
 start_opening_notice() {
   if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
     return
@@ -61,6 +70,7 @@ fi
 log "Launching EasyRob from $ENV_PREFIX"
 log "Using Python interpreter at $ENV_PYTHON"
 
+configure_private_environment
 start_opening_notice
 trap stop_opening_notice EXIT
 
