@@ -20,6 +20,9 @@ configure_private_environment() {
   local existing_path
   existing_path="${PATH:-}"
   export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
+  export LD_LIBRARY_PATH="$ENV_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  export XDG_DATA_DIRS="$ENV_PREFIX/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+  export GI_TYPELIB_PATH="$ENV_PREFIX/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
   export CONDA_PREFIX="$ENV_PREFIX"
   export CONDA_DEFAULT_ENV="easyrob"
   export CONDA_SHLVL="1"
