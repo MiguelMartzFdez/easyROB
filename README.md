@@ -22,10 +22,11 @@
 
 ## 🪟 Windows
 
-1. Download `easyrob-<VERSION>.exe`
-2. Double-click the installer
-3. Follow the setup wizard
-4. Launch **EasyRob** from:
+1. Download the installer from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
+2. Download `easyrob-<VERSION>.exe`
+3. Double-click the installer
+4. Follow the setup wizard
+5. Launch **EasyRob** from:
 
    * Start Menu
    * Windows Search
@@ -39,29 +40,23 @@ Recommended for Ubuntu and Debian-based distributions.
 
 ### Graphical Installation
 
-1. Download `easyrob-<VERSION>.deb`
-2. Open it with your system package installer
-3. Launch **EasyRob** from:
+1. Download the package from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
+2. Download `easyrob-<VERSION>.deb`
+3. Open it with your system package installer
+4. Launch **EasyRob** from:
 
    * Applications Menu
    * Desktop Shortcut (if available)
-
-### Terminal Installation
-
-```bash
-sudo apt install ./easyrob-<VERSION>.deb
-```
 
 ---
 
 ## 🍎 macOS
 
-After generating a macOS release:
-
-1. Download `easyrob-<VERSION>.zip`
-2. Extract the archive
-3. Move `EasyRob.app` into `/Applications`
-4. Open **EasyRob** using:
+1. Download the latest macOS release from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
+2. Download `easyrob-<VERSION>.zip`
+3. Extract the archive
+4. Move `EasyRob.app` into `/Applications`
+5. Open **EasyRob** using:
 
    * Applications
    * Launchpad
