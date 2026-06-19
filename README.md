@@ -107,8 +107,7 @@ EasyRob/
 │   ├── linux/
 │   └── macos/
 ├── docs/
-├── dist/
-└── build_installer.ps1
+└── dist/
 ```
 
 ---
@@ -149,7 +148,7 @@ What is shared across all of them is:
 ## 🪟 Windows
 
 ```powershell
-.\build_installer.ps1
+.\packaging\windows\build.ps1
 ```
 
 ### Requirements

@@ -70,7 +70,7 @@ The repository, dependency source, and packaging structure are shared, but the f
 
 - installer format: `.exe`
 - runtime source: `packaging/shared/env.yaml`
-- build entry point: `.\build_installer.ps1`
+- build entry point: `.\packaging\windows\build.ps1`
 - build host: Windows with Inno Setup 6 or 7
 - end-user result: EasyRob appears in Start Menu, Windows Search, and optionally on the Desktop
 

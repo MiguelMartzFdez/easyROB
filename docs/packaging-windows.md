@@ -13,13 +13,7 @@ dist/windows/easyrob-<VERSION>.exe
 From the repository root:
 
 ```powershell
-.\build_installer.ps1
-```
-
-That wrapper calls:
-
-```text
-packaging/windows/build.ps1
+.\packaging\windows\build.ps1
 ```
 
 ## Build requirements
@@ -97,7 +91,7 @@ Change Windows packaging files only when you are updating:
 Then rebuild the installer:
 
 ```powershell
-.\build_installer.ps1
+.\packaging\windows\build.ps1
 ```
 
 ### Dependency changes
