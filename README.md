@@ -64,22 +64,6 @@ Recommended for Ubuntu and Debian-based distributions.
   
 ---
 
-## 🔧 First Launch
-
-EasyRob automatically:
-
-* 📥 Installs Micromamba
-* 🐍 Creates its private runtime
-* ⚙️ Configures required dependencies
-
-Runtime files are stored in:
-
-```text
-~/Library/Application Support/EasyRob
-```
-
----
-
 # ⚡ Runtime Behavior
 
 EasyRob manages everything automatically.
