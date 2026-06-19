@@ -61,6 +61,8 @@ Recommended for Ubuntu and Debian-based distributions.
    * Applications
    * Launchpad
    * Spotlight
+  
+---
 
 ### First Launch
 
