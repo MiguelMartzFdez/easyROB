@@ -64,7 +64,7 @@ Recommended for Ubuntu and Debian-based distributions.
   
 ---
 
-### First Launch
+## 🔧 First Launch
 
 EasyRob automatically:
 
