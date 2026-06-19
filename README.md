@@ -1,4 +1,4 @@
-# 🚀 EasyRob
+# 🚀 easyROB
 
 **EasyRob** provides simple desktop installers that prepare and launch a fully private runtime environment for the application.
 
