@@ -6,7 +6,7 @@ This document explains the current macOS bootstrap-app packaging for EasyRob.
 
 ```text
 dist/macos/EasyRob.app
-dist/macos/easyrob-<VERSION>.zip
+dist/macos/easyrob-<VERSION>.dmg
 ```
 
 ## Current status
@@ -29,7 +29,7 @@ chmod +x packaging/macos/build.sh
 - a real Mac
 - macOS 11 Big Sur or newer
 - `rsync`
-- `ditto`
+- `hdiutil`
 - `grep`
 - `sed`
 
@@ -68,7 +68,7 @@ packaging/shared/env.yaml
 4. Copies the bootstrap and launcher scripts
 5. Optionally bundles predownloaded Micromamba binaries
 6. Copies `EasyRob.app` into `dist/macos/`
-7. Creates `dist/macos/easyrob-<VERSION>.zip`
+7. Creates a `.dmg` containing `EasyRob.app` and an `Applications` shortcut
 
 The build uses `packaging/macos/assets/easyrob.icns` when present. It does not reuse the Windows `.ico` file as a macOS icon.
 
@@ -76,9 +76,9 @@ The build uses `packaging/macos/assets/easyrob.icns` when present. It does not r
 
 The intended user flow is:
 
-1. Download `easyrob-<VERSION>.zip`
-2. Extract the downloaded archive
-3. Move `EasyRob.app` to `Applications`
+1. Download `easyrob-<VERSION>.dmg`
+2. Open the downloaded disk image
+3. Drag `EasyRob.app` to `Applications`
 4. Open EasyRob from Applications, Launchpad, or Spotlight
 5. On first launch, EasyRob installs Micromamba and creates the environment under `~/Library/Application Support/EasyRob`
 6. Later launches reuse the installed runtime
@@ -117,8 +117,7 @@ To finish hardening macOS packaging:
 2. Test on Big Sur 11.7 Intel as the minimum supported baseline
 3. Test on a newer Intel macOS release if available
 4. Test on Apple Silicon
-5. Decide whether to keep `.zip` only or also add a `.dmg`
-6. Test launch, Spotlight discovery, updates, and removal
+5. Test the `.dmg` flow, launch, Spotlight discovery, updates, and removal
 
 ## Signing
 

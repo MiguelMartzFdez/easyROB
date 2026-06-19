@@ -14,7 +14,7 @@
 | ------------------------ | --------------------------------------- |
 | 🪟 Windows               | `easyrob-<VERSION>.exe`                 |
 | 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb`                 |
-| 🍎 macOS                 | `EasyRob.app` + `easyrob-<VERSION>.zip` |
+| 🍎 macOS                 | `easyrob-<VERSION>.dmg`                 |
 
 ---
 
@@ -54,9 +54,9 @@ Recommended for Ubuntu and Debian-based distributions.
 
 If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**:
 
-1. Download `easyrob-<VERSION>.zip`
-2. Extract the archive
-3. Move `EasyRob.app` into `/Applications`
+1. Download `easyrob-<VERSION>.dmg`
+2. Open the downloaded disk image
+3. Drag `EasyRob.app` into `Applications`
 4. Open **EasyRob** using:
 
    * Applications
@@ -121,7 +121,7 @@ EasyRob/
 | 🪟 Windows | `dist/windows/easyrob-<VERSION>.exe` |
 | 🐧 Linux   | `dist/linux/easyrob-<VERSION>.deb`   |
 | 🍎 macOS   | `dist/macos/EasyRob.app`             |
-| 🍎 macOS   | `dist/macos/easyrob-<VERSION>.zip`   |
+| 🍎 macOS   | `dist/macos/easyrob-<VERSION>.dmg`   |
 
 ---
 
@@ -133,7 +133,7 @@ Each installer is generated on its own operating system.
 | ------------------------------------- | ---------- |
 | `easyrob-<VERSION>.exe`               | Windows    |
 | `easyrob-<VERSION>.deb`               | Linux      |
-| `EasyRob.app` / `easyrob-<VERSION>.zip` | macOS      |
+| `EasyRob.app` / `easyrob-<VERSION>.dmg` | macOS      |
 
 You do **not** build all three final artifacts from Windows.
 
@@ -191,7 +191,7 @@ chmod +x packaging/macos/build.sh
 * A real Mac
 * macOS 11 Big Sur or newer
 * `rsync`
-* `ditto`
+* `hdiutil`
 * `grep`
 * `sed`
 
@@ -200,7 +200,7 @@ chmod +x packaging/macos/build.sh
 This build creates:
 
 - `dist/macos/EasyRob.app`
-- `dist/macos/easyrob-<VERSION>.zip`
+- `dist/macos/easyrob-<VERSION>.dmg`
 
 ---
 

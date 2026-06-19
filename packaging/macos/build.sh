@@ -7,6 +7,7 @@ WINDOWS_ISS="$REPO_ROOT/packaging/windows/EasyRob.iss"
 APP_TEMPLATE="$SCRIPT_DIR/app/EasyRob.app"
 BUILD_ROOT="$SCRIPT_DIR/.build"
 APP_BUILD_DIR="$BUILD_ROOT/EasyRob.app"
+DMG_STAGE_DIR="$BUILD_ROOT/dmg-root"
 DIST_DIR="$REPO_ROOT/dist/macos"
 ASSETS_DIR="$SCRIPT_DIR/assets"
 ICON_SOURCE="$ASSETS_DIR/easyrob.icns"
@@ -22,7 +23,7 @@ require_command() {
 require_command grep
 require_command sed
 require_command rsync
-require_command ditto
+require_command hdiutil
 
 VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
 if [[ -z "$VERSION" ]]; then
@@ -30,7 +31,7 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-rm -rf "$APP_BUILD_DIR" "$APP_DIST_DIR"
+rm -rf "$APP_BUILD_DIR" "$APP_DIST_DIR" "$DMG_STAGE_DIR"
 mkdir -p "$BUILD_ROOT" "$DIST_DIR"
 rsync -a "$APP_TEMPLATE/" "$APP_BUILD_DIR/"
 
@@ -62,18 +63,24 @@ rm -f "$APP_BUILD_DIR/Contents/Info.plist.bak"
 
 rsync -a "$APP_BUILD_DIR/" "$APP_DIST_DIR/"
 
-ZIP_OUTPUT="$DIST_DIR/easyrob-$VERSION.zip"
-rm -f "$ZIP_OUTPUT"
-(
-  cd "$DIST_DIR"
-  ditto -c -k --sequesterRsrc --keepParent "EasyRob.app" "$(basename "$ZIP_OUTPUT")"
-)
+mkdir -p "$DMG_STAGE_DIR"
+rsync -a "$APP_BUILD_DIR/" "$DMG_STAGE_DIR/EasyRob.app/"
+ln -s /Applications "$DMG_STAGE_DIR/Applications"
+
+DMG_OUTPUT="$DIST_DIR/easyrob-$VERSION.dmg"
+rm -f "$DMG_OUTPUT"
+hdiutil create \
+  -volname "EasyRob" \
+  -srcfolder "$DMG_STAGE_DIR" \
+  -ov \
+  -format UDZO \
+  "$DMG_OUTPUT"
 
 echo "macOS app bundle created:"
 echo "  $APP_DIST_DIR"
 echo
 echo "macOS distributable created:"
-echo "  $ZIP_OUTPUT"
+echo "  $DMG_OUTPUT"
 echo
 echo "First launch behavior:"
 echo "  - copies or downloads Micromamba on demand"

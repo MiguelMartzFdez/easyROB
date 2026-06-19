@@ -6,10 +6,10 @@ This folder contains the macOS bootstrap-app packaging for EasyRob.
 
 ```text
 dist/macos/EasyRob.app
-dist/macos/easyrob-<VERSION>.zip
+dist/macos/easyrob-<VERSION>.dmg
 ```
 
-The `.zip` is the distribution artifact and `EasyRob.app` is the actual application bundle.
+The `.dmg` is the distribution artifact and `EasyRob.app` is the actual application bundle.
 
 ## Build
 
@@ -24,7 +24,7 @@ Requirements:
 
 - macOS 11 Big Sur or newer
 - `rsync`
-- `ditto`
+- `hdiutil`
 - `grep`
 - `sed`
 
@@ -56,8 +56,6 @@ Optional assets:
 - `assets/micromamba-osx-64`
 - `assets/micromamba-osx-arm64`
 - `assets/easyrob.icns`
-
-The `.dmg` can still be added later if you want a more polished distribution container.
 
 For the full workflow, see:
 
