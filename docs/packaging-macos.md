@@ -83,6 +83,8 @@ That location contains:
 - `logs/`
 - `state/`
 
+At launch time, the app runs the Python interpreter inside `envs/easyrob` directly and exports the private environment paths so ROBERT subprocesses can find `python` and native libraries.
+
 ## User removal
 
 To remove EasyRob on macOS:

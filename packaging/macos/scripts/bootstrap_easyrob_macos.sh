@@ -20,6 +20,7 @@ INSTALL_ERR_LOG="$LOG_DIR/install-error.log"
 RUNTIME_LOG="$LOG_DIR/runtime.log"
 RUNTIME_ERR_LOG="$LOG_DIR/runtime-error.log"
 MICROMAMBA_BIN="$BIN_DIR/micromamba"
+ENV_PYTHON="$ENV_PREFIX/bin/python"
 NOTICE_PID=""
 
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
@@ -36,6 +37,9 @@ configure_private_environment() {
   local existing_path
   existing_path="${PATH:-}"
   export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
+  export DYLD_LIBRARY_PATH="$ENV_PREFIX/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+  export XDG_DATA_DIRS="$ENV_PREFIX/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+  export GI_TYPELIB_PATH="$ENV_PREFIX/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
   export CONDA_PREFIX="$ENV_PREFIX"
   export CONDA_DEFAULT_ENV="easyrob"
   export CONDA_SHLVL="1"
@@ -200,10 +204,13 @@ install_runtime() {
 
 launch_easyrob() {
   runtime_log "Launching EasyRob from $ENV_PREFIX"
-  runtime_log "Using Micromamba at $MICROMAMBA_BIN"
+  runtime_log "Using Python interpreter at $ENV_PYTHON"
+  if [[ ! -x "$ENV_PYTHON" ]]; then
+    echo "EasyRob Python interpreter not found at $ENV_PYTHON" >>"$RUNTIME_ERR_LOG"
+    return 1
+  fi
   configure_private_environment
-  "$MICROMAMBA_BIN" run -p "$ENV_PREFIX" \
-    python -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
+  "$ENV_PYTHON" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
 }
 

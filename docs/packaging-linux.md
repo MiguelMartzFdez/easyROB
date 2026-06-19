@@ -49,7 +49,6 @@ If dependencies change, edit that file first.
 - `packaging/linux/scripts/install_desktop_shortcut_system.sh`
 - `packaging/linux/scripts/launch_easyrob.sh`
 - `packaging/linux/scripts/uninstall_easyrob.sh`
-- `packaging/linux/source/README.md`
 
 ## What the package does
 
