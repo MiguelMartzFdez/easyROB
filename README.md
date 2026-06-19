@@ -62,6 +62,8 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
    * Applications
    * Launchpad
    * Spotlight
+
+Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the machine architecture and prepares an Intel (`osx-64`) or Apple Silicon (`osx-arm64`) environment as needed.
   
 ---
 
@@ -187,6 +189,7 @@ chmod +x packaging/macos/build.sh
 ### Requirements
 
 * A real Mac
+* macOS 11 Big Sur or newer
 * `rsync`
 * `ditto`
 * `grep`

@@ -13,6 +13,8 @@ dist/macos/easyrob-<VERSION>.zip
 
 The bootstrap app workflow is now defined in the repository, but it still has to be built and tested on a real Mac.
 
+The compatibility baseline is macOS 11 Big Sur. This keeps the current Big Sur 11.7 VM useful as the lowest practical test target while still supporting newer macOS releases.
+
 ## Build command
 
 On macOS:
@@ -25,10 +27,21 @@ chmod +x packaging/macos/build.sh
 ## Build requirements
 
 - a real Mac
+- macOS 11 Big Sur or newer
 - `rsync`
 - `ditto`
 - `grep`
 - `sed`
+
+## Compatibility target
+
+The macOS package should support:
+
+- Intel Macs through the `osx-64` Micromamba target
+- Apple Silicon Macs through the `osx-arm64` Micromamba target
+- macOS 11 Big Sur or newer
+
+The bootstrapper detects the architecture at first launch and installs the matching runtime. AMD-based macOS systems are not an official distribution target.
 
 ## Source of truth
 
@@ -97,9 +110,11 @@ To remove EasyRob on macOS:
 To finish hardening macOS packaging:
 
 1. Build on a real Mac
-2. Test both Intel and Apple Silicon
-3. Decide whether to keep `.zip` only or also add a `.dmg`
-4. Test launch, Spotlight discovery, updates, and removal
+2. Test on Big Sur 11.7 Intel as the minimum supported baseline
+3. Test on a newer Intel macOS release if available
+4. Test on Apple Silicon
+5. Decide whether to keep `.zip` only or also add a `.dmg`
+6. Test launch, Spotlight discovery, updates, and removal
 
 ## Signing
 

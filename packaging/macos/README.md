@@ -22,6 +22,7 @@ chmod +x packaging/macos/build.sh
 
 Requirements:
 
+- macOS 11 Big Sur or newer
 - `rsync`
 - `ditto`
 - `grep`
@@ -43,6 +44,12 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 - first launch installs Micromamba and creates the environment
 - the runtime is stored under `~/Library/Application Support/EasyRob`
 - later launches reuse that installed runtime
+
+Compatibility target:
+
+- macOS 11 Big Sur or newer
+- Intel Macs using `osx-64`
+- Apple Silicon Macs using `osx-arm64`
 
 The `.dmg` can still be added later if you want a more polished distribution container.
 
