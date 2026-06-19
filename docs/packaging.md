@@ -54,6 +54,16 @@ EasyRob/
 - Linux: `dist/linux/easyrob-<VERSION>.deb`
 - macOS: `dist/macos/EasyRob.app` and `dist/macos/easyrob-<VERSION>.zip`
 
+## Build hosts
+
+Each final artifact is built on its own operating system:
+
+- Windows `.exe`: build on Windows
+- Linux `.deb`: build on Linux
+- macOS `.app` / `.zip`: build on macOS
+
+The repository, dependency source, and packaging structure are shared, but the final installers are not all produced from one host.
+
 ## Platform model
 
 ### Windows

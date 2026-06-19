@@ -8,7 +8,7 @@
 
 ---
 
-## 📦 Available Installers
+## 📦 Supported Package Formats
 
 | Platform                 | Package                                 |
 | ------------------------ | --------------------------------------- |
@@ -52,11 +52,12 @@ Recommended for Ubuntu and Debian-based distributions.
 
 ## 🍎 macOS
 
-1. Download the latest macOS release from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
-2. Download `easyrob-<VERSION>.zip`
-3. Extract the archive
-4. Move `EasyRob.app` into `/Applications`
-5. Open **EasyRob** using:
+If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**:
+
+1. Download `easyrob-<VERSION>.zip`
+2. Extract the archive
+3. Move `EasyRob.app` into `/Applications`
+4. Open **EasyRob** using:
 
    * Applications
    * Launchpad
@@ -123,6 +124,26 @@ EasyRob/
 
 ---
 
+# 🖥️ Build Hosts
+
+Each installer is generated on its own operating system.
+
+| Target package                        | Build host |
+| ------------------------------------- | ---------- |
+| `easyrob-<VERSION>.exe`               | Windows    |
+| `easyrob-<VERSION>.deb`               | Linux      |
+| `EasyRob.app` / `easyrob-<VERSION>.zip` | macOS      |
+
+You do **not** build all three final artifacts from Windows.
+
+What is shared across all of them is:
+
+- `packaging/shared/env.yaml`
+- the same repository
+- the same packaging structure
+
+---
+
 # 🔨 Building Packages
 
 ## 🪟 Windows
@@ -171,6 +192,13 @@ chmod +x packaging/macos/build.sh
 * `ditto`
 * `grep`
 * `sed`
+
+### Output
+
+This build creates:
+
+- `dist/macos/EasyRob.app`
+- `dist/macos/easyrob-<VERSION>.zip`
 
 ---
 
