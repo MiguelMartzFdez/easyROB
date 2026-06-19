@@ -9,6 +9,7 @@ BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
 BIN_DIR="$APP_SUPPORT_DIR/bin"
 ENV_PREFIX="$APP_SUPPORT_DIR/envs/easyrob"
+MAMBA_ROOT_PREFIX="$APP_SUPPORT_DIR/micromamba-root"
 LOG_DIR="$APP_SUPPORT_DIR/logs"
 STATE_DIR="$APP_SUPPORT_DIR/state"
 LOCK_DIR="$STATE_DIR/launch.lock"
@@ -48,6 +49,23 @@ configure_private_environment() {
 show_error_dialog() {
   local message="$1"
   osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
+}
+
+macos_major_version() {
+  sw_vers -productVersion 2>/dev/null | awk -F. '{ print $1 }'
+}
+
+validate_macos_version() {
+  local major_version
+  major_version="$(macos_major_version)"
+  if [[ -z "$major_version" ]]; then
+    echo "Could not determine macOS version." >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+  if [[ "$major_version" -lt 11 ]]; then
+    echo "Unsupported macOS version: $(sw_vers -productVersion 2>/dev/null || true). EasyRob requires macOS 11 or newer." >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
 }
 
 start_notice() {
@@ -135,6 +153,10 @@ detect_micromamba_platform() {
   esac
 }
 
+detect_machine_arch() {
+  uname -m
+}
+
 install_micromamba() {
   local platform asset_name bundled_asset downloader tmp_dir archive_path
 
@@ -185,7 +207,17 @@ install_micromamba() {
 }
 
 install_runtime() {
+  local platform machine_arch macos_version
+
+  validate_macos_version || return 1
+  platform="$(detect_micromamba_platform)" || return 1
+  machine_arch="$(detect_machine_arch)"
+  macos_version="$(sw_vers -productVersion 2>/dev/null || true)"
+
   log "Preparing EasyRob runtime at $APP_SUPPORT_DIR"
+  log "macOS version: $macos_version"
+  log "Machine architecture: $machine_arch"
+  log "Micromamba platform: $platform"
 
   if [[ -d "$ENV_PREFIX" ]]; then
     log "Removing previous EasyRob environment"
@@ -195,6 +227,8 @@ install_runtime() {
   install_micromamba || return 1
 
   log "Creating EasyRob environment from $ENV_FILE"
+  export MAMBA_ROOT_PREFIX
+  export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$ENV_FILE" || return 1
 
   if [[ -n "$current_version" ]]; then

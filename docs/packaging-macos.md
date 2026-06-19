@@ -41,7 +41,7 @@ The macOS package should support:
 - Apple Silicon Macs through the `osx-arm64` Micromamba target
 - macOS 11 Big Sur or newer
 
-The bootstrapper detects the architecture at first launch and installs the matching runtime. AMD-based macOS systems are not an official distribution target.
+The bootstrapper detects the architecture at first launch, sets `CONDA_SUBDIR` to the matching Micromamba platform, and installs the matching runtime. AMD-based macOS systems are not an official distribution target.
 
 ## Source of truth
 
@@ -70,6 +70,8 @@ packaging/shared/env.yaml
 6. Copies `EasyRob.app` into `dist/macos/`
 7. Creates `dist/macos/easyrob-<VERSION>.zip`
 
+The build uses `packaging/macos/assets/easyrob.icns` when present. It does not reuse the Windows `.ico` file as a macOS icon.
+
 ## User installation model
 
 The intended user flow is:
@@ -97,6 +99,8 @@ That location contains:
 - `state/`
 
 At launch time, the app runs the Python interpreter inside `envs/easyrob` directly and exports the private environment paths so ROBERT subprocesses can find `python` and native libraries.
+
+During first launch, the installer writes the detected macOS version, machine architecture, and Micromamba platform to the install log. This is important when testing Intel and Apple Silicon separately.
 
 ## User removal
 

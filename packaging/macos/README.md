@@ -51,6 +51,12 @@ Compatibility target:
 - Intel Macs using `osx-64`
 - Apple Silicon Macs using `osx-arm64`
 
+Optional assets:
+
+- `assets/micromamba-osx-64`
+- `assets/micromamba-osx-arm64`
+- `assets/easyrob.icns`
+
 The `.dmg` can still be added later if you want a more polished distribution container.
 
 For the full workflow, see:

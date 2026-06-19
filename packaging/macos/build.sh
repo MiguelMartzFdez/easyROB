@@ -8,8 +8,8 @@ APP_TEMPLATE="$SCRIPT_DIR/app/EasyRob.app"
 BUILD_ROOT="$SCRIPT_DIR/.build"
 APP_BUILD_DIR="$BUILD_ROOT/EasyRob.app"
 DIST_DIR="$REPO_ROOT/dist/macos"
-ICON_SOURCE="$REPO_ROOT/packaging/windows/assets/Robert_icon.ico"
 ASSETS_DIR="$SCRIPT_DIR/assets"
+ICON_SOURCE="$ASSETS_DIR/easyrob.icns"
 APP_DIST_DIR="$DIST_DIR/EasyRob.app"
 
 require_command() {
@@ -47,6 +47,8 @@ printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt
 
 if [[ -f "$ICON_SOURCE" ]]; then
   install -m 0644 "$ICON_SOURCE" "$APP_BUILD_DIR/Contents/Resources/easyrob.icns"
+else
+  echo "macOS icon not found at $ICON_SOURCE; EasyRob.app will use the default app icon."
 fi
 
 for asset_name in micromamba-osx-64 micromamba-osx-arm64; do

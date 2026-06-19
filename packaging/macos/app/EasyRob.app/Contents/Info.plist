@@ -10,6 +10,8 @@
   <string>EasyRob</string>
   <key>CFBundleIdentifier</key>
   <string>com.thealegregroup.easyrob</string>
+  <key>CFBundleIconFile</key>
+  <string>easyrob.icns</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
