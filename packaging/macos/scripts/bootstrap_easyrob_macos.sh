@@ -7,7 +7,7 @@ SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
 APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
-WORK_DIR="${HOME}/Documents/EasyRob"
+WORK_DIR="${APP_SUPPORT_DIR}/workspace"
 BIN_DIR="$APP_SUPPORT_DIR/bin"
 ENV_PREFIX="$APP_SUPPORT_DIR/envs/easyrob"
 MAMBA_ROOT_PREFIX="$APP_SUPPORT_DIR/micromamba-root"
@@ -281,7 +281,7 @@ if [[ "$need_install" == "1" ]]; then
   fi
 fi
 
-start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer."
+start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer.\n\nOn macOS, please work inside the EasyRob workspace:\n$WORK_DIR\n\nMove your CSV files and project folders there before running workflows."
 if ! launch_easyrob; then
   show_error_dialog "EasyRob could not start. Check the logs in ~/Library/ApplicationSupport/EasyRob/logs."
   exit 1
