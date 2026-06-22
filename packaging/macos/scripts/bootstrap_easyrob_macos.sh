@@ -260,14 +260,14 @@ launch_easyrob() {
 }
 
 if [[ "$need_install" == "1" ]]; then
-  start_notice "EasyRob is installing..."
+  start_notice "EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nPlease keep this window open."
   if ! install_runtime; then
     show_error_dialog "EasyRob installation failed. Check the logs in ~/Library/Application Support/EasyRob/logs."
     exit 1
   fi
 fi
 
-start_notice "EasyRob is opening..."
+start_notice "EasyRob is opening...\n\nPlease wait."
 if ! launch_easyrob; then
   show_error_dialog "EasyRob could not start. Check the logs in ~/Library/Application Support/EasyRob/logs."
   exit 1
