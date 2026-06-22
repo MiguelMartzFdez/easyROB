@@ -7,6 +7,7 @@ SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
 APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
+WORK_DIR="${HOME}/Documents/EasyRob"
 BIN_DIR="$APP_SUPPORT_DIR/bin"
 ENV_PREFIX="$APP_SUPPORT_DIR/envs/easyrob"
 MAMBA_ROOT_PREFIX="$APP_SUPPORT_DIR/micromamba-root"
@@ -26,6 +27,7 @@ ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 NOTICE_PID=""
 
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
+mkdir -p "$WORK_DIR"
 
 log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$INSTALL_LOG"
@@ -255,6 +257,7 @@ install_runtime() {
 launch_easyrob() {
   local launcher_python
   runtime_log "Launching EasyRob from $ENV_PREFIX"
+  runtime_log "Using working directory at $WORK_DIR"
   launcher_python="$ENV_PYTHON"
   if [[ -x "$ENV_PYTHONW" ]]; then
     launcher_python="$ENV_PYTHONW"
@@ -265,6 +268,7 @@ launch_easyrob() {
     return 1
   fi
   configure_private_environment
+  cd "$WORK_DIR"
   "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
 }
