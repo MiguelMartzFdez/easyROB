@@ -22,6 +22,7 @@ RUNTIME_LOG="$LOG_DIR/runtime.log"
 RUNTIME_ERR_LOG="$LOG_DIR/runtime-error.log"
 MICROMAMBA_BIN="$BIN_DIR/micromamba"
 ENV_PYTHON="$ENV_PREFIX/bin/python"
+ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 NOTICE_PID=""
 
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
@@ -244,6 +245,7 @@ install_runtime() {
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$ENV_FILE" || return 1
+  run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
 
   if [[ -n "$current_version" ]]; then
     printf '%s\n' "$current_version" > "$INSTALLED_VERSION_FILE"
@@ -251,14 +253,19 @@ install_runtime() {
 }
 
 launch_easyrob() {
+  local launcher_python
   runtime_log "Launching EasyRob from $ENV_PREFIX"
-  runtime_log "Using Python interpreter at $ENV_PYTHON"
-  if [[ ! -x "$ENV_PYTHON" ]]; then
-    echo "EasyRob Python interpreter not found at $ENV_PYTHON" >>"$RUNTIME_ERR_LOG"
+  launcher_python="$ENV_PYTHON"
+  if [[ -x "$ENV_PYTHONW" ]]; then
+    launcher_python="$ENV_PYTHONW"
+  fi
+  runtime_log "Using Python interpreter at $launcher_python"
+  if [[ ! -x "$launcher_python" ]]; then
+    echo "EasyRob Python launcher not found at $launcher_python" >>"$RUNTIME_ERR_LOG"
     return 1
   fi
   configure_private_environment
-  "$ENV_PYTHON" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
+  "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
 }
 
