@@ -34,6 +34,13 @@ runtime_log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$RUNTIME_LOG"
 }
 
+clear_quarantine_attribute() {
+  local target="$1"
+  if command -v xattr >/dev/null 2>&1; then
+    xattr -dr com.apple.quarantine "$target" >/dev/null 2>&1 || true
+  fi
+}
+
 configure_private_environment() {
   local existing_path
   existing_path="${PATH:-}"
@@ -167,6 +174,7 @@ install_micromamba() {
   if [[ -x "$bundled_asset" ]]; then
     log "Using bundled Micromamba asset: $bundled_asset"
     install -m 0755 "$bundled_asset" "$MICROMAMBA_BIN"
+    clear_quarantine_attribute "$MICROMAMBA_BIN"
     return 0
   fi
 
@@ -203,6 +211,7 @@ install_micromamba() {
   fi
 
   install -m 0755 "$tmp_dir/bin/micromamba" "$MICROMAMBA_BIN"
+  clear_quarantine_attribute "$MICROMAMBA_BIN"
   rm -rf "$tmp_dir"
 }
 
@@ -225,6 +234,8 @@ install_runtime() {
   fi
 
   install_micromamba || return 1
+  chmod 0755 "$MICROMAMBA_BIN" >/dev/null 2>&1 || true
+  clear_quarantine_attribute "$MICROMAMBA_BIN"
 
   log "Creating EasyRob environment from $ENV_FILE"
   export MAMBA_ROOT_PREFIX
