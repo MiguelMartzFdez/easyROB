@@ -51,6 +51,9 @@ configure_private_environment() {
   export CONDA_PREFIX="$ENV_PREFIX"
   export CONDA_DEFAULT_ENV="easyrob"
   export CONDA_SHLVL="1"
+  export QT_OPENGL="software"
+  export QTWEBENGINE_DISABLE_SANDBOX="1"
+  export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --disable-gpu-compositing"
 }
 
 show_error_dialog() {
