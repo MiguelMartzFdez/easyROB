@@ -20,7 +20,7 @@
 
 # 👤 For Users
 
-## 🪟 Windows
+## 💻 Windows
 
 1. Download the installer from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
 2. Download `easyrob-<VERSION>.exe`
