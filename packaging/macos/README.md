@@ -42,7 +42,7 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 
 - `EasyRob.app` is a bootstrap launcher
 - first launch installs Micromamba and creates the environment
-- the runtime is stored under `~/Library/Application Support/EasyRob`
+- the runtime is stored under `~/Library/ApplicationSupport/EasyRob`
 - later launches reuse that installed runtime
 
 Compatibility target:

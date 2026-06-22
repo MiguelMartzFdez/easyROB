@@ -80,7 +80,7 @@ The intended user flow is:
 2. Open the downloaded disk image
 3. Drag `EasyRob.app` to `Applications`
 4. Open EasyRob from Applications, Launchpad, or Spotlight
-5. On first launch, EasyRob installs Micromamba and creates the environment under `~/Library/Application Support/EasyRob`
+5. On first launch, EasyRob installs Micromamba and creates the environment under `~/Library/ApplicationSupport/EasyRob`
 6. Later launches reuse the installed runtime
 
 ## Runtime location
@@ -88,7 +88,7 @@ The intended user flow is:
 The macOS bootstrapper stores its runtime here:
 
 ```text
-~/Library/Application Support/EasyRob
+~/Library/ApplicationSupport/EasyRob
 ```
 
 That location contains:
@@ -107,7 +107,7 @@ During first launch, the installer writes the detected macOS version, machine ar
 To remove EasyRob on macOS:
 
 1. Delete `EasyRob.app` from `Applications`
-2. Remove `~/Library/Application Support/EasyRob` if you also want to remove the installed runtime and logs
+2. Remove `~/Library/ApplicationSupport/EasyRob` if you also want to remove the installed runtime and logs
 
 ## What is still missing
 

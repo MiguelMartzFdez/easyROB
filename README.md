@@ -64,6 +64,7 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
    * Spotlight
 
 Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the machine architecture and prepares an Intel (`osx-64`) or Apple Silicon (`osx-arm64`) environment as needed.
+The private macOS runtime is stored under `~/Library/ApplicationSupport/EasyRob`.
   
 ---
 
