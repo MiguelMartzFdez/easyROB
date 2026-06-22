@@ -11,7 +11,6 @@ DMG_STAGE_DIR="$BUILD_ROOT/dmg-root"
 DIST_DIR="$REPO_ROOT/dist/macos"
 ASSETS_DIR="$SCRIPT_DIR/assets"
 ICON_SOURCE="$ASSETS_DIR/easyrob.icns"
-APP_DIST_DIR="$DIST_DIR/EasyRob.app"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -31,7 +30,7 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-rm -rf "$APP_BUILD_DIR" "$APP_DIST_DIR" "$DMG_STAGE_DIR"
+rm -rf "$APP_BUILD_DIR" "$DMG_STAGE_DIR"
 mkdir -p "$BUILD_ROOT" "$DIST_DIR"
 rsync -a "$APP_TEMPLATE/" "$APP_BUILD_DIR/"
 
@@ -61,8 +60,6 @@ done
 sed -i.bak "s/__EASYROB_VERSION__/$VERSION/g" "$APP_BUILD_DIR/Contents/Info.plist"
 rm -f "$APP_BUILD_DIR/Contents/Info.plist.bak"
 
-rsync -a "$APP_BUILD_DIR/" "$APP_DIST_DIR/"
-
 mkdir -p "$DMG_STAGE_DIR"
 rsync -a "$APP_BUILD_DIR/" "$DMG_STAGE_DIR/EasyRob.app/"
 ln -s /Applications "$DMG_STAGE_DIR/Applications"
@@ -76,13 +73,10 @@ hdiutil create \
   -format UDZO \
   "$DMG_OUTPUT"
 
-echo "macOS app bundle created:"
-echo "  $APP_DIST_DIR"
-echo
 echo "macOS distributable created:"
 echo "  $DMG_OUTPUT"
 echo
 echo "First launch behavior:"
 echo "  - copies or downloads Micromamba on demand"
-echo "  - creates the private runtime under ~/Library/Application Support/EasyRob"
+echo "  - creates the private runtime under ~/Library/ApplicationSupport/EasyRob"
 echo "  - launches EasyRob and reuses that runtime on future launches"

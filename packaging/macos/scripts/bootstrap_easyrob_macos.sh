@@ -281,7 +281,7 @@ if [[ "$need_install" == "1" ]]; then
   fi
 fi
 
-start_notice "EasyRob is opening...\n\nPlease wait."
+start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer."
 if ! launch_easyrob; then
   show_error_dialog "EasyRob could not start. Check the logs in ~/Library/ApplicationSupport/EasyRob/logs."
   exit 1

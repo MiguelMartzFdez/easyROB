@@ -5,11 +5,10 @@ This folder contains the macOS bootstrap-app packaging for EasyRob.
 ## Current outputs
 
 ```text
-dist/macos/EasyRob.app
 dist/macos/easyrob-<VERSION>.dmg
 ```
 
-The `.dmg` is the distribution artifact and `EasyRob.app` is the actual application bundle.
+The `.dmg` is the distribution artifact. `EasyRob.app` exists inside the mounted disk image for the user to drag into `Applications`.
 
 ## Build
 

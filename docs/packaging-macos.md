@@ -5,7 +5,6 @@ This document explains the current macOS bootstrap-app packaging for EasyRob.
 ## Current outputs
 
 ```text
-dist/macos/EasyRob.app
 dist/macos/easyrob-<VERSION>.dmg
 ```
 
@@ -67,8 +66,7 @@ packaging/shared/env.yaml
 3. Copies `packaging/shared/env.yaml` into the app resources
 4. Copies the bootstrap and launcher scripts
 5. Optionally bundles predownloaded Micromamba binaries
-6. Copies `EasyRob.app` into `dist/macos/`
-7. Creates a `.dmg` containing `EasyRob.app` and an `Applications` shortcut
+6. Creates a `.dmg` containing `EasyRob.app` and an `Applications` shortcut
 
 The build uses `packaging/macos/assets/easyrob.icns` when present. It does not reuse the Windows `.ico` file as a macOS icon.
 

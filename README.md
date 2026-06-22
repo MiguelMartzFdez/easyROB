@@ -121,7 +121,6 @@ EasyRob/
 | ---------- | ------------------------------------ |
 | 🪟 Windows | `dist/windows/easyrob-<VERSION>.exe` |
 | 🐧 Linux   | `dist/linux/easyrob-<VERSION>.deb`   |
-| 🍎 macOS   | `dist/macos/EasyRob.app`             |
 | 🍎 macOS   | `dist/macos/easyrob-<VERSION>.dmg`   |
 
 ---
@@ -134,7 +133,7 @@ Each installer is generated on its own operating system.
 | ------------------------------------- | ---------- |
 | `easyrob-<VERSION>.exe`               | Windows    |
 | `easyrob-<VERSION>.deb`               | Linux      |
-| `EasyRob.app` / `easyrob-<VERSION>.dmg` | macOS      |
+| `easyrob-<VERSION>.dmg` | macOS      |
 
 You do **not** build all three final artifacts from Windows.
 
@@ -200,7 +199,6 @@ chmod +x packaging/macos/build.sh
 
 This build creates:
 
-- `dist/macos/EasyRob.app`
 - `dist/macos/easyrob-<VERSION>.dmg`
 
 ---
