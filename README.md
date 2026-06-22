@@ -12,7 +12,7 @@
 
 | Platform                 | Package                                 |
 | ------------------------ | --------------------------------------- |
-| 🪟 Windows               | `easyrob-<VERSION>.exe`                 |
+| 💻 Windows               | `easyrob-<VERSION>.exe`                 |
 | 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb`                 |
 | 🍎 macOS                 | `easyrob-<VERSION>.dmg`                 |
 
