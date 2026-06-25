@@ -28,6 +28,7 @@ NOTICE_PID=""
 
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
 mkdir -p "$WORK_DIR"
+clear_quarantine_attribute "$APP_ROOT"
 
 log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$INSTALL_LOG"
@@ -241,13 +242,19 @@ install_runtime() {
 
   install_micromamba || return 1
   chmod 0755 "$MICROMAMBA_BIN" >/dev/null 2>&1 || true
+  chmod -R u+rwx "$APP_SUPPORT_DIR" >/dev/null 2>&1 || true
+  clear_quarantine_attribute "$APP_SUPPORT_DIR"
   clear_quarantine_attribute "$MICROMAMBA_BIN"
 
   log "Creating EasyRob environment from $ENV_FILE"
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$ENV_FILE" || return 1
+  chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
+  clear_quarantine_attribute "$ENV_PREFIX"
   run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
+  chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
+  clear_quarantine_attribute "$ENV_PREFIX"
 
   if [[ -n "$current_version" ]]; then
     printf '%s\n' "$current_version" > "$INSTALLED_VERSION_FILE"
