@@ -37,14 +37,14 @@ runtime_log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$RUNTIME_LOG"
 }
 
-clear_quarantine_attribute() {
+clear_execution_attributes() {
   local target="$1"
   if command -v xattr >/dev/null 2>&1; then
-    xattr -dr com.apple.quarantine "$target" >/dev/null 2>&1 || true
+    xattr -cr "$target" >/dev/null 2>&1 || true
   fi
 }
 
-clear_quarantine_attribute "$APP_ROOT"
+clear_execution_attributes "$APP_ROOT"
 
 configure_private_environment() {
   local existing_path
@@ -182,7 +182,7 @@ install_micromamba() {
   if [[ -x "$bundled_asset" ]]; then
     log "Using bundled Micromamba asset: $bundled_asset"
     install -m 0755 "$bundled_asset" "$MICROMAMBA_BIN"
-    clear_quarantine_attribute "$MICROMAMBA_BIN"
+    clear_execution_attributes "$MICROMAMBA_BIN"
     return 0
   fi
 
@@ -219,7 +219,7 @@ install_micromamba() {
   fi
 
   install -m 0755 "$tmp_dir/bin/micromamba" "$MICROMAMBA_BIN"
-  clear_quarantine_attribute "$MICROMAMBA_BIN"
+  clear_execution_attributes "$MICROMAMBA_BIN"
   rm -rf "$tmp_dir"
 }
 
@@ -244,18 +244,18 @@ install_runtime() {
   install_micromamba || return 1
   chmod 0755 "$MICROMAMBA_BIN" >/dev/null 2>&1 || true
   chmod -R u+rwx "$APP_SUPPORT_DIR" >/dev/null 2>&1 || true
-  clear_quarantine_attribute "$APP_SUPPORT_DIR"
-  clear_quarantine_attribute "$MICROMAMBA_BIN"
+  clear_execution_attributes "$APP_SUPPORT_DIR"
+  clear_execution_attributes "$MICROMAMBA_BIN"
 
   log "Creating EasyRob environment from $ENV_FILE"
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$ENV_FILE" || return 1
   chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
-  clear_quarantine_attribute "$ENV_PREFIX"
+  clear_execution_attributes "$ENV_PREFIX"
   run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
   chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
-  clear_quarantine_attribute "$ENV_PREFIX"
+  clear_execution_attributes "$ENV_PREFIX"
 
   if [[ -n "$current_version" ]]; then
     printf '%s\n' "$current_version" > "$INSTALLED_VERSION_FILE"
