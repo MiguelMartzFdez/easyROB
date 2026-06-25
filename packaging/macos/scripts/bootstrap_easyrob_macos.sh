@@ -28,7 +28,6 @@ NOTICE_PID=""
 
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
 mkdir -p "$WORK_DIR"
-clear_quarantine_attribute "$APP_ROOT"
 
 log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$INSTALL_LOG"
@@ -44,6 +43,8 @@ clear_quarantine_attribute() {
     xattr -dr com.apple.quarantine "$target" >/dev/null 2>&1 || true
   fi
 }
+
+clear_quarantine_attribute "$APP_ROOT"
 
 configure_private_environment() {
   local existing_path
