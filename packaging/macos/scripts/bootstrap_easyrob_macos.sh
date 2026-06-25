@@ -17,6 +17,8 @@ LOCK_DIR="$STATE_DIR/launch.lock"
 VERSION_FILE="$SHARED_DIR/version.txt"
 INSTALLED_VERSION_FILE="$STATE_DIR/installed-version.txt"
 ENV_FILE="$SHARED_DIR/env.yaml"
+CONDA_ENV_FILE="$STATE_DIR/env-conda.yaml"
+PIP_REQUIREMENTS_FILE="$STATE_DIR/pip-requirements.txt"
 INSTALL_LOG="$LOG_DIR/install.log"
 INSTALL_ERR_LOG="$LOG_DIR/install-error.log"
 RUNTIME_LOG="$LOG_DIR/runtime.log"
@@ -122,6 +124,23 @@ run_install_command() {
     log "Command failed: $*"
     return 1
   fi
+}
+
+prepare_split_env_files() {
+  awk '
+    BEGIN { in_pip = 0 }
+    /^  - pip:$/ { in_pip = 1; next }
+    {
+      if (in_pip) {
+        if ($0 ~ /^      - /) {
+          print substr($0, 9) >> pip_file
+          next
+        }
+        in_pip = 0
+      }
+      print $0 >> conda_file
+    }
+  ' conda_file="$CONDA_ENV_FILE" pip_file="$PIP_REQUIREMENTS_FILE" "$ENV_FILE"
 }
 
 current_version=""
@@ -246,16 +265,23 @@ install_runtime() {
   chmod -R u+rwx "$APP_SUPPORT_DIR" >/dev/null 2>&1 || true
   clear_execution_attributes "$APP_SUPPORT_DIR"
   clear_execution_attributes "$MICROMAMBA_BIN"
+  rm -f "$CONDA_ENV_FILE" "$PIP_REQUIREMENTS_FILE"
+  prepare_split_env_files
 
-  log "Creating EasyRob environment from $ENV_FILE"
+  log "Creating EasyRob environment from $CONDA_ENV_FILE"
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
-  run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$ENV_FILE" || return 1
+  run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$CONDA_ENV_FILE" || return 1
   chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
   clear_execution_attributes "$ENV_PREFIX"
   run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
   chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
   clear_execution_attributes "$ENV_PREFIX"
+  if [[ -s "$PIP_REQUIREMENTS_FILE" ]]; then
+    run_install_command "$ENV_PYTHON" -m pip install -r "$PIP_REQUIREMENTS_FILE" || return 1
+    chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
+    clear_execution_attributes "$ENV_PREFIX"
+  fi
 
   if [[ -n "$current_version" ]]; then
     printf '%s\n' "$current_version" > "$INSTALLED_VERSION_FILE"
