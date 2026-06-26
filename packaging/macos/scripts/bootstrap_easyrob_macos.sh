@@ -171,6 +171,21 @@ stop_notice() {
   NOTICE_PID=""
 }
 
+schedule_notice_stop() {
+  local pid="$1"
+  local delay_seconds="$2"
+  if [[ -z "$pid" ]]; then
+    return
+  fi
+  (
+    sleep "$delay_seconds"
+    if kill -0 "$pid" >/dev/null 2>&1; then
+      kill "$pid" >/dev/null 2>&1 || true
+      wait "$pid" 2>/dev/null || true
+    fi
+  ) >/dev/null 2>&1 &
+}
+
 update_notice() {
   local percent="$1"
   local message="$2"
@@ -391,7 +406,6 @@ launch_easyrob() {
 
   configure_private_environment
   cd "$WORK_DIR"
-  stop_notice
   rm -rf "$LOCK_DIR"
   trap - EXIT
   exec "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
@@ -441,6 +455,8 @@ fi
 : >"$RUNTIME_LOG"
 : >"$RUNTIME_ERR_LOG"
 start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer.\n\nOn macOS, please work inside the EasyRob workspace:\n$WORK_DIR"
+sleep 0.5
+schedule_notice_stop "$NOTICE_PID" 6
 if ! launch_easyrob; then
   show_error_dialog "EasyRob could not start. Check the logs in ~/Library/Application Support/EasyRob/logs."
   exit 1
