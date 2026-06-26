@@ -46,14 +46,16 @@ Recommended for Ubuntu and Debian-based distributions.
 4. Launch **EasyRob** from:
 
    * Applications Menu
-   * Desktop Shortcut (if available)
+   * System Search
 
 The first launch creates EasyRob's private runtime under `~/.local/share/easyrob` and may take a few minutes. The environment, package downloads, logs, and runtime files live under that folder.
+The `.deb` itself only installs the launcher and static assets system-wide.
 
 To fully remove EasyRob on Linux:
 
-* Remove the system package with `sudo apt remove easyrob`
 * Remove the private user runtime with `easyrob --uninstall-user-data`
+* Remove the system package with `sudo apt remove easyrob`
+* If the package was already removed first, manually delete `~/.local/share/easyrob`
 
 ---
 

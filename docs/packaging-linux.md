@@ -69,7 +69,7 @@ The `.deb` does not create the Conda/Python runtime during package installation.
 1. Download `easyrob-<VERSION>.deb`
 2. Double-click the package
 3. Install it with the system package installer
-4. Open **EasyRob** from the applications menu or desktop shortcut
+4. Open **EasyRob** from the applications menu or system search
 
 The first launch creates the private runtime and may take a few minutes.
 
@@ -89,22 +89,28 @@ Runtime installation and launch logs are written under:
 
 ## User removal
 
-Remove the package:
+Remove the per-user runtime first:
+
+```bash
+easyrob --uninstall-user-data
+```
+
+Then remove the package:
 
 ```bash
 sudo dpkg -r easyrob
 ```
 
-Remove the package:
+Or purge it completely:
 
 ```bash
 sudo dpkg --purge easyrob
 ```
 
-Remove the per-user runtime if you also want to remove downloaded packages, logs, and environments:
+If the package was already removed first, delete the private runtime manually:
 
 ```bash
-easyrob --uninstall-user-data
+rm -rf ~/.local/share/easyrob
 ```
 
 ## When to update Linux packaging
