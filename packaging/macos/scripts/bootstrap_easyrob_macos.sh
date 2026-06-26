@@ -63,6 +63,14 @@ configure_private_environment() {
   export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --disable-gpu-compositing"
 }
 
+configure_build_environment() {
+  configure_private_environment
+  export PKG_CONFIG_PATH="$ENV_PREFIX/lib/pkgconfig:$ENV_PREFIX/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+  export OPENSSL_DIR="$ENV_PREFIX"
+  export OPENSSL_INCLUDE_DIR="$ENV_PREFIX/include"
+  export OPENSSL_LIB_DIR="$ENV_PREFIX/lib"
+}
+
 show_error_dialog() {
   local message="$1"
   osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
@@ -278,6 +286,7 @@ install_runtime() {
   chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
   clear_execution_attributes "$ENV_PREFIX"
   if [[ -s "$PIP_REQUIREMENTS_FILE" ]]; then
+    configure_build_environment
     run_install_command "$ENV_PYTHON" -m pip install -r "$PIP_REQUIREMENTS_FILE" || return 1
     chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
     clear_execution_attributes "$ENV_PREFIX"
