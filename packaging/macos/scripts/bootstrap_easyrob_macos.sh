@@ -210,7 +210,11 @@ install_micromamba() {
     log "Using bundled Micromamba asset: $bundled_asset"
     install -m 0755 "$bundled_asset" "$MICROMAMBA_BIN"
     clear_execution_attributes "$MICROMAMBA_BIN"
-    return 0
+    if "$MICROMAMBA_BIN" --version >>"$INSTALL_LOG" 2>>"$INSTALL_ERR_LOG"; then
+      return 0
+    fi
+    log "Bundled Micromamba could not be executed; falling back to download"
+    rm -f "$MICROMAMBA_BIN"
   fi
 
   downloader="$(require_download_tool)" || {
@@ -248,6 +252,7 @@ install_micromamba() {
   install -m 0755 "$tmp_dir/bin/micromamba" "$MICROMAMBA_BIN"
   clear_execution_attributes "$MICROMAMBA_BIN"
   rm -rf "$tmp_dir"
+  "$MICROMAMBA_BIN" --version >>"$INSTALL_LOG" 2>>"$INSTALL_ERR_LOG"
 }
 
 install_runtime() {
