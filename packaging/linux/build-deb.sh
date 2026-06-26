@@ -76,6 +76,9 @@ TryExec=/usr/bin/easyrob
 Terminal=false
 Icon=/usr/share/pixmaps/easyrob.ico
 Categories=Science;
+Keywords=EasyRob;ROBERT;chemistry;science;
+StartupNotify=true
+NoDisplay=false
 EOF
 
 cat > "$DEBIAN_DIR/postinst" <<'EOF'

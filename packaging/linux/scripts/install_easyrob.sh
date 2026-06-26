@@ -153,6 +153,9 @@ Terminal=false
 Path=$INSTALL_ROOT
 Icon=$ICON_TARGET
 Categories=Science;
+Keywords=EasyRob;ROBERT;chemistry;science;
+StartupNotify=true
+NoDisplay=false
 EOF
 
   chmod 0644 "$DESKTOP_FILE"
@@ -174,6 +177,9 @@ Terminal=false
 Path=$INSTALL_ROOT
 Icon=$ICON_TARGET
 Categories=Science;
+Keywords=EasyRob;ROBERT;chemistry;science;
+StartupNotify=true
+NoDisplay=false
 EOF
     chmod 0755 "$DESKTOP_SHORTCUT_FILE"
   fi
