@@ -76,6 +76,7 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
 Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the machine architecture and prepares an Intel (`osx-64`) or Apple Silicon (`osx-arm64`) environment as needed.
 The private macOS runtime is stored under `~/Library/Application Support/EasyRob`.
 EasyRob does not require `sudo` on macOS and does not modify `EasyRob.app` after it has been copied to `Applications`.
+On macOS, the first open installs the private runtime and then exits. Open EasyRob a second time to start the GUI.
 For now, macOS users should work only inside the private workspace created here:
 
 ```text

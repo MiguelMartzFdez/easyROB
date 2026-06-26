@@ -43,6 +43,7 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 - `EasyRob.app` is a bootstrap launcher
 - `EasyRob.app` remains immutable after it is copied to `Applications`
 - first launch copies the bundled Micromamba binary and creates the environment
+- first launch finishes installation and exits without opening the GUI automatically
 - the runtime is stored under `~/Library/Application Support/EasyRob`
 - the macOS workflow uses the private workspace under `~/Library/Application Support/EasyRob/workspace`
 - first launch also creates `uninstall_easyrob.command` and `uninstall_easyrob.sh` in `~/Library/Application Support/EasyRob`

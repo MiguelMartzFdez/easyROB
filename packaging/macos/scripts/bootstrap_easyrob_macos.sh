@@ -117,6 +117,11 @@ show_error_dialog() {
   osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
 }
 
+show_info_dialog() {
+  local message="$1"
+  osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon note" >/dev/null 2>&1 || true
+}
+
 start_notice() {
   local text="$1"
   stop_notice
@@ -390,6 +395,9 @@ if [[ "$need_install" == "1" ]]; then
     show_error_dialog "EasyRob installation failed. Check the logs in ~/Library/Application Support/EasyRob/logs."
     exit 1
   fi
+  stop_notice
+  show_info_dialog "EasyRob finished installing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+  exit 0
 fi
 
 : >"$RUNTIME_LOG"

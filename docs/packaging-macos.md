@@ -85,8 +85,9 @@ The build now fails if any of those files are missing.
 2. Open the disk image
 3. Drag `EasyRob.app` into `Applications`
 4. Launch EasyRob from Applications, Launchpad, or Spotlight
-5. On first launch, EasyRob creates its private runtime entirely inside the user profile
-6. Later launches reuse that installed runtime
+5. On first launch, EasyRob creates its private runtime entirely inside the user profile and then exits
+6. On the second launch, EasyRob opens the GUI
+7. Later launches reuse that installed runtime
 
 ## Runtime layout
 
@@ -130,7 +131,8 @@ On first launch, the bootstrapper:
 7. Installs pip packages from the shared environment definition
 8. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
 9. Writes a reusable uninstall script into `~/Library/Application Support/EasyRob`
-10. Launches EasyRob from the private environment with the workspace as the working directory
+10. Shows an installation-complete message and exits
+11. Launches EasyRob from the private environment with the workspace as the working directory on the next open
 
 ## Protected-folder policy
 
