@@ -87,6 +87,18 @@ To fully remove EasyRob on macOS:
 
 * Delete `EasyRob.app` from `Applications`
 * Delete `~/Library/Application Support/EasyRob`
+
+EasyRob also creates a reusable macOS uninstaller here:
+
+```text
+~/Library/Application Support/EasyRob/uninstall_easyrob.command
+```
+
+You can double-click that file, or run:
+
+```bash
+bash ~/Library/Application\ Support/EasyRob/uninstall_easyrob.sh
+```
   
 ---
 

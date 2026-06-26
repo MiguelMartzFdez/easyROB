@@ -2,6 +2,7 @@
 set -euo pipefail
 
 APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+APP_BUNDLE_PATH="$(cd "$APP_ROOT/.." && pwd)"
 RESOURCES_DIR="$APP_ROOT/Resources"
 SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
@@ -22,6 +23,8 @@ ENV_FILE="$SHARED_DIR/env.yaml"
 CONDA_ENV_FILE="$CACHE_DIR/env-conda.yaml"
 PIP_REQUIREMENTS_FILE="$CACHE_DIR/pip-requirements.txt"
 WORKSPACE_README="$WORK_DIR/README.txt"
+UNINSTALL_SCRIPT="$APP_SUPPORT_DIR/uninstall_easyrob.sh"
+UNINSTALL_COMMAND="$APP_SUPPORT_DIR/uninstall_easyrob.command"
 INSTALL_LOG="$LOG_DIR/install.log"
 INSTALL_ERR_LOG="$LOG_DIR/install-error.log"
 RUNTIME_LOG="$LOG_DIR/runtime.log"
@@ -51,6 +54,55 @@ macOS build note:
 - EasyRob is configured to work inside this private workspace.
 - Avoid running workflows directly from Desktop, Downloads, or Documents.
 EOF
+}
+
+write_uninstallers() {
+  cat >"$UNINSTALL_SCRIPT" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
+APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
+TMP_SCRIPT="\$(mktemp /tmp/easyrob-uninstall.XXXXXX.sh)"
+
+confirm_uninstall() {
+  osascript \
+    -e 'display dialog "Uninstall EasyRob?\n\nThis will remove EasyRob.app and ~/Library/Application Support/EasyRob." buttons {"Cancel", "Uninstall"} default button "Uninstall" with icon caution' \
+    -e 'button returned of result' 2>/dev/null || true
+}
+
+if [[ "\$(confirm_uninstall)" != "Uninstall" ]]; then
+  exit 0
+fi
+
+cat >"\$TMP_SCRIPT" <<INNER
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
+APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
+
+osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
+sleep 2
+
+if [[ -d "\$APP_BUNDLE_PATH" ]]; then
+  osascript -e 'tell application "Finder" to delete POSIX file "'"'\$APP_BUNDLE_PATH'"'"'' >/dev/null 2>&1 || rm -rf "\$APP_BUNDLE_PATH"
+fi
+
+rm -rf "\$APP_SUPPORT_DIR"
+rm -f "\$0"
+INNER
+
+chmod +x "\$TMP_SCRIPT"
+nohup "\$TMP_SCRIPT" >/dev/null 2>&1 &
+EOF
+
+  cat >"$UNINSTALL_COMMAND" <<EOF
+#!/usr/bin/env bash
+exec "$UNINSTALL_SCRIPT"
+EOF
+
+  chmod 0755 "$UNINSTALL_SCRIPT" "$UNINSTALL_COMMAND"
 }
 
 log() {
@@ -230,6 +282,7 @@ install_runtime() {
 
   ensure_directories
   write_workspace_readme
+  write_uninstallers
   validate_macos_version || return 1
   require_file "$ENV_FILE" "shared environment file" || return 1
 
@@ -246,6 +299,7 @@ install_runtime() {
   update_notice 15 "Creating application folders."
   ensure_directories
   write_workspace_readme
+  write_uninstallers
 
   update_notice 30 "Copying bundled Micromamba."
   copy_bundled_micromamba || return 1
@@ -309,6 +363,7 @@ launch_easyrob() {
 }
 
 ensure_directories
+write_uninstallers
 
 if ! mkdir "$LOCK_DIR" >/dev/null 2>&1; then
   osascript -e 'display notification "EasyRob is already starting..." with title "EasyRob"' >/dev/null 2>&1 || true

@@ -115,6 +115,7 @@ Notes:
 - `env/` stores the private EasyRob environment
 - `cache/` stores generated metadata such as version markers and split dependency files
 - `logs/` stores installation and runtime logs
+- `uninstall_easyrob.command` and `uninstall_easyrob.sh` provide a simple user-level uninstall entry point
 
 ## First-launch behavior
 
@@ -128,7 +129,8 @@ On first launch, the bootstrapper:
 6. Creates the environment with absolute paths
 7. Installs pip packages from the shared environment definition
 8. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
-9. Launches EasyRob from the private environment with the workspace as the working directory
+9. Writes a reusable uninstall script into `~/Library/Application Support/EasyRob`
+10. Launches EasyRob from the private environment with the workspace as the working directory
 
 ## Protected-folder policy
 
@@ -147,6 +149,19 @@ To remove EasyRob on macOS:
 
 1. Delete `EasyRob.app` from `Applications`
 2. Delete `~/Library/Application Support/EasyRob`
+
+EasyRob also generates:
+
+```text
+~/Library/Application Support/EasyRob/uninstall_easyrob.command
+~/Library/Application Support/EasyRob/uninstall_easyrob.sh
+```
+
+The `.command` file can be opened with double click. The shell version can be run with:
+
+```bash
+bash ~/Library/Application\ Support/EasyRob/uninstall_easyrob.sh
+```
 
 ## Testing focus
 
