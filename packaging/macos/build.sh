@@ -23,6 +23,7 @@ require_command grep
 require_command sed
 require_command rsync
 require_command hdiutil
+require_command codesign
 
 VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
 if [[ -z "$VERSION" ]]; then
@@ -45,20 +46,28 @@ install -m 0755 "$SCRIPT_DIR/scripts/bootstrap_easyrob_macos.sh" "$APP_BUILD_DIR
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$APP_BUILD_DIR/Contents/Resources/shared/env.yaml"
 printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt"
 
-if [[ -f "$ICON_SOURCE" ]]; then
-  install -m 0644 "$ICON_SOURCE" "$APP_BUILD_DIR/Contents/Resources/easyrob.icns"
-else
-  echo "macOS icon not found at $ICON_SOURCE; EasyRob.app will use the default app icon."
+if [[ ! -f "$ICON_SOURCE" ]]; then
+  echo "Missing required macOS icon at $ICON_SOURCE" >&2
+  exit 1
 fi
+install -m 0644 "$ICON_SOURCE" "$APP_BUILD_DIR/Contents/Resources/easyrob.icns"
 
 for asset_name in micromamba-osx-64 micromamba-osx-arm64; do
-  if [[ -f "$ASSETS_DIR/$asset_name" ]]; then
-    install -m 0755 "$ASSETS_DIR/$asset_name" "$APP_BUILD_DIR/Contents/Resources/bootstrap/$asset_name"
+  if [[ ! -f "$ASSETS_DIR/$asset_name" ]]; then
+    echo "Missing required macOS bootstrap asset: $ASSETS_DIR/$asset_name" >&2
+    exit 1
   fi
+  install -m 0755 "$ASSETS_DIR/$asset_name" "$APP_BUILD_DIR/Contents/Resources/bootstrap/$asset_name"
 done
 
 sed -i.bak "s/__EASYROB_VERSION__/$VERSION/g" "$APP_BUILD_DIR/Contents/Info.plist"
 rm -f "$APP_BUILD_DIR/Contents/Info.plist.bak"
+
+if command -v xattr >/dev/null 2>&1; then
+  xattr -cr "$APP_BUILD_DIR" >/dev/null 2>&1 || true
+fi
+
+codesign --force --deep --sign - "$APP_BUILD_DIR"
 
 mkdir -p "$DMG_STAGE_DIR"
 rsync -a "$APP_BUILD_DIR/" "$DMG_STAGE_DIR/EasyRob.app/"
@@ -77,6 +86,7 @@ echo "macOS distributable created:"
 echo "  $DMG_OUTPUT"
 echo
 echo "First launch behavior:"
-echo "  - copies or downloads Micromamba on demand"
-echo "  - creates the private runtime under ~/Library/ApplicationSupport/EasyRob"
+echo "  - copies the bundled Micromamba binary into ~/Library/Application Support/EasyRob/micromamba"
+echo "  - creates the private runtime under ~/Library/Application Support/EasyRob"
+echo "  - uses the private workspace under ~/Library/Application Support/EasyRob/workspace"
 echo "  - launches EasyRob and reuses that runtime on future launches"

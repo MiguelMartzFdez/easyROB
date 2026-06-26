@@ -86,7 +86,10 @@ The repository, dependency source, and packaging structure are shared, but the f
 - current distribution format: `.dmg`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/macos/build.sh`
-- build host: a real Mac with `rsync` and `hdiutil`
+- build host: a real Mac with `rsync`, `hdiutil`, and `codesign`
+- app model: immutable bootstrap app
+- runtime location: `~/Library/Application Support/EasyRob`
+- workspace model: `~/Library/Application Support/EasyRob/workspace`
 - current status: bootstrap-app flow implemented, build and testing must happen on a real Mac
 
 ## What to change

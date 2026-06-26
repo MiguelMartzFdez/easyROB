@@ -24,6 +24,7 @@ Requirements:
 - macOS 11 Big Sur or newer
 - `rsync`
 - `hdiutil`
+- `codesign`
 - `grep`
 - `sed`
 
@@ -40,8 +41,10 @@ packaging/shared/env.yaml
 The macOS package now follows the same lightweight model as Windows and Linux:
 
 - `EasyRob.app` is a bootstrap launcher
-- first launch installs Micromamba and creates the environment
-- the runtime is stored under `~/Library/ApplicationSupport/EasyRob`
+- `EasyRob.app` remains immutable after it is copied to `Applications`
+- first launch copies the bundled Micromamba binary and creates the environment
+- the runtime is stored under `~/Library/Application Support/EasyRob`
+- the macOS workflow uses the private workspace under `~/Library/Application Support/EasyRob/workspace`
 - later launches reuse that installed runtime
 
 Compatibility target:
@@ -50,7 +53,7 @@ Compatibility target:
 - Intel Macs using `osx-64`
 - Apple Silicon Macs using `osx-arm64`
 
-Optional assets:
+Required assets:
 
 - `assets/micromamba-osx-64`
 - `assets/micromamba-osx-arm64`

@@ -6,30 +6,52 @@ RESOURCES_DIR="$APP_ROOT/Resources"
 SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
-APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
-WORK_DIR="${APP_SUPPORT_DIR}/workspace"
-BIN_DIR="$APP_SUPPORT_DIR/bin"
-ENV_PREFIX="$APP_SUPPORT_DIR/envs/easyrob"
-MAMBA_ROOT_PREFIX="$APP_SUPPORT_DIR/micromamba-root"
+APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
+WORK_DIR="$APP_SUPPORT_DIR/workspace"
+MICROMAMBA_DIR="$APP_SUPPORT_DIR/micromamba"
+BIN_DIR="$MICROMAMBA_DIR/bin"
+MICROMAMBA_BIN="$BIN_DIR/micromamba"
+ENV_PREFIX="$APP_SUPPORT_DIR/env"
+CACHE_DIR="$APP_SUPPORT_DIR/cache"
 LOG_DIR="$APP_SUPPORT_DIR/logs"
-STATE_DIR="$APP_SUPPORT_DIR/state"
-LOCK_DIR="$STATE_DIR/launch.lock"
+MAMBA_ROOT_PREFIX="$MICROMAMBA_DIR/root"
+
 VERSION_FILE="$SHARED_DIR/version.txt"
-INSTALLED_VERSION_FILE="$STATE_DIR/installed-version.txt"
+INSTALLED_VERSION_FILE="$CACHE_DIR/installed-version.txt"
 ENV_FILE="$SHARED_DIR/env.yaml"
-CONDA_ENV_FILE="$STATE_DIR/env-conda.yaml"
-PIP_REQUIREMENTS_FILE="$STATE_DIR/pip-requirements.txt"
+CONDA_ENV_FILE="$CACHE_DIR/env-conda.yaml"
+PIP_REQUIREMENTS_FILE="$CACHE_DIR/pip-requirements.txt"
+WORKSPACE_README="$WORK_DIR/README.txt"
 INSTALL_LOG="$LOG_DIR/install.log"
 INSTALL_ERR_LOG="$LOG_DIR/install-error.log"
 RUNTIME_LOG="$LOG_DIR/runtime.log"
 RUNTIME_ERR_LOG="$LOG_DIR/runtime-error.log"
-MICROMAMBA_BIN="$BIN_DIR/micromamba"
+LOCK_DIR="$CACHE_DIR/launch.lock"
 ENV_PYTHON="$ENV_PREFIX/bin/python"
 ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 NOTICE_PID=""
 
-mkdir -p "$BIN_DIR" "$LOG_DIR" "$STATE_DIR"
-mkdir -p "$WORK_DIR"
+ensure_directories() {
+  mkdir -p \
+    "$APP_SUPPORT_DIR" \
+    "$WORK_DIR" \
+    "$MICROMAMBA_DIR" \
+    "$BIN_DIR" \
+    "$CACHE_DIR" \
+    "$LOG_DIR"
+}
+
+write_workspace_readme() {
+  cat >"$WORKSPACE_README" <<EOF
+EasyRob workspace
+
+Place your CSV files and project folders in this workspace before running workflows.
+
+macOS build note:
+- EasyRob is configured to work inside this private workspace.
+- Avoid running workflows directly from Desktop, Downloads, or Documents.
+EOF
+}
 
 log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$INSTALL_LOG"
@@ -39,58 +61,9 @@ runtime_log() {
   printf '%s %s\n' "[$(date '+%Y-%m-%d %H:%M:%S')]" "$*" >>"$RUNTIME_LOG"
 }
 
-clear_execution_attributes() {
-  local target="$1"
-  if command -v xattr >/dev/null 2>&1; then
-    xattr -cr "$target" >/dev/null 2>&1 || true
-  fi
-}
-
-clear_execution_attributes "$APP_ROOT"
-
-configure_private_environment() {
-  local existing_path
-  existing_path="${PATH:-}"
-  export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
-  export DYLD_LIBRARY_PATH="$ENV_PREFIX/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
-  export XDG_DATA_DIRS="$ENV_PREFIX/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
-  export GI_TYPELIB_PATH="$ENV_PREFIX/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
-  export CONDA_PREFIX="$ENV_PREFIX"
-  export CONDA_DEFAULT_ENV="easyrob"
-  export CONDA_SHLVL="1"
-  export QT_OPENGL="software"
-  export QTWEBENGINE_DISABLE_SANDBOX="1"
-  export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --disable-gpu-compositing"
-}
-
-configure_build_environment() {
-  configure_private_environment
-  export PKG_CONFIG_PATH="$ENV_PREFIX/lib/pkgconfig:$ENV_PREFIX/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-  export OPENSSL_DIR="$ENV_PREFIX"
-  export OPENSSL_INCLUDE_DIR="$ENV_PREFIX/include"
-  export OPENSSL_LIB_DIR="$ENV_PREFIX/lib"
-}
-
 show_error_dialog() {
   local message="$1"
   osascript -e "display dialog \"$message\" buttons {\"OK\"} default button \"OK\" with icon stop" >/dev/null 2>&1 || true
-}
-
-macos_major_version() {
-  sw_vers -productVersion 2>/dev/null | awk -F. '{ print $1 }'
-}
-
-validate_macos_version() {
-  local major_version
-  major_version="$(macos_major_version)"
-  if [[ -z "$major_version" ]]; then
-    echo "Could not determine macOS version." >>"$INSTALL_ERR_LOG"
-    return 1
-  fi
-  if [[ "$major_version" -lt 11 ]]; then
-    echo "Unsupported macOS version: $(sw_vers -productVersion 2>/dev/null || true). EasyRob requires macOS 11 or newer." >>"$INSTALL_ERR_LOG"
-    return 1
-  fi
 }
 
 start_notice() {
@@ -110,21 +83,48 @@ stop_notice() {
   NOTICE_PID=""
 }
 
+update_notice() {
+  local percent="$1"
+  local message="$2"
+  start_notice "EasyRob setup in progress ($percent%).\n\n$message\n\nPlease keep this window open."
+}
+
 cleanup() {
   stop_notice
   rm -rf "$LOCK_DIR"
 }
 
-if ! mkdir "$LOCK_DIR" >/dev/null 2>&1; then
-  osascript -e 'display notification "EasyRob is already starting..." with title "EasyRob"' >/dev/null 2>&1 || true
-  exit 0
-fi
-trap cleanup EXIT
+clear_execution_attributes() {
+  local target="$1"
+  if [[ -e "$target" ]] && command -v xattr >/dev/null 2>&1; then
+    xattr -cr "$target" >/dev/null 2>&1 || true
+  fi
+}
 
-: >"$INSTALL_LOG"
-: >"$INSTALL_ERR_LOG"
-: >"$RUNTIME_LOG"
-: >"$RUNTIME_ERR_LOG"
+configure_private_environment() {
+  local existing_path
+  existing_path="${PATH:-}"
+  export PATH="$ENV_PREFIX/bin${existing_path:+:$existing_path}"
+  export DYLD_LIBRARY_PATH="$ENV_PREFIX/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+  export XDG_DATA_DIRS="$ENV_PREFIX/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+  export GI_TYPELIB_PATH="$ENV_PREFIX/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
+  export CONDA_PREFIX="$ENV_PREFIX"
+  export CONDA_DEFAULT_ENV="easyrob"
+  export CONDA_SHLVL="1"
+  export MAMBA_ROOT_PREFIX
+  export EASYROB_WORKSPACE_DIR="$WORK_DIR"
+  export QT_OPENGL="software"
+  export QTWEBENGINE_DISABLE_SANDBOX="1"
+  export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu --disable-gpu-compositing"
+}
+
+configure_build_environment() {
+  configure_private_environment
+  export PKG_CONFIG_PATH="$ENV_PREFIX/lib/pkgconfig:$ENV_PREFIX/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+  export OPENSSL_DIR="$ENV_PREFIX"
+  export OPENSSL_INCLUDE_DIR="$ENV_PREFIX/include"
+  export OPENSSL_LIB_DIR="$ENV_PREFIX/lib"
+}
 
 run_install_command() {
   log "Running: $*"
@@ -134,51 +134,21 @@ run_install_command() {
   fi
 }
 
-prepare_split_env_files() {
-  awk '
-    BEGIN { in_pip = 0 }
-    /^  - pip:$/ { in_pip = 1; next }
-    {
-      if (in_pip) {
-        if ($0 ~ /^      - /) {
-          print substr($0, 9) >> pip_file
-          next
-        }
-        in_pip = 0
-      }
-      print $0 >> conda_file
-    }
-  ' conda_file="$CONDA_ENV_FILE" pip_file="$PIP_REQUIREMENTS_FILE" "$ENV_FILE"
+macos_major_version() {
+  sw_vers -productVersion 2>/dev/null | awk -F. '{ print $1 }'
 }
 
-current_version=""
-if [[ -f "$VERSION_FILE" ]]; then
-  current_version="$(tr -d '\r\n' < "$VERSION_FILE")"
-fi
-
-installed_version=""
-if [[ -f "$INSTALLED_VERSION_FILE" ]]; then
-  installed_version="$(tr -d '\r\n' < "$INSTALLED_VERSION_FILE")"
-fi
-
-need_install=0
-if [[ ! -x "$MICROMAMBA_BIN" || ! -d "$ENV_PREFIX" ]]; then
-  need_install=1
-fi
-if [[ -n "$current_version" && "$current_version" != "$installed_version" ]]; then
-  need_install=1
-fi
-
-require_download_tool() {
-  if command -v curl >/dev/null 2>&1; then
-    printf '%s\n' "curl"
-    return
+validate_macos_version() {
+  local major_version
+  major_version="$(macos_major_version)"
+  if [[ -z "$major_version" ]]; then
+    echo "Could not determine macOS version." >>"$INSTALL_ERR_LOG"
+    return 1
   fi
-  if command -v wget >/dev/null 2>&1; then
-    printf '%s\n' "wget"
-    return
+  if [[ "$major_version" -lt 11 ]]; then
+    echo "Unsupported macOS version: $(sw_vers -productVersion 2>/dev/null || true). EasyRob requires macOS 11 or newer." >>"$INSTALL_ERR_LOG"
+    return 1
   fi
-  return 1
 }
 
 detect_micromamba_platform() {
@@ -195,142 +165,189 @@ detect_micromamba_platform() {
   esac
 }
 
-detect_machine_arch() {
-  uname -m
+require_file() {
+  local path="$1"
+  local description="$2"
+  if [[ ! -e "$path" ]]; then
+    echo "Missing $description at $path" >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
 }
 
-install_micromamba() {
-  local platform asset_name bundled_asset downloader tmp_dir archive_path
+prepare_split_env_files() {
+  rm -f "$CONDA_ENV_FILE" "$PIP_REQUIREMENTS_FILE"
+  awk '
+    BEGIN { in_pip = 0 }
+    /^  - pip:$/ { in_pip = 1; next }
+    {
+      if (in_pip) {
+        if ($0 ~ /^      - /) {
+          print substr($0, 9) >> pip_file
+          next
+        }
+        in_pip = 0
+      }
+      print $0 >> conda_file
+    }
+  ' conda_file="$CONDA_ENV_FILE" pip_file="$PIP_REQUIREMENTS_FILE" "$ENV_FILE"
+}
 
-  platform="$(detect_micromamba_platform)"
+copy_bundled_micromamba() {
+  local platform asset_name bundled_asset
+
+  platform="$(detect_micromamba_platform)" || {
+    echo "Unsupported machine architecture: $(uname -m)" >>"$INSTALL_ERR_LOG"
+    return 1
+  }
   asset_name="micromamba-$platform"
   bundled_asset="$BOOTSTRAP_DIR/$asset_name"
 
-  if [[ -x "$bundled_asset" ]]; then
-    log "Using bundled Micromamba asset: $bundled_asset"
-    install -m 0755 "$bundled_asset" "$MICROMAMBA_BIN"
-    clear_execution_attributes "$MICROMAMBA_BIN"
-    if "$MICROMAMBA_BIN" --version >>"$INSTALL_LOG" 2>>"$INSTALL_ERR_LOG"; then
-      return 0
-    fi
-    log "Bundled Micromamba could not be executed; falling back to download"
-    rm -f "$MICROMAMBA_BIN"
-  fi
-
-  downloader="$(require_download_tool)" || {
-    echo "No download tool available for Micromamba bootstrap." >>"$INSTALL_ERR_LOG"
-    return 1
-  }
-
-  tmp_dir="$(mktemp -d)"
-  archive_path="$tmp_dir/micromamba.tar.bz2"
-  log "Downloading Micromamba for $platform"
-
-  if [[ "$downloader" == "curl" ]]; then
-    run_install_command curl -L "https://micro.mamba.pm/api/micromamba/$platform/latest" -o "$archive_path" || {
-      rm -rf "$tmp_dir"
-      return 1
-    }
-  else
-    run_install_command wget -O "$archive_path" "https://micro.mamba.pm/api/micromamba/$platform/latest" || {
-      rm -rf "$tmp_dir"
-      return 1
-    }
-  fi
-
-  run_install_command tar -xjf "$archive_path" -C "$tmp_dir" || {
-    rm -rf "$tmp_dir"
-    return 1
-  }
-
-  if [[ ! -f "$tmp_dir/bin/micromamba" ]]; then
-    echo "Micromamba archive did not contain bin/micromamba" >>"$INSTALL_ERR_LOG"
-    rm -rf "$tmp_dir"
-    return 1
-  fi
-
-  install -m 0755 "$tmp_dir/bin/micromamba" "$MICROMAMBA_BIN"
+  require_file "$bundled_asset" "bundled Micromamba asset" || return 1
+  log "Copying bundled Micromamba from $bundled_asset"
+  install -m 0755 "$bundled_asset" "$MICROMAMBA_BIN"
+  chmod 0755 "$MICROMAMBA_BIN"
   clear_execution_attributes "$MICROMAMBA_BIN"
-  rm -rf "$tmp_dir"
-  "$MICROMAMBA_BIN" --version >>"$INSTALL_LOG" 2>>"$INSTALL_ERR_LOG"
+  require_file "$MICROMAMBA_BIN" "copied Micromamba binary" || return 1
+  run_install_command "$MICROMAMBA_BIN" --version || return 1
+}
+
+validate_environment() {
+  if [[ ! -x "$ENV_PYTHON" ]]; then
+    echo "EasyRob Python interpreter was not created at $ENV_PYTHON" >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+  configure_private_environment
+  run_install_command "$ENV_PYTHON" -c "import robert" || return 1
+}
+
+remove_previous_runtime() {
+  log "Removing previous EasyRob runtime directories"
+  rm -rf "$ENV_PREFIX" "$MAMBA_ROOT_PREFIX"
 }
 
 install_runtime() {
   local platform machine_arch macos_version
 
+  ensure_directories
+  write_workspace_readme
   validate_macos_version || return 1
+  require_file "$ENV_FILE" "shared environment file" || return 1
+
   platform="$(detect_micromamba_platform)" || return 1
-  machine_arch="$(detect_machine_arch)"
+  machine_arch="$(uname -m)"
   macos_version="$(sw_vers -productVersion 2>/dev/null || true)"
 
   log "Preparing EasyRob runtime at $APP_SUPPORT_DIR"
+  log "Workspace: $WORK_DIR"
   log "macOS version: $macos_version"
   log "Machine architecture: $machine_arch"
   log "Micromamba platform: $platform"
 
-  if [[ -d "$ENV_PREFIX" ]]; then
-    log "Removing previous EasyRob environment"
-    rm -rf "$ENV_PREFIX"
-  fi
+  update_notice 15 "Creating application folders."
+  ensure_directories
+  write_workspace_readme
 
-  install_micromamba || return 1
-  chmod 0755 "$MICROMAMBA_BIN" >/dev/null 2>&1 || true
-  chmod -R u+rwx "$APP_SUPPORT_DIR" >/dev/null 2>&1 || true
-  clear_execution_attributes "$APP_SUPPORT_DIR"
-  clear_execution_attributes "$MICROMAMBA_BIN"
-  rm -f "$CONDA_ENV_FILE" "$PIP_REQUIREMENTS_FILE"
+  update_notice 30 "Copying bundled Micromamba."
+  copy_bundled_micromamba || return 1
+
+  update_notice 45 "Preparing the private environment definition."
   prepare_split_env_files
 
-  log "Creating EasyRob environment from $CONDA_ENV_FILE"
+  update_notice 60 "Cleaning the previous private runtime."
+  remove_previous_runtime
+  mkdir -p "$MAMBA_ROOT_PREFIX"
+
+  update_notice 75 "Creating the private EasyRob environment."
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$CONDA_ENV_FILE" || return 1
-  chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
   clear_execution_attributes "$ENV_PREFIX"
+
+  update_notice 85 "Installing the macOS Python application launcher."
   run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
-  chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
   clear_execution_attributes "$ENV_PREFIX"
+
   if [[ -s "$PIP_REQUIREMENTS_FILE" ]]; then
+    update_notice 92 "Installing Python packages."
     configure_build_environment
     run_install_command "$ENV_PYTHON" -m pip install -r "$PIP_REQUIREMENTS_FILE" || return 1
-    chmod -R u+rwx "$ENV_PREFIX" >/dev/null 2>&1 || true
     clear_execution_attributes "$ENV_PREFIX"
   fi
 
-  if [[ -n "$current_version" ]]; then
-    printf '%s\n' "$current_version" > "$INSTALLED_VERSION_FILE"
+  update_notice 98 "Validating the installed runtime."
+  validate_environment || return 1
+
+  if [[ -f "$VERSION_FILE" ]]; then
+    tr -d '\r\n' < "$VERSION_FILE" > "$INSTALLED_VERSION_FILE"
   fi
 }
 
 launch_easyrob() {
   local launcher_python
+
   runtime_log "Launching EasyRob from $ENV_PREFIX"
   runtime_log "Using working directory at $WORK_DIR"
+
   launcher_python="$ENV_PYTHON"
   if [[ -x "$ENV_PYTHONW" ]]; then
     launcher_python="$ENV_PYTHONW"
   fi
   runtime_log "Using Python interpreter at $launcher_python"
+
   if [[ ! -x "$launcher_python" ]]; then
     echo "EasyRob Python launcher not found at $launcher_python" >>"$RUNTIME_ERR_LOG"
     return 1
   fi
+
   configure_private_environment
   cd "$WORK_DIR"
-  "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
+  stop_notice
+  rm -rf "$LOCK_DIR"
+  trap - EXIT
+  exec "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
 }
 
+ensure_directories
+
+if ! mkdir "$LOCK_DIR" >/dev/null 2>&1; then
+  osascript -e 'display notification "EasyRob is already starting..." with title "EasyRob"' >/dev/null 2>&1 || true
+  exit 0
+fi
+trap cleanup EXIT
+
+current_version=""
+if [[ -f "$VERSION_FILE" ]]; then
+  current_version="$(tr -d '\r\n' < "$VERSION_FILE")"
+fi
+
+installed_version=""
+if [[ -f "$INSTALLED_VERSION_FILE" ]]; then
+  installed_version="$(tr -d '\r\n' < "$INSTALLED_VERSION_FILE")"
+fi
+
+need_install=0
+if [[ ! -x "$MICROMAMBA_BIN" || ! -d "$ENV_PREFIX" || ! -x "$ENV_PYTHON" ]]; then
+  need_install=1
+fi
+if [[ -n "$current_version" && "$current_version" != "$installed_version" ]]; then
+  need_install=1
+fi
+
 if [[ "$need_install" == "1" ]]; then
-  start_notice "EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nPlease keep this window open."
+  : >"$INSTALL_LOG"
+  : >"$INSTALL_ERR_LOG"
+  start_notice "EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
   if ! install_runtime; then
-    show_error_dialog "EasyRob installation failed. Check the logs in ~/Library/ApplicationSupport/EasyRob/logs."
+    show_error_dialog "EasyRob installation failed. Check the logs in ~/Library/Application Support/EasyRob/logs."
     exit 1
   fi
 fi
 
-start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer.\n\nOn macOS, please work inside the EasyRob workspace:\n$WORK_DIR\n\nMove your CSV files and project folders there before running workflows."
+: >"$RUNTIME_LOG"
+: >"$RUNTIME_ERR_LOG"
+start_notice "EasyRob is opening...\n\nPlease wait.\n\nThe first launch may take a little longer.\n\nOn macOS, please work inside the EasyRob workspace:\n$WORK_DIR"
 if ! launch_easyrob; then
-  show_error_dialog "EasyRob could not start. Check the logs in ~/Library/ApplicationSupport/EasyRob/logs."
+  show_error_dialog "EasyRob could not start. Check the logs in ~/Library/Application Support/EasyRob/logs."
   exit 1
 fi

@@ -1,6 +1,6 @@
 # macOS Bootstrap Assets
 
-This folder can contain optional prebundled Micromamba binaries for macOS.
+This folder stores the required bootstrap assets for the macOS build.
 
 Supported filenames:
 
@@ -8,8 +8,6 @@ Supported filenames:
 - `micromamba-osx-arm64`
 - `easyrob.icns`
 
-If a matching binary is present, `packaging/macos/build.sh` bundles it into `EasyRob.app` and first launch does not need to download Micromamba.
+`packaging/macos/build.sh` requires both Micromamba binaries so the generated `.dmg` can bootstrap on Intel and Apple Silicon Macs without downloading anything on first launch.
 
-If these files are absent, the macOS launcher downloads Micromamba during first launch.
-
-`easyrob.icns` is optional. If it is absent, the generated app uses the default macOS application icon.
+`easyrob.icns` is also required. The build fails if any of these assets are missing.

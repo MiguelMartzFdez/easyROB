@@ -1,50 +1,30 @@
 # EasyRob macOS Packaging
 
-This document explains the current macOS bootstrap-app packaging for EasyRob.
+This document describes the hardened macOS bootstrap-app packaging for EasyRob.
 
-## Current outputs
+## Output
 
 ```text
 dist/macos/easyrob-<VERSION>.dmg
 ```
 
-## Current status
+## Packaging goals
 
-The bootstrap app workflow is now defined in the repository, but it still has to be built and tested on a real Mac.
-
-The compatibility baseline is macOS 11 Big Sur. This keeps the current Big Sur 11.7 VM useful as the lowest practical test target while still supporting newer macOS releases.
-
-## Build command
-
-On macOS:
-
-```bash
-chmod +x packaging/macos/build.sh
-./packaging/macos/build.sh
-```
-
-## Build requirements
-
-- a real Mac
-- macOS 11 Big Sur or newer
-- `rsync`
-- `hdiutil`
-- `grep`
-- `sed`
+- `EasyRob.app` is immutable after the user copies it into `Applications`
+- no runtime state is stored inside the `.app` bundle
+- no `sudo` is required
+- no direct dependency on Desktop, Downloads, or Documents
+- all persistent state lives under `~/Library/Application Support/EasyRob`
 
 ## Compatibility target
 
-The macOS package should support:
-
-- Intel Macs through the `osx-64` Micromamba target
-- Apple Silicon Macs through the `osx-arm64` Micromamba target
 - macOS 11 Big Sur or newer
-
-The bootstrapper detects the architecture at first launch, sets `CONDA_SUBDIR` to the matching Micromamba platform, and installs the matching runtime. AMD-based macOS systems are not an official distribution target.
+- Intel Macs through the `osx-64` Micromamba bootstrap asset
+- Apple Silicon Macs through the `osx-arm64` Micromamba bootstrap asset
 
 ## Source of truth
 
-macOS packaging should use the same dependency source as the other platforms:
+Shared dependencies are still defined in:
 
 ```text
 packaging/shared/env.yaml
@@ -59,66 +39,133 @@ packaging/shared/env.yaml
 - `packaging/macos/scripts/bootstrap_easyrob_macos.sh`
 - `packaging/macos/scripts/launch_easyrob_macos.sh`
 
-## What the current build does
+## Build command
 
-1. Reads the version from the Windows installer definition
-2. Creates a staged `EasyRob.app`
-3. Copies `packaging/shared/env.yaml` into the app resources
-4. Copies the bootstrap and launcher scripts
-5. Optionally bundles predownloaded Micromamba binaries
-6. Creates a `.dmg` containing `EasyRob.app` and an `Applications` shortcut
+Run on macOS:
 
-The build uses `packaging/macos/assets/easyrob.icns` when present. It does not reuse the Windows `.ico` file as a macOS icon.
-
-## User installation model
-
-The intended user flow is:
-
-1. Download `easyrob-<VERSION>.dmg`
-2. Open the downloaded disk image
-3. Drag `EasyRob.app` to `Applications`
-4. Open EasyRob from Applications, Launchpad, or Spotlight
-5. On first launch, EasyRob installs Micromamba and creates the environment under `~/Library/ApplicationSupport/EasyRob`
-6. Later launches reuse the installed runtime
-
-## Runtime location
-
-The macOS bootstrapper stores its runtime here:
-
-```text
-~/Library/ApplicationSupport/EasyRob
+```bash
+chmod +x packaging/macos/build.sh
+./packaging/macos/build.sh
 ```
 
-That location contains:
+## Build requirements
 
-- `bin/micromamba`
-- `envs/easyrob`
-- `logs/`
-- `state/`
+- a real Mac
+- macOS 11 Big Sur or newer
+- `rsync`
+- `hdiutil`
+- `codesign`
+- `grep`
+- `sed`
 
-At launch time, the app runs the Python interpreter inside `envs/easyrob` directly and exports the private environment paths so ROBERT subprocesses can find `python` and native libraries.
+## Required assets
 
-During first launch, the installer writes the detected macOS version, machine architecture, and Micromamba platform to the install log. This is important when testing Intel and Apple Silicon separately.
+The macOS build requires:
+
+- `packaging/macos/assets/micromamba-osx-64`
+- `packaging/macos/assets/micromamba-osx-arm64`
+- `packaging/macos/assets/easyrob.icns`
+
+The build now fails if any of those files are missing.
+
+## What the build does
+
+1. Reads the EasyRob version from the Windows installer definition
+2. Stages `EasyRob.app`
+3. Copies `packaging/shared/env.yaml` into the app resources
+4. Copies the macOS bootstrap and launcher scripts
+5. Bundles both Micromamba bootstrap binaries inside the app resources
+6. Clears extended attributes on the staged `.app`
+7. Applies ad hoc signing with `codesign --deep --sign -`
+8. Creates a `.dmg` containing `EasyRob.app` and an `Applications` shortcut
+
+## User installation flow
+
+1. Download `easyrob-<VERSION>.dmg`
+2. Open the disk image
+3. Drag `EasyRob.app` into `Applications`
+4. Launch EasyRob from Applications, Launchpad, or Spotlight
+5. On first launch, EasyRob creates its private runtime entirely inside the user profile
+6. Later launches reuse that installed runtime
+
+## Runtime layout
+
+All macOS state lives under:
+
+```text
+~/Library/Application Support/EasyRob
+```
+
+Current layout:
+
+```text
+Application Support/
+└── EasyRob/
+    ├── workspace/
+    ├── micromamba/
+    ├── env/
+    ├── cache/
+    └── logs/
+```
+
+Notes:
+
+- `workspace/` is the only supported place for CSV files and project folders in the current macOS workflow
+- `micromamba/` stores the copied Micromamba binary and its root prefix
+- `env/` stores the private EasyRob environment
+- `cache/` stores generated metadata such as version markers and split dependency files
+- `logs/` stores installation and runtime logs
+
+## First-launch behavior
+
+On first launch, the bootstrapper:
+
+1. Creates the full directory structure under `~/Library/Application Support/EasyRob`
+2. Copies the correct bundled Micromamba binary from the app resources into `micromamba/bin/micromamba`
+3. Runs `chmod +x` on the copied binary
+4. Clears quarantine attributes on the copied binary and generated runtime directories
+5. Sets `MAMBA_ROOT_PREFIX` explicitly inside the private Application Support tree
+6. Creates the environment with absolute paths
+7. Installs pip packages from the shared environment definition
+8. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
+9. Launches EasyRob from the private environment with the workspace as the working directory
+
+## Protected-folder policy
+
+The current macOS packaging intentionally avoids depending on TCC-protected folders.
+
+That means:
+
+- EasyRob does not assume direct access to Desktop
+- EasyRob does not assume direct access to Downloads
+- EasyRob does not assume direct access to Documents
+- users should manually move CSV files into `~/Library/Application Support/EasyRob/workspace`
 
 ## User removal
 
 To remove EasyRob on macOS:
 
 1. Delete `EasyRob.app` from `Applications`
-2. Remove `~/Library/ApplicationSupport/EasyRob` if you also want to remove the installed runtime and logs
+2. Delete `~/Library/Application Support/EasyRob`
 
-## What is still missing
+## Testing focus
 
-To finish hardening macOS packaging:
+The main macOS checks are now:
 
 1. Build on a real Mac
-2. Test on Big Sur 11.7 Intel as the minimum supported baseline
-3. Test on a newer Intel macOS release if available
-4. Test on Apple Silicon
-5. Test the `.dmg` flow, launch, Spotlight discovery, updates, and removal
+2. Test first launch on Big Sur 11.7 Intel
+3. Test first launch on Apple Silicon
+4. Verify the `.dmg` drag-to-Applications flow
+5. Verify that reinstalling a new version recreates the private runtime cleanly
+6. Verify that logs are written under `~/Library/Application Support/EasyRob/logs`
+7. Verify that workflows run from the private workspace
 
 ## Signing
 
-Code signing and notarization are intentionally out of scope for now.
+The build now applies ad hoc signing before the DMG is created:
 
-That means Gatekeeper warnings are expected until signing is added later.
+```bash
+codesign --force --deep --sign - EasyRob.app
+```
+
+This is not a replacement for Developer ID signing or notarization, but it reduces problems with bundled helper binaries during local distribution and testing.

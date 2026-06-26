@@ -73,12 +73,20 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
    * Spotlight
 
 Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the machine architecture and prepares an Intel (`osx-64`) or Apple Silicon (`osx-arm64`) environment as needed.
-The private macOS runtime is stored under `~/Library/ApplicationSupport/EasyRob`.
+The private macOS runtime is stored under `~/Library/Application Support/EasyRob`.
+EasyRob does not require `sudo` on macOS and does not modify `EasyRob.app` after it has been copied to `Applications`.
+For now, macOS users should work only inside the private workspace created here:
+
+```text
+~/Library/Application Support/EasyRob/workspace
+```
+
+Move CSV files and project folders into that workspace before running workflows.
 
 To fully remove EasyRob on macOS:
 
 * Delete `EasyRob.app` from `Applications`
-* Delete `~/Library/ApplicationSupport/EasyRob`
+* Delete `~/Library/Application Support/EasyRob`
   
 ---
 
@@ -206,6 +214,7 @@ chmod +x packaging/macos/build.sh
 * macOS 11 Big Sur or newer
 * `rsync`
 * `hdiutil`
+* `codesign`
 * `grep`
 * `sed`
 
