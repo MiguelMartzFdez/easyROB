@@ -45,6 +45,10 @@ if [[ "${1:-}" == "--uninstall-user-data" ]]; then
   exec "$EASYROB_SCRIPT_ROOT/scripts/uninstall_easyrob.sh"
 fi
 
+if [[ "${1:-}" == "--uninstall" ]]; then
+  exec "$EASYROB_SCRIPT_ROOT/scripts/uninstall_easyrob_full.sh"
+fi
+
 if [[ ! -d "$EASYROB_INSTALL_ROOT/envs/easyrob" ]]; then
   start_installing_notice
   trap stop_installing_notice EXIT

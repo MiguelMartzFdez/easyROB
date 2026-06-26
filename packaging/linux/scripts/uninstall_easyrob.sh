@@ -28,4 +28,4 @@ rm -rf "$INSTALL_ROOT"
 rm -f "$DESKTOP_FILE"
 rm -f "$DESKTOP_SHORTCUT_FILE"
 
-echo "EasyRob was removed from $INSTALL_ROOT"
+echo "EasyRob user data was removed from $INSTALL_ROOT"

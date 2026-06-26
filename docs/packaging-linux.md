@@ -95,7 +95,13 @@ Remove the per-user runtime first:
 easyrob --uninstall-user-data
 ```
 
-Then remove the package:
+Or remove both the per-user runtime and the system package in one step:
+
+```bash
+easyrob --uninstall
+```
+
+If you prefer, you can still remove the package manually:
 
 ```bash
 sudo dpkg -r easyrob

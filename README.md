@@ -53,8 +53,9 @@ The `.deb` itself only installs the launcher and static assets system-wide.
 
 To fully remove EasyRob on Linux:
 
-* Remove the private user runtime with `easyrob --uninstall-user-data`
-* Remove the system package with `sudo apt remove easyrob`
+* Remove only the private user runtime with `easyrob --uninstall-user-data`
+* Remove everything, including the launcher and search entry, with `easyrob --uninstall`
+* Or remove the system package manually with `sudo apt remove easyrob`
 * If the package was already removed first, manually delete `~/.local/share/easyrob`
 
 ---

@@ -63,6 +63,7 @@ install -m 0755 "$MICROMAMBA_ASSET" "$STAGE_DIR/usr/lib/easyrob/bootstrap/microm
 install -m 0755 "$SCRIPT_DIR/scripts/install_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/install_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/launch_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob.sh"
+install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob_full.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob_full.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$STAGE_DIR/usr/lib/easyrob/shared/env.yaml"
 install -m 0644 "$REPO_ROOT/packaging/windows/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"
 
