@@ -28,7 +28,6 @@ EasyRob/
 |   |-- linux/
 |   |   |-- assets/
 |   |   |-- scripts/
-|   |   |-- source/
 |   |   |-- README.md
 |   |   `-- build-deb.sh
 |   `-- macos/
@@ -60,7 +59,7 @@ Each final artifact is built on its own operating system:
 
 - Windows `.exe`: build on Windows
 - Linux `.deb`: build on Linux
-- macOS `.app` / `.zip`: build on macOS
+- macOS `.dmg`: build on macOS
 
 The repository, dependency source, and packaging structure are shared, but the final installers are not all produced from one host.
 
@@ -84,10 +83,10 @@ The repository, dependency source, and packaging structure are shared, but the f
 
 ### macOS
 
-- current distribution formats: `.app` and `.zip`
+- current distribution format: `.dmg`
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/macos/build.sh`
-- build host: a real Mac with `rsync` and `ditto`
+- build host: a real Mac with `rsync` and `hdiutil`
 - current status: bootstrap-app flow implemented, build and testing must happen on a real Mac
 
 ## What to change
