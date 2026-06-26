@@ -165,6 +165,8 @@ The `.command` file can be opened with double click. The shell version can be ru
 bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
 ```
 
+The uninstaller verifies whether both the private Application Support directory and `EasyRob.app` were actually removed. If macOS blocks removal of the app bundle, it reports that explicitly and falls back to a manual delete of `/Applications/EasyRob.app`.
+
 ## Testing focus
 
 The main macOS checks are now:

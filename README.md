@@ -101,6 +101,8 @@ You can double-click that file, or run:
 ```bash
 bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
 ```
+
+If macOS does not allow the script to remove `EasyRob.app` automatically, the uninstaller now shows a message and you can delete `/Applications/EasyRob.app` manually.
   
 ---
 

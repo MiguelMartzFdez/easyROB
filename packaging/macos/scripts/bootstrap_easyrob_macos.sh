@@ -63,7 +63,7 @@ set -euo pipefail
 
 APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
 APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
-TMP_SCRIPT="\$(mktemp /tmp/easyrob-uninstall.XXXXXX.sh)"
+UNINSTALL_LOG="\${TMPDIR:-/tmp}/easyrob-uninstall.log"
 
 confirm_uninstall() {
   osascript \
@@ -71,30 +71,61 @@ confirm_uninstall() {
     -e 'button returned of result' 2>/dev/null || true
 }
 
+show_result() {
+  local message="\$1"
+  local icon="\$2"
+  osascript -e "display dialog \\"\$message\\" buttons {\\"OK\\"} default button \\"OK\\" with icon \$icon" >/dev/null 2>&1 || true
+}
+
 if [[ "\$(confirm_uninstall)" != "Uninstall" ]]; then
   exit 0
 fi
 
-cat >"\$TMP_SCRIPT" <<INNER
-#!/usr/bin/env bash
-set -euo pipefail
+cd "\$HOME"
+: >"\$UNINSTALL_LOG"
 
-APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
-APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
+echo "Starting EasyRob uninstall" >>"\$UNINSTALL_LOG"
+echo "App bundle: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
+echo "Support dir: \$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
 
 osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
 sleep 2
 
-if [[ -d "\$APP_BUNDLE_PATH" ]]; then
-  osascript -e 'tell application "Finder" to delete POSIX file "'"'\$APP_BUNDLE_PATH'"'"'' >/dev/null 2>&1 || rm -rf "\$APP_BUNDLE_PATH"
+SUPPORT_REMOVED=0
+APP_REMOVED=0
+
+if [[ -d "\$APP_SUPPORT_DIR" ]]; then
+  rm -rf "\$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
+fi
+if [[ ! -d "\$APP_SUPPORT_DIR" ]]; then
+  SUPPORT_REMOVED=1
 fi
 
-rm -rf "\$APP_SUPPORT_DIR"
-rm -f "\$0"
-INNER
+if [[ -d "\$APP_BUNDLE_PATH" ]]; then
+  osascript -e 'tell application "Finder" to delete POSIX file "'"'\$APP_BUNDLE_PATH'"'"'' >>"\$UNINSTALL_LOG" 2>&1 || true
+  sleep 2
+fi
 
-chmod +x "\$TMP_SCRIPT"
-nohup "\$TMP_SCRIPT" >/dev/null 2>&1 &
+if [[ -d "\$APP_BUNDLE_PATH" ]]; then
+  rm -rf "\$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG" 2>&1 || true
+fi
+
+if [[ ! -d "\$APP_BUNDLE_PATH" ]]; then
+  APP_REMOVED=1
+fi
+
+if [[ "\$SUPPORT_REMOVED" == "1" && "\$APP_REMOVED" == "1" ]]; then
+  show_result "EasyRob was uninstalled successfully." note
+  exit 0
+fi
+
+if [[ "\$SUPPORT_REMOVED" == "1" && "\$APP_REMOVED" != "1" ]]; then
+  show_result "EasyRob removed its private files, but EasyRob.app is still present.\n\nPlease delete /Applications/EasyRob.app manually." caution
+  exit 1
+fi
+
+show_result "EasyRob could not be fully uninstalled.\n\nCheck this log for details:\n\$UNINSTALL_LOG" stop
+exit 1
 EOF
 
   cat >"$UNINSTALL_COMMAND" <<EOF
