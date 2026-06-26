@@ -37,6 +37,12 @@ The `.deb` installs launchers and static assets system-wide. The private runtime
 ~/.local/share/easyrob
 ```
 
+Remove the system package with `sudo apt remove easyrob`. Remove the per-user runtime with:
+
+```bash
+easyrob --uninstall-user-data
+```
+
 For full details, see:
 
 - [Linux packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-linux.md)

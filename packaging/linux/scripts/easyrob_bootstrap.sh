@@ -7,6 +7,10 @@ export EASYROB_ENV_FILE="${EASYROB_ENV_FILE:-$EASYROB_SCRIPT_ROOT/shared/env.yam
 export EASYROB_ICON_SOURCE="${EASYROB_ICON_SOURCE:-/usr/share/pixmaps/easyrob.ico}"
 export EASYROB_BUNDLED_MICROMAMBA="${EASYROB_BUNDLED_MICROMAMBA:-$EASYROB_SCRIPT_ROOT/bootstrap/micromamba}"
 
+if [[ "${1:-}" == "--uninstall-user-data" ]]; then
+  exec "$EASYROB_SCRIPT_ROOT/scripts/uninstall_easyrob.sh"
+fi
+
 if [[ ! -d "$EASYROB_INSTALL_ROOT/envs/easyrob" ]]; then
   "$EASYROB_SCRIPT_ROOT/scripts/install_easyrob.sh"
 fi

@@ -50,6 +50,11 @@ Recommended for Ubuntu and Debian-based distributions.
 
 The first launch creates EasyRob's private runtime under `~/.local/share/easyrob` and may take a few minutes.
 
+To fully remove EasyRob on Linux:
+
+* Remove the system package with `sudo apt remove easyrob`
+* Remove the private user runtime with `easyrob --uninstall-user-data`
+
 ---
 
 ## 🍎 macOS

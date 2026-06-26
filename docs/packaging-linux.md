@@ -102,10 +102,10 @@ Remove the package:
 sudo dpkg --purge easyrob
 ```
 
-Remove the per-user runtime manually if you also want to remove downloaded packages, logs, and environments:
+Remove the per-user runtime if you also want to remove downloaded packages, logs, and environments:
 
 ```bash
-rm -rf ~/.local/share/easyrob ~/.local/state/easyrob
+easyrob --uninstall-user-data
 ```
 
 ## When to update Linux packaging
