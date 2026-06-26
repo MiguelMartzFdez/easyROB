@@ -98,7 +98,7 @@ EasyRob also creates a reusable macOS uninstaller here:
 You can double-click that file, or run:
 
 ```bash
-bash ~/Library/Application\ Support/EasyRob/uninstall_easyrob.sh
+bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
 ```
   
 ---

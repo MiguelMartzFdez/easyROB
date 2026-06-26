@@ -160,7 +160,7 @@ EasyRob also generates:
 The `.command` file can be opened with double click. The shell version can be run with:
 
 ```bash
-bash ~/Library/Application\ Support/EasyRob/uninstall_easyrob.sh
+bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
 ```
 
 ## Testing focus
