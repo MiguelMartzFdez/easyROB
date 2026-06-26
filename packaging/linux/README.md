@@ -37,6 +37,8 @@ The `.deb` installs launchers and static assets system-wide. The private runtime
 ~/.local/share/easyrob
 ```
 
+The first-launch runtime, environment, bundled Micromamba copy, and logs all live under that folder.
+
 Remove the system package with `sudo apt remove easyrob`. Remove the per-user runtime with:
 
 ```bash

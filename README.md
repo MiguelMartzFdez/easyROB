@@ -48,7 +48,7 @@ Recommended for Ubuntu and Debian-based distributions.
    * Applications Menu
    * Desktop Shortcut (if available)
 
-The first launch creates EasyRob's private runtime under `~/.local/share/easyrob` and may take a few minutes.
+The first launch creates EasyRob's private runtime under `~/.local/share/easyrob` and may take a few minutes. The environment, package downloads, logs, and runtime files live under that folder.
 
 To fully remove EasyRob on Linux:
 

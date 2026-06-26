@@ -85,7 +85,6 @@ Runtime installation and launch logs are written under:
 
 ```text
 ~/.local/share/easyrob/logs
-~/.local/state/easyrob/logs
 ```
 
 ## User removal
