@@ -52,7 +52,7 @@ EasyRob/
 
 - Windows: `dist/windows/easyrob-<VERSION>.exe`
 - Linux: `dist/linux/easyrob-<VERSION>.deb`
-- macOS: `dist/macos/EasyRob.app` and `dist/macos/easyrob-<VERSION>.zip`
+- macOS: `dist/macos/easyrob-<VERSION>.dmg`
 
 ## Build hosts
 
@@ -80,7 +80,7 @@ The repository, dependency source, and packaging structure are shared, but the f
 - runtime source: `packaging/shared/env.yaml`
 - build entry point: `./packaging/linux/build-deb.sh`
 - build host: Linux with `dpkg-deb`
-- end-user result: EasyRob appears in the applications menu and can also create a desktop shortcut
+- end-user result: EasyRob appears in the applications menu and creates its private runtime on first launch
 
 ### macOS
 

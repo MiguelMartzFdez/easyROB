@@ -45,8 +45,7 @@ If dependencies change, edit that file first.
 - `packaging/linux/build-deb.sh`
 - `packaging/linux/assets/micromamba-linux-64`
 - `packaging/linux/scripts/easyrob_bootstrap.sh`
-- `packaging/linux/scripts/install_easyrob_system.sh`
-- `packaging/linux/scripts/install_desktop_shortcut_system.sh`
+- `packaging/linux/scripts/install_easyrob.sh`
 - `packaging/linux/scripts/launch_easyrob.sh`
 - `packaging/linux/scripts/uninstall_easyrob.sh`
 
@@ -54,9 +53,14 @@ If dependencies change, edit that file first.
 
 1. Installs the EasyRob launcher under `/usr/bin/easyrob`
 2. Installs the shared environment definition under `/usr/lib/easyrob/shared/env.yaml`
-3. Uses bundled micromamba to create the runtime under `/opt/easyrob`
-4. Creates an applications menu entry
-5. Attempts to create a desktop shortcut for the installing user
+3. Installs the bundled Micromamba bootstrap under `/usr/lib/easyrob/bootstrap/micromamba`
+4. Creates an applications menu entry under `/usr/share/applications`
+
+The `.deb` does not create the Conda/Python runtime during package installation. The runtime is created on first launch in the current user's profile:
+
+```text
+~/.local/share/easyrob
+```
 
 ## User installation
 
@@ -67,6 +71,8 @@ If dependencies change, edit that file first.
 3. Install it with the system package installer
 4. Open **EasyRob** from the applications menu or desktop shortcut
 
+The first launch creates the private runtime and may take a few minutes.
+
 ### Terminal install
 
 ```bash
@@ -75,10 +81,11 @@ sudo apt install ./easyrob-<VERSION>.deb
 
 ## Log location
 
-During package installation, logs are written under:
+Runtime installation and launch logs are written under:
 
 ```text
-/opt/easyrob/logs
+~/.local/share/easyrob/logs
+~/.local/state/easyrob/logs
 ```
 
 ## User removal
@@ -89,10 +96,16 @@ Remove the package:
 sudo dpkg -r easyrob
 ```
 
-Remove the package and the runtime under `/opt/easyrob`:
+Remove the package:
 
 ```bash
 sudo dpkg --purge easyrob
+```
+
+Remove the per-user runtime manually if you also want to remove downloaded packages, logs, and environments:
+
+```bash
+rm -rf ~/.local/share/easyrob ~/.local/state/easyrob
 ```
 
 ## When to update Linux packaging

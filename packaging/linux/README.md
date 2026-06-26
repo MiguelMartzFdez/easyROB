@@ -29,8 +29,13 @@ packaging/shared/env.yaml
 
 - `build-deb.sh`: builds the `.deb`
 - `assets/`: bundled Linux packaging assets
-- `scripts/`: install, launch, shortcut, and uninstall logic
-- `source/`: Linux packaging notes
+- `scripts/`: first-launch install, launch, shortcut, and uninstall logic
+
+The `.deb` installs launchers and static assets system-wide. The private runtime is created on first launch under the current user's profile:
+
+```text
+~/.local/share/easyrob
+```
 
 For full details, see:
 
