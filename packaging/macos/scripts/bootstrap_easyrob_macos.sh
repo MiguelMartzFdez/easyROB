@@ -31,7 +31,6 @@ RUNTIME_LOG="$LOG_DIR/runtime.log"
 RUNTIME_ERR_LOG="$LOG_DIR/runtime-error.log"
 LOCK_DIR="$CACHE_DIR/launch.lock"
 ENV_PYTHON="$ENV_PREFIX/bin/python"
-ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 NOTICE_PID=""
 
 ensure_directories() {
@@ -337,19 +336,13 @@ install_runtime() {
 }
 
 launch_easyrob() {
-  local launcher_python
-
   runtime_log "Launching EasyRob from $ENV_PREFIX"
   runtime_log "Using working directory at $WORK_DIR"
 
-  launcher_python="$ENV_PYTHON"
-  if [[ -x "$ENV_PYTHONW" ]]; then
-    launcher_python="$ENV_PYTHONW"
-  fi
-  runtime_log "Using Python interpreter at $launcher_python"
+  runtime_log "Using Python interpreter at $ENV_PYTHON"
 
-  if [[ ! -x "$launcher_python" ]]; then
-    echo "EasyRob Python launcher not found at $launcher_python" >>"$RUNTIME_ERR_LOG"
+  if [[ ! -x "$ENV_PYTHON" ]]; then
+    echo "EasyRob Python launcher not found at $ENV_PYTHON" >>"$RUNTIME_ERR_LOG"
     return 1
   fi
 
@@ -358,7 +351,7 @@ launch_easyrob() {
   stop_notice
   rm -rf "$LOCK_DIR"
   trap - EXIT
-  exec "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
+  exec "$ENV_PYTHON" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
 }
 
