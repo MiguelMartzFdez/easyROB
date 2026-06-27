@@ -102,11 +102,6 @@ if [[ ! -d "\$APP_SUPPORT_DIR" ]]; then
 fi
 
 if [[ -d "\$APP_BUNDLE_PATH" ]]; then
-  osascript -e 'tell application "Finder" to delete POSIX file "'"'\$APP_BUNDLE_PATH'"'"'' >>"\$UNINSTALL_LOG" 2>&1 || true
-  sleep 2
-fi
-
-if [[ -d "\$APP_BUNDLE_PATH" ]]; then
   rm -rf "\$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG" 2>&1 || true
 fi
 
