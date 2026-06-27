@@ -174,6 +174,7 @@ bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
 ```
 
 The uninstaller verifies whether both the private Application Support directory and `EasyRob.app` were actually removed. If macOS blocks removal of the app bundle, it reports that explicitly and falls back to a manual delete of `/Applications/EasyRob.app`.
+It also verifies the expected EasyRob paths before running any recursive delete, so it only removes the fixed EasyRob locations and aborts if those paths are unexpected.
 
 ## Testing focus
 

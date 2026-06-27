@@ -70,6 +70,9 @@ set -euo pipefail
 APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
 APP_RUNTIME_DIR="$APP_RUNTIME_DIR"
 APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
+EXPECTED_APP_SUPPORT_DIR="$HOME/Library/Application Support/EasyRob"
+EXPECTED_APP_RUNTIME_DIR="$HOME/Library/ApplicationSupport/EasyRob"
+EXPECTED_APP_BUNDLE_PATH="/Applications/EasyRob.app"
 UNINSTALL_LOG="\${TMPDIR:-/tmp}/easyrob-uninstall.log"
 
 confirm_uninstall() {
@@ -84,6 +87,19 @@ show_result() {
   osascript -e "display dialog \\"\$message\\" buttons {\\"OK\\"} default button \\"OK\\" with icon \$icon" >/dev/null 2>&1 || true
 }
 
+abort_if_unexpected_path() {
+  local actual_path="\$1"
+  local expected_path="\$2"
+  local label="\$3"
+
+  if [[ "\$actual_path" != "\$expected_path" ]]; then
+    echo "Unexpected \$label path: \$actual_path" >>"\$UNINSTALL_LOG"
+    echo "Expected: \$expected_path" >>"\$UNINSTALL_LOG"
+    show_result "EasyRob uninstall was stopped because the \$label path was unexpected.\n\nCheck this log for details:\n\$UNINSTALL_LOG" stop
+    exit 1
+  fi
+}
+
 if [[ "\$(confirm_uninstall)" != "Uninstall" ]]; then
   exit 0
 fi
@@ -95,6 +111,13 @@ echo "Starting EasyRob uninstall" >>"\$UNINSTALL_LOG"
 echo "App bundle: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
 echo "Support dir: \$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
 echo "Runtime dir: \$APP_RUNTIME_DIR" >>"\$UNINSTALL_LOG"
+
+abort_if_unexpected_path "\$APP_SUPPORT_DIR" "\$EXPECTED_APP_SUPPORT_DIR" "Application Support"
+abort_if_unexpected_path "\$APP_RUNTIME_DIR" "\$EXPECTED_APP_RUNTIME_DIR" "runtime"
+
+if [[ -d "\$APP_BUNDLE_PATH" ]]; then
+  abort_if_unexpected_path "\$APP_BUNDLE_PATH" "\$EXPECTED_APP_BUNDLE_PATH" "app bundle"
+fi
 
 osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
 sleep 2

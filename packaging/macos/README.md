@@ -49,6 +49,7 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 - the macOS workflow uses the private workspace under `~/Library/Application Support/EasyRob/workspace`
 - first launch also creates `uninstall_easyrob.command` and `uninstall_easyrob.sh` in `~/Library/Application Support/EasyRob`
 - the uninstaller verifies whether the app bundle was removed and tells the user if `/Applications/EasyRob.app` must be deleted manually
+- the uninstaller also verifies its target paths before any recursive delete
 - later launches reuse that installed runtime
 
 Compatibility target:
