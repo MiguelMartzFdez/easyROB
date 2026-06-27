@@ -8,13 +8,13 @@ SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
 APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
-APP_SUPPORT_ALIAS_BASE="${HOME}/Library/ApplicationSupport"
-APP_SUPPORT_ALIAS_DIR="$APP_SUPPORT_ALIAS_BASE/EasyRob"
+APP_RUNTIME_BASE="${HOME}/Library/ApplicationSupport"
+APP_RUNTIME_DIR="$APP_RUNTIME_BASE/EasyRob"
 WORK_DIR="$APP_SUPPORT_DIR/workspace"
-MICROMAMBA_DIR="$APP_SUPPORT_ALIAS_DIR/micromamba"
+MICROMAMBA_DIR="$APP_RUNTIME_DIR/micromamba"
 BIN_DIR="$MICROMAMBA_DIR/bin"
 MICROMAMBA_BIN="$BIN_DIR/micromamba"
-ENV_PREFIX="$APP_SUPPORT_ALIAS_DIR/env"
+ENV_PREFIX="$APP_RUNTIME_DIR/env"
 CACHE_DIR="$APP_SUPPORT_DIR/cache"
 LOG_DIR="$APP_SUPPORT_DIR/logs"
 MAMBA_ROOT_PREFIX="$MICROMAMBA_DIR/root"
@@ -39,27 +39,15 @@ NOTICE_PID=""
 
 ensure_directories() {
   mkdir -p \
-    "$APP_SUPPORT_ALIAS_BASE" \
+    "$APP_RUNTIME_BASE" \
     "$APP_SUPPORT_DIR" \
     "$WORK_DIR" \
     "$CACHE_DIR" \
     "$LOG_DIR"
-  ensure_support_alias
   mkdir -p \
+    "$APP_RUNTIME_DIR" \
     "$MICROMAMBA_DIR" \
     "$BIN_DIR"
-}
-
-ensure_support_alias() {
-  if [[ -L "$APP_SUPPORT_ALIAS_DIR" ]]; then
-    return
-  fi
-
-  if [[ -e "$APP_SUPPORT_ALIAS_DIR" && ! -L "$APP_SUPPORT_ALIAS_DIR" ]]; then
-    rm -rf "$APP_SUPPORT_ALIAS_DIR"
-  fi
-
-  ln -sfn "$APP_SUPPORT_DIR" "$APP_SUPPORT_ALIAS_DIR"
 }
 
 write_workspace_readme() {
@@ -80,7 +68,7 @@ write_uninstallers() {
 set -euo pipefail
 
 APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
-APP_SUPPORT_ALIAS_DIR="$APP_SUPPORT_ALIAS_DIR"
+APP_RUNTIME_DIR="$APP_RUNTIME_DIR"
 APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
 UNINSTALL_LOG="\${TMPDIR:-/tmp}/easyrob-uninstall.log"
 
@@ -106,7 +94,7 @@ cd "\$HOME"
 echo "Starting EasyRob uninstall" >>"\$UNINSTALL_LOG"
 echo "App bundle: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
 echo "Support dir: \$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
-echo "Alias dir: \$APP_SUPPORT_ALIAS_DIR" >>"\$UNINSTALL_LOG"
+echo "Runtime dir: \$APP_RUNTIME_DIR" >>"\$UNINSTALL_LOG"
 
 osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
 sleep 2
@@ -117,9 +105,14 @@ APP_REMOVED=0
 if [[ -d "\$APP_SUPPORT_DIR" ]]; then
   rm -rf "\$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
 fi
-rm -f "\$APP_SUPPORT_ALIAS_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
+if [[ -d "\$APP_RUNTIME_DIR" ]]; then
+  rm -rf "\$APP_RUNTIME_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
+fi
 if [[ ! -d "\$APP_SUPPORT_DIR" ]]; then
   SUPPORT_REMOVED=1
+fi
+if [[ -d "\$APP_RUNTIME_DIR" ]]; then
+  SUPPORT_REMOVED=0
 fi
 
 if [[ -d "\$APP_BUNDLE_PATH" ]]; then
@@ -203,9 +196,9 @@ schedule_notice_stop() {
 }
 
 update_notice() {
-  local percent="$1"
+  local step="$1"
   local message="$2"
-  start_notice "EasyRob setup in progress ($percent%).\n\n$message\n\nPlease keep this window open."
+  start_notice "EasyRob setup in progress.\n\nStep $step of 6:\n$message\n\nPlease keep this window open."
 }
 
 cleanup() {
@@ -358,45 +351,45 @@ install_runtime() {
   macos_version="$(sw_vers -productVersion 2>/dev/null || true)"
 
   log "Preparing EasyRob runtime at $APP_SUPPORT_DIR"
-  log "Runtime alias: $APP_SUPPORT_ALIAS_DIR"
+  log "Runtime directory: $APP_RUNTIME_DIR"
   log "Workspace: $WORK_DIR"
   log "macOS version: $macos_version"
   log "Machine architecture: $machine_arch"
   log "Micromamba platform: $platform"
 
-  update_notice 15 "Creating application folders."
+  update_notice 1 "Creating application folders."
   ensure_directories
   write_workspace_readme
   write_uninstallers
 
-  update_notice 30 "Copying bundled Micromamba."
+  update_notice 2 "Copying bundled Micromamba."
   copy_bundled_micromamba || return 1
 
-  update_notice 45 "Preparing the private environment definition."
+  update_notice 3 "Preparing the private environment definition."
   prepare_split_env_files
 
-  update_notice 60 "Cleaning the previous private runtime."
+  update_notice 4 "Cleaning the previous private runtime."
   remove_previous_runtime
   mkdir -p "$MAMBA_ROOT_PREFIX"
 
-  update_notice 75 "Creating the private EasyRob environment."
+  update_notice 5 "Creating the private EasyRob environment."
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
   run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$CONDA_ENV_FILE" || return 1
   clear_execution_attributes "$ENV_PREFIX"
 
-  update_notice 85 "Installing the macOS Python application launcher."
+  update_notice 6 "Installing the macOS Python application launcher."
   run_install_command "$MICROMAMBA_BIN" install -y -p "$ENV_PREFIX" python.app || return 1
   clear_execution_attributes "$ENV_PREFIX"
 
   if [[ -s "$PIP_REQUIREMENTS_FILE" ]]; then
-    update_notice 92 "Installing Python packages."
+    update_notice 6 "Installing Python packages."
     configure_build_environment
     run_install_command "$ENV_PYTHON" -m pip install -r "$PIP_REQUIREMENTS_FILE" || return 1
     clear_execution_attributes "$ENV_PREFIX"
   fi
 
-  update_notice 98 "Validating the installed runtime."
+  update_notice 6 "Validating the installed runtime."
   validate_environment || return 1
 
   if [[ -f "$VERSION_FILE" ]]; then

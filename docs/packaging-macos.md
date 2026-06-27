@@ -14,7 +14,8 @@ dist/macos/easyrob-<VERSION>.dmg
 - no runtime state is stored inside the `.app` bundle
 - no `sudo` is required
 - no direct dependency on Desktop, Downloads, or Documents
-- all persistent state lives under `~/Library/Application Support/EasyRob`
+- user-facing state lives under `~/Library/Application Support/EasyRob`
+- the private `pythonw` runtime lives under `~/Library/ApplicationSupport/EasyRob`
 
 ## Compatibility target
 
@@ -91,7 +92,7 @@ The build now fails if any of those files are missing.
 
 ## Runtime layout
 
-All macOS state lives under:
+User-facing macOS state lives under:
 
 ```text
 ~/Library/Application Support/EasyRob
@@ -103,37 +104,42 @@ Current layout:
 Application Support/
 └── EasyRob/
     ├── workspace/
-    ├── micromamba/
-    ├── env/
     ├── cache/
     └── logs/
+```
+
+Private runtime root used by `pythonw`:
+
+```text
+~/Library/ApplicationSupport/EasyRob
+├── micromamba/
+└── env/
 ```
 
 Notes:
 
 - `workspace/` is the only supported place for CSV files and project folders in the current macOS workflow
-- `micromamba/` stores the copied Micromamba binary and its root prefix
-- `env/` stores the private EasyRob environment
 - `cache/` stores generated metadata such as version markers and split dependency files
 - `logs/` stores installation and runtime logs
 - `uninstall_easyrob.command` and `uninstall_easyrob.sh` provide a simple user-level uninstall entry point
-- the launcher also creates an internal alias at `~/Library/ApplicationSupport/EasyRob` so macOS GUI helpers such as `pythonw` avoid the space in `Application Support`
+- `~/Library/ApplicationSupport/EasyRob` stores the copied Micromamba binary, root prefix, and private environment used by `pythonw`
 
 ## First-launch behavior
 
 On first launch, the bootstrapper:
 
-1. Creates the full directory structure under `~/Library/Application Support/EasyRob`
-2. Copies the correct bundled Micromamba binary from the app resources into `micromamba/bin/micromamba`
-3. Runs `chmod +x` on the copied binary
-4. Clears quarantine attributes on the copied binary and generated runtime directories
-5. Sets `MAMBA_ROOT_PREFIX` explicitly inside the private Application Support tree
-6. Creates the environment with absolute paths
-7. Installs pip packages from the shared environment definition
-8. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
-9. Writes a reusable uninstall script into `~/Library/Application Support/EasyRob`
-10. Shows an installation-complete message and exits
-11. Launches EasyRob from the private environment with the workspace as the working directory on the next open
+1. Creates the user-facing directory structure under `~/Library/Application Support/EasyRob`
+2. Creates the private runtime root under `~/Library/ApplicationSupport/EasyRob`
+3. Copies the correct bundled Micromamba binary from the app resources into `micromamba/bin/micromamba`
+4. Runs `chmod +x` on the copied binary
+5. Clears quarantine attributes on the copied binary and generated runtime directories
+6. Sets `MAMBA_ROOT_PREFIX` explicitly inside the private runtime tree
+7. Creates the environment with absolute paths
+8. Installs pip packages from the shared environment definition
+9. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
+10. Writes a reusable uninstall script into `~/Library/Application Support/EasyRob`
+11. Shows an installation-complete message and exits
+12. Launches EasyRob from the private environment with the workspace as the working directory on the next open
 
 ## Protected-folder policy
 
@@ -152,6 +158,7 @@ To remove EasyRob on macOS:
 
 1. Delete `EasyRob.app` from `Applications`
 2. Delete `~/Library/Application Support/EasyRob`
+3. Delete `~/Library/ApplicationSupport/EasyRob`
 
 EasyRob also generates:
 

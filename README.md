@@ -77,6 +77,7 @@ Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the m
 The private macOS runtime is stored under `~/Library/Application Support/EasyRob`.
 EasyRob does not require `sudo` on macOS and does not modify `EasyRob.app` after it has been copied to `Applications`.
 On macOS, the first open installs the private runtime and then exits. Open EasyRob a second time to start the GUI.
+The visible workspace, logs, and uninstall helpers stay under `~/Library/Application Support/EasyRob`, while the private `pythonw` runtime is created under `~/Library/ApplicationSupport/EasyRob` to avoid path issues with spaces.
 For now, macOS users should work only inside the private workspace created here:
 
 ```text
@@ -89,6 +90,7 @@ To fully remove EasyRob on macOS:
 
 * Delete `EasyRob.app` from `Applications`
 * Delete `~/Library/Application Support/EasyRob`
+* Delete `~/Library/ApplicationSupport/EasyRob`
 
 EasyRob also creates a reusable macOS uninstaller here:
 
