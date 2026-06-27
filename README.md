@@ -69,7 +69,7 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
    * Applications
    * Launchpad
    * Spotlight
-   * 
+     
 For now, macOS users should work only inside the private workspace created here:
 
 ```text
