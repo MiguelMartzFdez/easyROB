@@ -8,11 +8,13 @@ SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
 APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
+APP_SUPPORT_ALIAS_BASE="${HOME}/Library/ApplicationSupport"
+APP_SUPPORT_ALIAS_DIR="$APP_SUPPORT_ALIAS_BASE/EasyRob"
 WORK_DIR="$APP_SUPPORT_DIR/workspace"
-MICROMAMBA_DIR="$APP_SUPPORT_DIR/micromamba"
+MICROMAMBA_DIR="$APP_SUPPORT_ALIAS_DIR/micromamba"
 BIN_DIR="$MICROMAMBA_DIR/bin"
 MICROMAMBA_BIN="$BIN_DIR/micromamba"
-ENV_PREFIX="$APP_SUPPORT_DIR/env"
+ENV_PREFIX="$APP_SUPPORT_ALIAS_DIR/env"
 CACHE_DIR="$APP_SUPPORT_DIR/cache"
 LOG_DIR="$APP_SUPPORT_DIR/logs"
 MAMBA_ROOT_PREFIX="$MICROMAMBA_DIR/root"
@@ -31,17 +33,33 @@ RUNTIME_LOG="$LOG_DIR/runtime.log"
 RUNTIME_ERR_LOG="$LOG_DIR/runtime-error.log"
 LOCK_DIR="$CACHE_DIR/launch.lock"
 ENV_PYTHON="$ENV_PREFIX/bin/python"
+ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 ENV_PYTHON_APP="$ENV_PREFIX/python.app/Contents/MacOS/python"
 NOTICE_PID=""
 
 ensure_directories() {
   mkdir -p \
+    "$APP_SUPPORT_ALIAS_BASE" \
     "$APP_SUPPORT_DIR" \
     "$WORK_DIR" \
-    "$MICROMAMBA_DIR" \
-    "$BIN_DIR" \
     "$CACHE_DIR" \
     "$LOG_DIR"
+  ensure_support_alias
+  mkdir -p \
+    "$MICROMAMBA_DIR" \
+    "$BIN_DIR"
+}
+
+ensure_support_alias() {
+  if [[ -L "$APP_SUPPORT_ALIAS_DIR" ]]; then
+    return
+  fi
+
+  if [[ -e "$APP_SUPPORT_ALIAS_DIR" && ! -L "$APP_SUPPORT_ALIAS_DIR" ]]; then
+    rm -rf "$APP_SUPPORT_ALIAS_DIR"
+  fi
+
+  ln -sfn "$APP_SUPPORT_DIR" "$APP_SUPPORT_ALIAS_DIR"
 }
 
 write_workspace_readme() {
@@ -62,6 +80,7 @@ write_uninstallers() {
 set -euo pipefail
 
 APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
+APP_SUPPORT_ALIAS_DIR="$APP_SUPPORT_ALIAS_DIR"
 APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
 UNINSTALL_LOG="\${TMPDIR:-/tmp}/easyrob-uninstall.log"
 
@@ -87,6 +106,7 @@ cd "\$HOME"
 echo "Starting EasyRob uninstall" >>"\$UNINSTALL_LOG"
 echo "App bundle: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
 echo "Support dir: \$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
+echo "Alias dir: \$APP_SUPPORT_ALIAS_DIR" >>"\$UNINSTALL_LOG"
 
 osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
 sleep 2
@@ -97,6 +117,7 @@ APP_REMOVED=0
 if [[ -d "\$APP_SUPPORT_DIR" ]]; then
   rm -rf "\$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
 fi
+rm -f "\$APP_SUPPORT_ALIAS_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
 if [[ ! -d "\$APP_SUPPORT_DIR" ]]; then
   SUPPORT_REMOVED=1
 fi
@@ -337,6 +358,7 @@ install_runtime() {
   macos_version="$(sw_vers -productVersion 2>/dev/null || true)"
 
   log "Preparing EasyRob runtime at $APP_SUPPORT_DIR"
+  log "Runtime alias: $APP_SUPPORT_ALIAS_DIR"
   log "Workspace: $WORK_DIR"
   log "macOS version: $macos_version"
   log "Machine architecture: $machine_arch"
@@ -389,7 +411,9 @@ launch_easyrob() {
   runtime_log "Using working directory at $WORK_DIR"
 
   launcher_python="$ENV_PYTHON"
-  if [[ -x "$ENV_PYTHON_APP" ]]; then
+  if [[ -x "$ENV_PYTHONW" ]]; then
+    launcher_python="$ENV_PYTHONW"
+  elif [[ -x "$ENV_PYTHON_APP" ]]; then
     launcher_python="$ENV_PYTHON_APP"
   fi
   runtime_log "Using Python interpreter at $launcher_python"

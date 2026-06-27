@@ -117,6 +117,7 @@ Notes:
 - `cache/` stores generated metadata such as version markers and split dependency files
 - `logs/` stores installation and runtime logs
 - `uninstall_easyrob.command` and `uninstall_easyrob.sh` provide a simple user-level uninstall entry point
+- the launcher also creates an internal alias at `~/Library/ApplicationSupport/EasyRob` so macOS GUI helpers such as `pythonw` avoid the space in `Application Support`
 
 ## First-launch behavior
 
