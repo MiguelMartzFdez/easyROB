@@ -44,10 +44,9 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 - `EasyRob.app` remains immutable after it is copied to `Applications`
 - first launch copies the bundled Micromamba binary and creates the environment
 - first launch finishes installation and exits without opening the GUI automatically
-- the runtime is stored under `~/Library/Application Support/EasyRob`
-- the private `pythonw` runtime root is stored under `~/Library/ApplicationSupport/EasyRob`
-- the macOS workflow uses the private workspace under `~/Library/Application Support/EasyRob/workspace`
-- first launch also creates `uninstall_easyrob.command` and `uninstall_easyrob.sh` in `~/Library/Application Support/EasyRob`
+- the runtime is stored under `~/Library/ApplicationSupport/EasyRob`
+- the macOS workflow uses the private workspace under `~/Library/ApplicationSupport/EasyRob/workspace`
+- first launch also creates `uninstall_easyrob.command` and `uninstall_easyrob.sh` in `~/Library/ApplicationSupport/EasyRob`
 - the uninstaller verifies whether the app bundle was removed and tells the user if `/Applications/EasyRob.app` must be deleted manually
 - the uninstaller also verifies its target paths before any recursive delete
 - later launches reuse that installed runtime

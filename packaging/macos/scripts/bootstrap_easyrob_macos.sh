@@ -7,14 +7,13 @@ RESOURCES_DIR="$APP_ROOT/Resources"
 SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 
-APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
-APP_RUNTIME_BASE="${HOME}/Library/ApplicationSupport"
-APP_RUNTIME_DIR="$APP_RUNTIME_BASE/EasyRob"
+LEGACY_APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
+APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
 WORK_DIR="$APP_SUPPORT_DIR/workspace"
-MICROMAMBA_DIR="$APP_RUNTIME_DIR/micromamba"
+MICROMAMBA_DIR="$APP_SUPPORT_DIR/micromamba"
 BIN_DIR="$MICROMAMBA_DIR/bin"
 MICROMAMBA_BIN="$BIN_DIR/micromamba"
-ENV_PREFIX="$APP_RUNTIME_DIR/env"
+ENV_PREFIX="$APP_SUPPORT_DIR/env"
 CACHE_DIR="$APP_SUPPORT_DIR/cache"
 LOG_DIR="$APP_SUPPORT_DIR/logs"
 MAMBA_ROOT_PREFIX="$MICROMAMBA_DIR/root"
@@ -37,15 +36,21 @@ ENV_PYTHONW="$ENV_PREFIX/bin/pythonw"
 ENV_PYTHON_APP="$ENV_PREFIX/python.app/Contents/MacOS/python"
 NOTICE_PID=""
 
+migrate_legacy_support_dir() {
+  if [[ -d "$LEGACY_APP_SUPPORT_DIR" && ! -e "$APP_SUPPORT_DIR" ]]; then
+    mkdir -p "$(dirname "$APP_SUPPORT_DIR")"
+    mv "$LEGACY_APP_SUPPORT_DIR" "$APP_SUPPORT_DIR"
+  fi
+}
+
 ensure_directories() {
+  migrate_legacy_support_dir
   mkdir -p \
-    "$APP_RUNTIME_BASE" \
     "$APP_SUPPORT_DIR" \
     "$WORK_DIR" \
     "$CACHE_DIR" \
     "$LOG_DIR"
   mkdir -p \
-    "$APP_RUNTIME_DIR" \
     "$MICROMAMBA_DIR" \
     "$BIN_DIR"
 }
@@ -68,11 +73,9 @@ write_uninstallers() {
 set -euo pipefail
 
 APP_SUPPORT_DIR="$APP_SUPPORT_DIR"
-APP_RUNTIME_DIR="$APP_RUNTIME_DIR"
+LEGACY_APP_SUPPORT_DIR="$LEGACY_APP_SUPPORT_DIR"
 APP_BUNDLE_PATH="$APP_BUNDLE_PATH"
-EXPECTED_APP_SUPPORT_DIR="$HOME/Library/Application Support/EasyRob"
-EXPECTED_APP_RUNTIME_DIR="$HOME/Library/ApplicationSupport/EasyRob"
-EXPECTED_APP_BUNDLE_PATH="/Applications/EasyRob.app"
+EXPECTED_APP_SUPPORT_DIR="$HOME/Library/ApplicationSupport/EasyRob"
 UNINSTALL_LOG="\${TMPDIR:-/tmp}/easyrob-uninstall.log"
 
 confirm_uninstall() {
@@ -110,13 +113,27 @@ cd "\$HOME"
 echo "Starting EasyRob uninstall" >>"\$UNINSTALL_LOG"
 echo "App bundle: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
 echo "Support dir: \$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
-echo "Runtime dir: \$APP_RUNTIME_DIR" >>"\$UNINSTALL_LOG"
+echo "Legacy support dir: \$LEGACY_APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
 
 abort_if_unexpected_path "\$APP_SUPPORT_DIR" "\$EXPECTED_APP_SUPPORT_DIR" "Application Support"
-abort_if_unexpected_path "\$APP_RUNTIME_DIR" "\$EXPECTED_APP_RUNTIME_DIR" "runtime"
+case "\$APP_BUNDLE_PATH" in
+  */EasyRob.app) ;;
+  *)
+    echo "Unexpected app bundle path: \$APP_BUNDLE_PATH" >>"\$UNINSTALL_LOG"
+    show_result "EasyRob uninstall was stopped because the app bundle path was unexpected.\n\nCheck this log for details:\n\$UNINSTALL_LOG" stop
+    exit 1
+    ;;
+esac
 
-if [[ -d "\$APP_BUNDLE_PATH" ]]; then
-  abort_if_unexpected_path "\$APP_BUNDLE_PATH" "\$EXPECTED_APP_BUNDLE_PATH" "app bundle"
+if [[ -d "\$LEGACY_APP_SUPPORT_DIR" && "\$LEGACY_APP_SUPPORT_DIR" != "\$APP_SUPPORT_DIR" ]]; then
+  case "\$LEGACY_APP_SUPPORT_DIR" in
+    "$HOME/Library/Application Support/EasyRob") ;;
+    *)
+      echo "Unexpected legacy support path: \$LEGACY_APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG"
+      show_result "EasyRob uninstall was stopped because the legacy support path was unexpected.\n\nCheck this log for details:\n\$UNINSTALL_LOG" stop
+      exit 1
+      ;;
+  esac
 fi
 
 osascript -e 'tell application id "com.thealegregroup.easyrob" to quit' >/dev/null 2>&1 || true
@@ -128,14 +145,11 @@ APP_REMOVED=0
 if [[ -d "\$APP_SUPPORT_DIR" ]]; then
   rm -rf "\$APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
 fi
-if [[ -d "\$APP_RUNTIME_DIR" ]]; then
-  rm -rf "\$APP_RUNTIME_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
+if [[ -d "\$LEGACY_APP_SUPPORT_DIR" && "\$LEGACY_APP_SUPPORT_DIR" != "\$APP_SUPPORT_DIR" ]]; then
+  rm -rf "\$LEGACY_APP_SUPPORT_DIR" >>"\$UNINSTALL_LOG" 2>&1 || true
 fi
 if [[ ! -d "\$APP_SUPPORT_DIR" ]]; then
   SUPPORT_REMOVED=1
-fi
-if [[ -d "\$APP_RUNTIME_DIR" ]]; then
-  SUPPORT_REMOVED=0
 fi
 
 if [[ -d "\$APP_BUNDLE_PATH" ]]; then
@@ -374,7 +388,6 @@ install_runtime() {
   macos_version="$(sw_vers -productVersion 2>/dev/null || true)"
 
   log "Preparing EasyRob runtime at $APP_SUPPORT_DIR"
-  log "Runtime directory: $APP_RUNTIME_DIR"
   log "Workspace: $WORK_DIR"
   log "macOS version: $macos_version"
   log "Machine architecture: $machine_arch"

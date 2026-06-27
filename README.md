@@ -74,14 +74,13 @@ If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMa
    * Spotlight
 
 Supported baseline: macOS 11 Big Sur or newer. The macOS bootstrap detects the machine architecture and prepares an Intel (`osx-64`) or Apple Silicon (`osx-arm64`) environment as needed.
-The private macOS runtime is stored under `~/Library/Application Support/EasyRob`.
+The private macOS runtime is stored under `~/Library/ApplicationSupport/EasyRob`.
 EasyRob does not require `sudo` on macOS and does not modify `EasyRob.app` after it has been copied to `Applications`.
 On macOS, the first open installs the private runtime and then exits. Open EasyRob a second time to start the GUI.
-The visible workspace, logs, and uninstall helpers stay under `~/Library/Application Support/EasyRob`, while the private `pythonw` runtime is created under `~/Library/ApplicationSupport/EasyRob` to avoid path issues with spaces.
 For now, macOS users should work only inside the private workspace created here:
 
 ```text
-~/Library/Application Support/EasyRob/workspace
+~/Library/ApplicationSupport/EasyRob/workspace
 ```
 
 Move CSV files and project folders into that workspace before running workflows.
@@ -89,19 +88,18 @@ Move CSV files and project folders into that workspace before running workflows.
 To fully remove EasyRob on macOS:
 
 * Delete `EasyRob.app` from `Applications`
-* Delete `~/Library/Application Support/EasyRob`
 * Delete `~/Library/ApplicationSupport/EasyRob`
 
 EasyRob also creates a reusable macOS uninstaller here:
 
 ```text
-~/Library/Application Support/EasyRob/uninstall_easyrob.command
+~/Library/ApplicationSupport/EasyRob/uninstall_easyrob.command
 ```
 
 You can double-click that file, or run:
 
 ```bash
-bash "$HOME/Library/Application Support/EasyRob/uninstall_easyrob.sh"
+bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 ```
 
 If macOS does not allow the script to remove `EasyRob.app` automatically, the uninstaller now shows a message and you can delete `/Applications/EasyRob.app` manually.
