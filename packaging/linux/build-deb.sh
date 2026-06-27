@@ -79,6 +79,7 @@ Icon=/usr/share/pixmaps/easyrob.ico
 Categories=Science;
 Keywords=EasyRob;ROBERT;chemistry;science;
 StartupNotify=true
+StartupWMClass=EasyRob
 NoDisplay=false
 EOF
 

@@ -155,6 +155,7 @@ Icon=$ICON_TARGET
 Categories=Science;
 Keywords=EasyRob;ROBERT;chemistry;science;
 StartupNotify=true
+StartupWMClass=EasyRob
 NoDisplay=false
 EOF
 
@@ -179,6 +180,7 @@ Icon=$ICON_TARGET
 Categories=Science;
 Keywords=EasyRob;ROBERT;chemistry;science;
 StartupNotify=true
+StartupWMClass=EasyRob
 NoDisplay=false
 EOF
     chmod 0755 "$DESKTOP_SHORTCUT_FILE"
