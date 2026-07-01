@@ -26,8 +26,6 @@ chmod +x packaging/linux/build-deb.sh
 - Linux
 - `dpkg-deb`
 - `install`
-- `grep`
-- `sed`
 - `packaging/linux/assets/micromamba-linux-64`
 
 ## Source of truth
@@ -36,9 +34,10 @@ Linux packaging is driven by:
 
 ```text
 packaging/shared/env.yaml
+packaging/shared/version.txt
 ```
 
-If dependencies change, edit that file first.
+If dependencies or the release version change, edit those shared files first.
 
 ## Relevant files
 

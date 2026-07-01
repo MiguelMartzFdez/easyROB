@@ -29,9 +29,10 @@ Windows packaging is driven by:
 
 ```text
 packaging/shared/env.yaml
+packaging/shared/version.txt
 ```
 
-If dependencies change, edit that file first.
+If dependencies or the release version change, edit those shared files first.
 
 ## Relevant files
 

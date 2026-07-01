@@ -1,5 +1,5 @@
 #define MyAppName "EasyRob"
-#define MyAppVersion "2.1.5"
+#define MyAppVersion "__EASYROB_VERSION__"
 #define MyAppPublisher "The Alegre Group"
 #define MyAppIcon "assets\Robert_icon.ico"
 #define MiniforgeInstaller "assets\Miniforge3-Windows-x86_64.exe"

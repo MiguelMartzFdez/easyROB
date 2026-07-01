@@ -28,6 +28,7 @@ Shared dependencies are still defined in:
 
 ```text
 packaging/shared/env.yaml
+packaging/shared/version.txt
 ```
 
 ## Relevant files
@@ -55,7 +56,6 @@ chmod +x packaging/macos/build.sh
 - `rsync`
 - `hdiutil`
 - `codesign`
-- `grep`
 - `sed`
 
 ## Required assets
@@ -70,7 +70,7 @@ The build now fails if any of those files are missing.
 
 ## What the build does
 
-1. Reads the EasyRob version from the Windows installer definition
+1. Reads the EasyRob version from `packaging/shared/version.txt`
 2. Stages `EasyRob.app`
 3. Copies `packaging/shared/env.yaml` into the app resources
 4. Copies the macOS bootstrap and launcher scripts

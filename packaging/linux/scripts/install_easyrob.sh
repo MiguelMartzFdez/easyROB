@@ -10,6 +10,7 @@ else
 fi
 SHARED_ROOT="${EASYROB_SHARED_ROOT:-$DEFAULT_SHARED_ROOT}"
 ENV_FILE="${EASYROB_ENV_FILE:-$SHARED_ROOT/env.yaml}"
+VERSION_FILE="${EASYROB_VERSION_FILE:-$SHARED_ROOT/version.txt}"
 if [[ -f /usr/share/pixmaps/easyrob.ico ]]; then
   DEFAULT_ICON_SOURCE="/usr/share/pixmaps/easyrob.ico"
 else
@@ -23,11 +24,14 @@ ENV_PREFIX="$INSTALL_ROOT/envs/easyrob"
 LOG_DIR="$INSTALL_ROOT/logs"
 SHARE_DIR="$INSTALL_ROOT/share"
 ICON_DIR="$SHARE_DIR/icons"
+CACHE_DIR="$INSTALL_ROOT/cache"
+MAMBA_ROOT_PREFIX="$INSTALL_ROOT/micromamba-root"
 ICON_SOURCE="${EASYROB_ICON_SOURCE:-$DEFAULT_ICON_SOURCE}"
 ICON_TARGET="$ICON_DIR/easyrob.ico"
 LAUNCHER_TARGET="$BIN_DIR/easyrob"
 APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 DESKTOP_FILE="$APPLICATIONS_DIR/easyrob.desktop"
+INSTALLED_VERSION_FILE="$CACHE_DIR/installed-version.txt"
 MICROMAMBA_TARBALL_URL="${MICROMAMBA_TARBALL_URL:-https://micro.mamba.pm/api/micromamba/linux-64/latest}"
 BOOTSTRAP_MICROMAMBA="${EASYROB_BUNDLED_MICROMAMBA:-}"
 SKIP_APPLICATION_DESKTOP="${EASYROB_SKIP_APPLICATION_DESKTOP:-0}"
@@ -73,7 +77,7 @@ else
   exit 1
 fi
 
-mkdir -p "$BIN_DIR" "$LOG_DIR" "$ICON_DIR"
+mkdir -p "$BIN_DIR" "$LOG_DIR" "$ICON_DIR" "$CACHE_DIR"
 if [[ "$SKIP_APPLICATION_DESKTOP" != "1" ]]; then
   mkdir -p "$APPLICATIONS_DIR"
 fi
@@ -107,6 +111,11 @@ trap cleanup EXIT
 log "Installing EasyRob into $INSTALL_ROOT"
 log "Logs: $INSTALL_LOG"
 
+if [[ -d "$ENV_PREFIX" || -d "$BIN_DIR" ]]; then
+  log "Removing previous EasyRob runtime..."
+  rm -rf "$ENV_PREFIX" "$BIN_DIR/micromamba" "$MAMBA_ROOT_PREFIX"
+fi
+
 if [[ -n "$BOOTSTRAP_MICROMAMBA" && -x "$BOOTSTRAP_MICROMAMBA" ]]; then
   log "Using bundled Micromamba bootstrap from $BOOTSTRAP_MICROMAMBA"
   install -m 0755 "$BOOTSTRAP_MICROMAMBA" "$BIN_DIR/micromamba"
@@ -133,8 +142,21 @@ fi
 log "Creating EasyRob environment..."
 run_and_log "$BIN_DIR/micromamba" create -y -p "$ENV_PREFIX" -f "$ENV_FILE"
 
+if [[ ! -x "$ENV_PREFIX/bin/python" ]]; then
+  echo "EasyRob Python interpreter was not created at $ENV_PREFIX/bin/python" >&2
+  exit 1
+fi
+
+log "Validating EasyRob environment..."
+run_and_log "$ENV_PREFIX/bin/python" -c "import robert"
+
 log "Installing launcher..."
 install -m 0755 "$SCRIPT_DIR/launch_easyrob.sh" "$LAUNCHER_TARGET"
+
+if [[ -f "$VERSION_FILE" ]]; then
+  tr -d '\r\n' < "$VERSION_FILE" > "$INSTALLED_VERSION_FILE"
+  log "Installed version: $(cat "$INSTALLED_VERSION_FILE")"
+fi
 
 if [[ -f "$ICON_SOURCE" ]]; then
   log "Installing icon..."

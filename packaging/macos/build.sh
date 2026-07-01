@@ -3,7 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WINDOWS_ISS="$REPO_ROOT/packaging/windows/EasyRob.iss"
 APP_TEMPLATE="$SCRIPT_DIR/app/EasyRob.app"
 BUILD_ROOT="$SCRIPT_DIR/.build"
 APP_BUILD_DIR="$BUILD_ROOT/EasyRob.app"
@@ -11,6 +10,7 @@ DMG_STAGE_DIR="$BUILD_ROOT/dmg-root"
 DIST_DIR="$REPO_ROOT/dist/macos"
 ASSETS_DIR="$SCRIPT_DIR/assets"
 ICON_SOURCE="$ASSETS_DIR/easyrob.icns"
+SHARED_VERSION_FILE="$REPO_ROOT/packaging/shared/version.txt"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -19,15 +19,19 @@ require_command() {
   fi
 }
 
-require_command grep
 require_command sed
 require_command rsync
 require_command hdiutil
 require_command codesign
 
-VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
+if [[ ! -f "$SHARED_VERSION_FILE" ]]; then
+  echo "Required shared version file is missing: $SHARED_VERSION_FILE" >&2
+  exit 1
+fi
+
+VERSION="$(head -n 1 "$SHARED_VERSION_FILE" | tr -d '\r\n')"
 if [[ -z "$VERSION" ]]; then
-  echo "Could not determine EasyRob version from $WINDOWS_ISS" >&2
+  echo "Could not determine the EasyRob version from $SHARED_VERSION_FILE" >&2
   exit 1
 fi
 

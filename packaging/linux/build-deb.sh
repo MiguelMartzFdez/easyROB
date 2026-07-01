@@ -3,12 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WINDOWS_ISS="$REPO_ROOT/packaging/windows/EasyRob.iss"
 DIST_DIR="$REPO_ROOT/dist/linux"
 STAGE_DIR="$SCRIPT_DIR/.build/deb-root"
 DEBIAN_DIR="$STAGE_DIR/DEBIAN"
 PACKAGE_NAME="easyrob"
 MICROMAMBA_ASSET="$SCRIPT_DIR/assets/micromamba-linux-64"
+SHARED_VERSION_FILE="$REPO_ROOT/packaging/shared/version.txt"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -19,12 +19,15 @@ require_command() {
 
 require_command dpkg-deb
 require_command install
-require_command grep
-require_command sed
 
-VERSION="$(grep '^#define MyAppVersion "' "$WINDOWS_ISS" | sed -E 's/^#define MyAppVersion "(.+)"$/\1/' | head -n 1)"
+if [[ ! -f "$SHARED_VERSION_FILE" ]]; then
+  echo "Required shared version file is missing: $SHARED_VERSION_FILE" >&2
+  exit 1
+fi
+
+VERSION="$(head -n 1 "$SHARED_VERSION_FILE" | tr -d '\r\n')"
 if [[ -z "$VERSION" ]]; then
-  echo "Could not determine EasyRob version from $WINDOWS_ISS" >&2
+  echo "Could not determine the EasyRob version from $SHARED_VERSION_FILE" >&2
   exit 1
 fi
 
@@ -65,6 +68,7 @@ install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob.sh" "$STAGE_DIR/usr/lib/easy
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob_full.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob_full.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$STAGE_DIR/usr/lib/easyrob/shared/env.yaml"
+printf '%s\n' "$VERSION" > "$STAGE_DIR/usr/lib/easyrob/shared/version.txt"
 install -m 0644 "$REPO_ROOT/packaging/windows/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"
 
 cat > "$STAGE_DIR/usr/share/applications/easyrob.desktop" <<EOF

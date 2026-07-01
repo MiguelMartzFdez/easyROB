@@ -479,24 +479,46 @@ if [[ -f "$INSTALLED_VERSION_FILE" ]]; then
   installed_version="$(tr -d '\r\n' < "$INSTALLED_VERSION_FILE")"
 fi
 
+has_existing_install=0
+if [[ -d "$APP_SUPPORT_DIR" || -x "$MICROMAMBA_BIN" || -d "$ENV_PREFIX" || -n "$installed_version" ]]; then
+  has_existing_install=1
+fi
+
 need_install=0
+install_reason="first_install"
 if [[ ! -x "$MICROMAMBA_BIN" || ! -d "$ENV_PREFIX" || ! -x "$ENV_PYTHON" ]]; then
   need_install=1
+  if [[ "$has_existing_install" == "1" ]]; then
+    install_reason="repair"
+  fi
 fi
 if [[ -n "$current_version" && "$current_version" != "$installed_version" ]]; then
   need_install=1
+  install_reason="update"
 fi
 
 if [[ "$need_install" == "1" ]]; then
+  install_notice="EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
+  install_success_message="EasyRob finished installing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+
+  if [[ "$install_reason" == "update" ]]; then
+    install_notice="EasyRob found an existing installation and needs to update its private runtime.\n\nInstalled version: ${installed_version:-unknown}\nNew version: ${current_version:-unknown}\n\nThis may take a few minutes.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
+    install_success_message="EasyRob finished updating successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+  elif [[ "$install_reason" == "repair" ]]; then
+    install_notice="EasyRob found an existing installation, but its private runtime is incomplete or damaged.\n\nEasyRob will repair the private runtime now. This may take a few minutes.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
+    install_success_message="EasyRob finished repairing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+  fi
+
   : >"$INSTALL_LOG"
   : >"$INSTALL_ERR_LOG"
-  start_notice "EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
+  start_notice "$install_notice"
+  log "Install reason: $install_reason"
   if ! install_runtime; then
     show_error_dialog "EasyRob installation failed. Check the logs in ~/Library/Application Support/EasyRob/logs."
     exit 1
   fi
   stop_notice
-  show_info_dialog "EasyRob finished installing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+  show_info_dialog "$install_success_message"
   exit 0
 fi
 
