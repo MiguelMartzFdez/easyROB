@@ -20,83 +20,85 @@
 
 # 👤 For Users
 
-## 💻 Windows
-
-1. Download the installer from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
-2. Download `easyrob-<VERSION>.exe`
-3. Double-click the installer
-4. Follow the setup wizard
-5. Launch **EasyRob** from:
-
-   * Start Menu
-   * Windows Search
-   * Desktop Shortcut (optional)
-
 ---
 
-## 🐧 Linux
+# Installation
 
-Recommended for Ubuntu and Debian-based distributions.
+## 💻 Windows
 
-### Graphical Installation
+1. Download `easyrob-2.1.6.exe`.
+2. Double-click the installer.
+3. If **Windows protected your PC** appears:
+   - Click **More info**.
+   - Click **Run anyway**.
+4. Follow the installation wizard.
+5. Launch **easyROB** from:
+   - the **Start Menu**
+   - **Windows Search**
+   - or the **Desktop shortcut** (if selected during installation)
 
-1. Download the package from **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**.
-2. Download `easyrob-<VERSION>.deb`
-3. Open it with your system package installer
-4. Launch **EasyRob** from:
+### Uninstall
 
-   * Applications Menu
-   * System Search
+easyROB can be removed like any other Windows application:
 
-The first launch creates EasyRob's private runtime under `~/.local/share/easyrob` and may take a few minutes. The environment, package downloads, logs, and runtime files live under that folder.
-The `.deb` itself only installs the launcher and static assets system-wide.
-
-To fully remove EasyRob on Linux:
-
-* Remove everything, including the launcher and search entry, with `easyrob --uninstall`
+1. Open **Settings** → **Apps** → **Installed apps** (or **Apps & features** on older Windows versions).
+2. Select **easyROB**.
+3. Click **Uninstall** and follow the prompts.
 
 ---
 
 ## 🍎 macOS
 
-If a macOS build is published in **[GitHub Releases](https://github.com/MiguelMartzFdez/EasyRob/releases/)**:
+1. Download `easyrob-2.1.6.dmg`.
+2. Open the downloaded disk image.
+3. Drag **EasyRob.app** into the **Applications** folder.
+4. Open **EasyRob**.
 
-1. Download `easyrob-<VERSION>.dmg`
-2. Open the downloaded disk image
-3. Drag `EasyRob.app` into `Applications`
-4. Open **EasyRob** using:
+If macOS reports that **EasyRob** is from an unidentified developer:
 
-   * Applications
-   * Launchpad
-   * Spotlight
+1. Click **Done** (do **not** move the application to the Trash).
+2. Open the **Applications** folder.
+3. Right-click **EasyRob.app** and select **Open**.
+4. Click **Open** in the confirmation dialog.
 
-For now, macOS users should work only inside the private workspace created here:
+> **Important**
+>
+> Due to macOS sandbox permissions, it is recommended to work inside the **workspace** folder automatically created by EasyRob.
 
-```text
-~/Library/ApplicationSupport/EasyRob/workspace
-```
+### Uninstall
 
-Move CSV files and project folders into that workspace before running workflows.
-
-To fully remove EasyRob on macOS:
-
-* Delete `EasyRob.app` from `Applications`
-* Delete `~/Library/ApplicationSupport/EasyRob`
-
-EasyRob also creates a reusable macOS uninstaller here:
-
-```text
-~/Library/ApplicationSupport/EasyRob/uninstall_easyrob.command
-```
-
-You can double-click that file, or run:
+To completely remove EasyRob:
 
 ```bash
 bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 ```
 
-If macOS does not allow the script to remove `EasyRob.app` automatically, the uninstaller now shows a message and you can delete `/Applications/EasyRob.app` manually.
-  
+---
+
+## 🐧 Linux (Ubuntu / Debian)
+
+1. Download `easyrob-2.1.6.deb`.
+2. Double-click the package.
+3. If your system warns that the package is provided by a third party, click **Install**.
+4. Launch **easyROB** from:
+   - the **Applications menu**
+   - the **Desktop shortcut** (if available)
+
+> **Note**
+>
+> Ubuntu may display a warning because the package is distributed outside the official repositories. If you downloaded it from the official GitHub Releases page, it is safe to continue.
+
+### Install or update from the terminal
+
+```bash
+sudo dpkg -i easyrob-2.1.6.deb
+```
+
+### Uninstall
+
+```bash
+easyrob --uninstall
+```
 ---
 
 # ⚡ Runtime Behavior
