@@ -8,13 +8,17 @@
 
 ---
 
-## 📦 Supported Package Formats
+## 📦 Download EasyRob
 
-| Platform                 | Package                                 |
-| ------------------------ | --------------------------------------- |
-| 💻 Windows               | `easyrob-<VERSION>.exe`                 |
-| 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb`                 |
-| 🍎 macOS                 | `easyrob-<VERSION>.dmg`                 |
+Download the latest version of EasyRob for your platform.
+
+| Platform | Package | Download |
+| --- | --- | --- |
+| 💻 Windows | `easyrob-<VERSION>.exe` | [![Download for Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge&logo=windows)](../../releases/latest) |
+| 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb` | [![Download for Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](../../releases/latest) |
+| 🍎 macOS | `easyrob-<VERSION>.dmg` | [![Download for macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple)](../../releases/latest) |
+
+---
 
 ---
 
