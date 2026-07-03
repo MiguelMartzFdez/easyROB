@@ -17,6 +17,8 @@ Latest version: `v2.1.6`
 | 🐧 Linux | `easyrob-2.1.6.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](../../releases/latest/download/easyrob-2.1.6.deb) |
 | 🍎 macOS | `easyrob-2.1.6.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple)](../../releases/latest/download/easyrob-2.1.6.dmg) |
 
+> [!TIP]
+> Before installing EasyRob, we recommend reading the instructions for your operating system below. You'll find installation and uninstallation steps, along with platform-specific recommendations.
 ---
 
 # 👤 For Users
