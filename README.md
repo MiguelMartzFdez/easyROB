@@ -10,13 +10,11 @@
 
 ## 📦 Download EasyRob
 
-Download the latest version of EasyRob for your platform.
-
-| Platform | Package | Download |
-| --- | --- | --- |
-| 💻 Windows | `easyrob-<VERSION>.exe` | [![Download for Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge&logo=windows)](../../releases/latest) |
-| 🐧 Linux (Ubuntu/Debian) | `easyrob-<VERSION>.deb` | [![Download for Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](../../releases/latest) |
-| 🍎 macOS | `easyrob-<VERSION>.dmg` | [![Download for macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple)](../../releases/latest) |
+| Platform | Download |
+| --- | --- |
+| 💻 Windows | [![Download for Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge&logo=windows)](../../releases/latest/download/easyrob-latest.exe) |
+| 🐧 Linux (Ubuntu/Debian) | [![Download for Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](../../releases/latest/download/easyrob-latest.deb) |
+| 🍎 macOS | [![Download for macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple)](../../releases/latest/download/easyrob-latest.dmg) |
 
 ---
 
@@ -24,7 +22,7 @@ Download the latest version of EasyRob for your platform.
 
 ---
 
-# Installation
+## Installation
 
 ## 💻 Windows
 
