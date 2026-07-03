@@ -20,8 +20,6 @@ Download the latest version of EasyRob for your platform.
 
 ---
 
----
-
 # 👤 For Users
 
 ---
