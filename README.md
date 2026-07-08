@@ -10,13 +10,13 @@
 
 ## 📦 Download EasyRob
 
-Latest version: `v2.0.0`
+Latest version: `v2.2.0`
 
 | Platform   | Package             | Download                                                                                                                                                                   |
 | ---------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 Windows | `easyrob-2.0.0.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge\&logo=windows)](../../releases/latest/download/easyrob-2.0.0.exe)            |
-| 🐧 Linux   | `easyrob-2.0.0.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge\&logo=linux\&logoColor=black)](../../releases/latest/download/easyrob-2.0.0.deb) |
-| 🍎 macOS   | `easyrob-2.0.0.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge\&logo=apple)](../../releases/latest/download/easyrob-2.0.0.dmg)                  |
+| 💻 Windows | `easyrob-2.2.0.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge\&logo=windows)](../../releases/latest/download/easyrob-2.2.0.exe)            |
+| 🐧 Linux   | `easyrob-2.2.0.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge\&logo=linux\&logoColor=black)](../../releases/latest/download/easyrob-2.2.0.deb) |
+| 🍎 macOS   | `easyrob-2.2.0.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge\&logo=apple)](../../releases/latest/download/easyrob-2.2.0.dmg)                  |
 
 > [!TIP]
 > Before installing EasyRob, we recommend reading the instructions for your operating system below. You'll find installation and uninstallation steps, along with platform-specific recommendations.
@@ -31,7 +31,7 @@ Latest version: `v2.0.0`
 
 ## 💻 Windows
 
-1. Download `easyrob-2.0.0.exe`.
+1. Download `easyrob-2.2.0.exe`.
 2. Double-click the installer.
 3. If **Windows protected your PC** appears:
 
@@ -56,7 +56,7 @@ easyROB can be removed like any other Windows application:
 
 ## 🍎 macOS
 
-1. Download `easyrob-2.0.0.dmg`.
+1. Download `easyrob-2.2.0.dmg`.
 2. Open the downloaded disk image.
 3. Drag **EasyRob.app** into the **Applications** folder.
 4. Open **EasyRob**.
@@ -84,7 +84,7 @@ bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 
 ## 🐧 Linux (Ubuntu / Debian)
 
-1. Download `easyrob-2.0.0.deb`.
+1. Download `easyrob-2.2.0.deb`.
 2. Double-click the package.
 3. If your system warns that the package is provided by a third party, click **Install**.
 4. Launch **easyROB** from:
@@ -99,7 +99,7 @@ bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 ### Install or update from the terminal
 
 ```bash
-sudo dpkg -i easyrob-2.0.0.deb
+sudo dpkg -i easyrob-2.2.0.deb
 ```
 
 ### Uninstall
