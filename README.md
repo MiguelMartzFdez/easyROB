@@ -186,7 +186,7 @@ What is shared across all of them is:
 ## 🪟 Windows
 
 ```powershell
-.\packaging\windows\build.ps1
+powershell -ExecutionPolicy Bypass -File .\packaging\windows\build.ps1
 ```
 
 ### Requirements
