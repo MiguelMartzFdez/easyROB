@@ -7,18 +7,20 @@
 </p>
 
 ---
+
 ## 📦 Download EasyRob
 
-Latest version: `v2.1.6`
+Latest version: `v2.2.0`
 
-| Platform | Package | Download |
-| --- | --- | --- |
-| 💻 Windows | `easyrob-2.1.6.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge&logo=windows)](../../releases/latest/download/easyrob-2.1.6.exe) |
-| 🐧 Linux | `easyrob-2.1.6.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)](../../releases/latest/download/easyrob-2.1.6.deb) |
-| 🍎 macOS | `easyrob-2.1.6.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge&logo=apple)](../../releases/latest/download/easyrob-2.1.6.dmg) |
+| Platform   | Package             | Download                                                                                                                                                                   |
+| ---------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 💻 Windows | `easyrob-2.2.0.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge\&logo=windows)](../../releases/latest/download/easyrob-2.2.0.exe)            |
+| 🐧 Linux   | `easyrob-2.2.0.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge\&logo=linux\&logoColor=black)](../../releases/latest/download/easyrob-2.2.0.deb) |
+| 🍎 macOS   | `easyrob-2.2.0.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge\&logo=apple)](../../releases/latest/download/easyrob-2.2.0.dmg)                  |
 
 > [!TIP]
 > Before installing EasyRob, we recommend reading the instructions for your operating system below. You'll find installation and uninstallation steps, along with platform-specific recommendations.
+
 ---
 
 # 👤 For Users
@@ -29,16 +31,18 @@ Latest version: `v2.1.6`
 
 ## 💻 Windows
 
-1. Download `easyrob-2.1.6.exe`.
+1. Download `easyrob-2.2.0.exe`.
 2. Double-click the installer.
 3. If **Windows protected your PC** appears:
-   - Click **More info**.
-   - Click **Run anyway**.
+
+   * Click **More info**.
+   * Click **Run anyway**.
 4. Follow the installation wizard.
 5. Launch **easyROB** from:
-   - the **Start Menu**
-   - **Windows Search**
-   - or the **Desktop shortcut** (if selected during installation)
+
+   * the **Start Menu**
+   * **Windows Search**
+   * or the **Desktop shortcut** (if selected during installation)
 
 ### Uninstall
 
@@ -52,7 +56,7 @@ easyROB can be removed like any other Windows application:
 
 ## 🍎 macOS
 
-1. Download `easyrob-2.1.6.dmg`.
+1. Download `easyrob-2.2.0.dmg`.
 2. Open the downloaded disk image.
 3. Drag **EasyRob.app** into the **Applications** folder.
 4. Open **EasyRob**.
@@ -80,12 +84,13 @@ bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 
 ## 🐧 Linux (Ubuntu / Debian)
 
-1. Download `easyrob-2.1.6.deb`.
+1. Download `easyrob-2.2.0.deb`.
 2. Double-click the package.
 3. If your system warns that the package is provided by a third party, click **Install**.
 4. Launch **easyROB** from:
-   - the **Applications menu**
-   - the **Desktop shortcut** (if available)
+
+   * the **Applications menu**
+   * the **Desktop shortcut** (if available)
 
 > **Note**
 >
@@ -94,7 +99,7 @@ bash "$HOME/Library/ApplicationSupport/EasyRob/uninstall_easyrob.sh"
 ### Install or update from the terminal
 
 ```bash
-sudo dpkg -i easyrob-2.1.6.deb
+sudo dpkg -i easyrob-2.2.0.deb
 ```
 
 ### Uninstall
@@ -102,6 +107,7 @@ sudo dpkg -i easyrob-2.1.6.deb
 ```bash
 easyrob --uninstall
 ```
+
 ---
 
 # ⚡ Runtime Behavior
@@ -165,19 +171,19 @@ EasyRob/
 
 Each installer is generated on its own operating system.
 
-| Target package                        | Build host |
-| ------------------------------------- | ---------- |
-| `easyrob-<VERSION>.exe`               | Windows    |
-| `easyrob-<VERSION>.deb`               | Linux      |
+| Target package          | Build host |
+| ----------------------- | ---------- |
+| `easyrob-<VERSION>.exe` | Windows    |
+| `easyrob-<VERSION>.deb` | Linux      |
 | `easyrob-<VERSION>.dmg` | macOS      |
 
 You do **not** build all three final artifacts from Windows.
 
 What is shared across all of them is:
 
-- `packaging/shared/env.yaml`
-- the same repository
-- the same packaging structure
+* `packaging/shared/env.yaml`
+* the same repository
+* the same packaging structure
 
 ---
 
@@ -186,7 +192,7 @@ What is shared across all of them is:
 ## 🪟 Windows
 
 ```powershell
-.\packaging\windows\build.ps1
+powershell -ExecutionPolicy Bypass -File .\packaging\windows\build.ps1
 ```
 
 ### Requirements
@@ -236,7 +242,7 @@ chmod +x packaging/macos/build.sh
 
 This build creates:
 
-- `dist/macos/easyrob-<VERSION>.dmg`
+* `dist/macos/easyrob-<VERSION>.dmg`
 
 ---
 
@@ -265,9 +271,9 @@ No dependency rebuild required.
 packaging/shared/env.yaml
 ```
 
-2. Rebuild the installer/package
+2. Rebuild the installer/package.
 
-3. Test on a clean machine
+3. Test on a clean machine.
 
 ---
 
