@@ -3,10 +3,13 @@ param(
     [string]$InstallDir,
 
     [Parameter(Mandatory = $true)]
-    [string]$MiniforgeInstaller,
+    [string]$MicromambaInstaller,
 
     [Parameter(Mandatory = $true)]
     [string]$EnvFile,
+
+    [Parameter(Mandatory = $true)]
+    [string]$RobertWheel,
 
     [Parameter(Mandatory = $true)]
     [string]$StateDir
@@ -16,13 +19,16 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
 $installRoot = [System.IO.Path]::GetFullPath($InstallDir)
-$miniforgeDir = Join-Path $installRoot 'miniforge'
+$micromambaDir = Join-Path $installRoot 'micromamba'
 $logsDir = Join-Path $installRoot 'logs'
-$condaExe = Join-Path $miniforgeDir 'Scripts\conda.exe'
-$envPython = Join-Path $miniforgeDir 'envs\easyrob\python.exe'
-$envPythonw = Join-Path $miniforgeDir 'envs\easyrob\pythonw.exe'
-$easyrobExe = Join-Path $miniforgeDir 'envs\easyrob\Scripts\easyrob.exe'
+$micromambaExe = Join-Path $micromambaDir 'micromamba.exe'
+$mambaRootPrefix = Join-Path $micromambaDir 'root'
+$envPrefix = Join-Path $micromambaDir 'envs\easyrob'
+$envPython = Join-Path $envPrefix 'python.exe'
+$envPythonw = Join-Path $envPrefix 'pythonw.exe'
+$easyrobExe = Join-Path $envPrefix 'Scripts\easyrob.exe'
 $sharedEnvFile = Join-Path $StateDir 'env.yaml'
+$bundledRobertWheel = Join-Path $StateDir ([System.IO.Path]::GetFileName($RobertWheel))
 
 $pidFile = Join-Path $StateDir 'pid.txt'
 $phaseFile = Join-Path $StateDir 'phase.txt'
@@ -32,6 +38,7 @@ $script:lastProcessExitCode = -1
 $script:phaseDurations = [ordered]@{}
 $script:installStartedAt = Get-Date
 $script:utf8Encoding = New-Object System.Text.UTF8Encoding($false)
+$maxEnvironmentCreateAttempts = 3
 
 function Format-Duration {
     param(
@@ -115,8 +122,8 @@ function Normalize-LogText {
 }
 
 function Remove-PrivateRuntime {
-    if (Test-Path -LiteralPath $miniforgeDir) {
-        Remove-Item -LiteralPath $miniforgeDir -Recurse -Force
+    if (Test-Path -LiteralPath $micromambaDir) {
+        Remove-Item -LiteralPath $micromambaDir -Recurse -Force
     }
 }
 
@@ -124,7 +131,9 @@ function Invoke-LoggedProcess {
     param(
         [string]$FilePath,
         [string]$Arguments,
-        [string]$LogBaseName
+        [string]$LogBaseName,
+
+        [bool]$AppendLogs = $false
     )
 
     $stdoutLog = Join-Path $logsDir "$LogBaseName.log"
@@ -145,6 +154,7 @@ function Invoke-LoggedProcess {
     $startInfo.Environment['PYTHONUTF8'] = '1'
     $startInfo.Environment['PYTHONIOENCODING'] = 'utf-8'
     $startInfo.Environment['PIP_DISABLE_PIP_VERSION_CHECK'] = '1'
+    $startInfo.Environment['MAMBA_ROOT_PREFIX'] = $mambaRootPrefix
 
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
@@ -161,8 +171,14 @@ function Invoke-LoggedProcess {
     $process.WaitForExit()
     $stdout = Normalize-LogText -Text $stdout
     $stderr = Normalize-LogText -Text $stderr
-    [System.IO.File]::WriteAllText($stdoutLog, $stdout, $script:utf8Encoding)
-    [System.IO.File]::WriteAllText($stderrLog, $stderr, $script:utf8Encoding)
+    if ($AppendLogs) {
+        Add-Content -LiteralPath $stdoutLog -Value $stdout -Encoding UTF8
+        Add-Content -LiteralPath $stderrLog -Value $stderr -Encoding UTF8
+    }
+    else {
+        [System.IO.File]::WriteAllText($stdoutLog, $stdout, $script:utf8Encoding)
+        [System.IO.File]::WriteAllText($stderrLog, $stderr, $script:utf8Encoding)
+    }
 
     $script:lastProcessExitCode = [int]$process.ExitCode
     $duration = (Get-Date) - $startedAt
@@ -173,6 +189,38 @@ function Invoke-LoggedProcess {
 
 function Copy-EnvironmentFile {
     Copy-Item -LiteralPath $EnvFile -Destination $sharedEnvFile -Force
+}
+
+function Copy-RobertWheel {
+    Copy-Item -LiteralPath $RobertWheel -Destination $bundledRobertWheel -Force
+}
+
+function Invoke-EnvironmentCreateWithRetry {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Arguments
+    )
+
+    for ($attempt = 1; $attempt -le $maxEnvironmentCreateAttempts; $attempt++) {
+        if ($attempt -gt 1) {
+            $delaySeconds = 5 * ($attempt - 1)
+            Add-Content -LiteralPath (Join-Path $logsDir 'conda-environment.log') `
+                -Value "Retrying environment creation: attempt $attempt of $maxEnvironmentCreateAttempts after $delaySeconds seconds." `
+                -Encoding UTF8
+            Start-Sleep -Seconds (5 * ($attempt - 1))
+        }
+
+        Invoke-LoggedProcess `
+            -FilePath $micromambaExe `
+            -Arguments $Arguments `
+            -LogBaseName 'conda-environment' `
+            -AppendLogs ($attempt -gt 1)
+        if ($script:lastProcessExitCode -eq 0) {
+            return
+        }
+    }
+
+    throw "Conda environment creation failed after $maxEnvironmentCreateAttempts attempts with exit code $script:lastProcessExitCode."
 }
 
 try {
@@ -186,32 +234,31 @@ try {
     }
     New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
     Copy-EnvironmentFile
+    Copy-RobertWheel
 
-    Set-Content -LiteralPath $phaseFile -Value 'miniforge' -Encoding ASCII
-    $miniforgeArgs = "/S /InstallationType=JustMe /AddToPath=0 /RegisterPython=0 /D=$miniforgeDir"
-    Invoke-LoggedProcess `
-        -FilePath $MiniforgeInstaller `
-        -Arguments $miniforgeArgs `
-        -LogBaseName 'miniforge-install'
-    $exitCode = $script:lastProcessExitCode
-    if ($exitCode -ne 0) {
-        throw "Miniforge installation failed with exit code $exitCode."
-    }
-    if (-not (Test-Path -LiteralPath $condaExe)) {
-        throw 'Miniforge finished but conda.exe was not created.'
+    Set-Content -LiteralPath $phaseFile -Value 'micromamba' -Encoding ASCII
+    New-Item -ItemType Directory -Path $micromambaDir -Force | Out-Null
+    Copy-Item -LiteralPath $MicromambaInstaller -Destination $micromambaExe -Force
+    if (-not (Test-Path -LiteralPath $micromambaExe)) {
+        throw 'Micromamba executable was not copied.'
     }
 
     Set-Content -LiteralPath $phaseFile -Value 'environment' -Encoding ASCII
     $quotedEnvFile = "`"$sharedEnvFile`""
-    $quotedEnvPrefix = "`"$($miniforgeDir)\envs\easyrob`""
-    $condaArgs = "env create --prefix $quotedEnvPrefix --yes --file $quotedEnvFile"
+    $quotedEnvPrefix = "`"$envPrefix`""
+    $condaArgs = "create --prefix $quotedEnvPrefix --yes --file $quotedEnvFile"
+    Invoke-EnvironmentCreateWithRetry -Arguments $condaArgs
+
+    Set-Content -LiteralPath $phaseFile -Value 'robert-wheel' -Encoding ASCII
+    $quotedRobertWheel = "`"$bundledRobertWheel`""
+    $pipArgs = "-m pip install --force-reinstall --no-deps $quotedRobertWheel"
     Invoke-LoggedProcess `
-        -FilePath $condaExe `
-        -Arguments $condaArgs `
-        -LogBaseName 'conda-environment'
+        -FilePath $envPython `
+        -Arguments $pipArgs `
+        -LogBaseName 'robert-wheel-install'
     $exitCode = $script:lastProcessExitCode
     if ($exitCode -ne 0) {
-        throw "Conda environment creation failed with exit code $exitCode."
+        throw "Bundled ROBERT wheel installation failed with exit code $exitCode."
     }
 
     Set-Content -LiteralPath $phaseFile -Value 'validate' -Encoding ASCII

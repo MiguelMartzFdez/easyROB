@@ -283,6 +283,23 @@ run_install_command() {
   fi
 }
 
+run_environment_create_with_retry() {
+  local max_environment_create_attempts=3
+  local attempt=1
+
+  while (( attempt <= max_environment_create_attempts )); do
+    if run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$CONDA_ENV_FILE"; then
+      return 0
+    fi
+    if (( attempt == max_environment_create_attempts )); then
+      return 1
+    fi
+    log "Environment creation attempt $attempt of $max_environment_create_attempts failed; retrying in $((attempt * 5)) seconds."
+    sleep "$((attempt * 5))"
+    ((attempt++))
+  done
+}
+
 macos_major_version() {
   sw_vers -productVersion 2>/dev/null | awk -F. '{ print $1 }'
 }
@@ -411,7 +428,7 @@ install_runtime() {
   update_notice 5 "Creating the private EasyRob environment."
   export MAMBA_ROOT_PREFIX
   export CONDA_SUBDIR="$platform"
-  run_install_command "$MICROMAMBA_BIN" create -y -p "$ENV_PREFIX" -f "$CONDA_ENV_FILE" || return 1
+  run_environment_create_with_retry || return 1
   clear_execution_attributes "$ENV_PREFIX"
 
   update_notice 6 "Installing the macOS Python application launcher."

@@ -193,7 +193,7 @@ What is shared across all of them is:
 
 * Windows
 * Inno Setup 6 or 7
-* `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
+* `packaging/windows/assets/micromamba-win-64.exe`
 
 ---
 

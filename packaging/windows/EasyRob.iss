@@ -2,17 +2,19 @@
 #define MyAppVersion "__EASYROB_VERSION__"
 #define MyAppPublisher "The Alegre Group"
 #define MyAppIcon "assets\Robert_icon.ico"
-#define MiniforgeInstaller "assets\Miniforge3-Windows-x86_64.exe"
+#define MicromambaInstaller "assets\micromamba-win-64.exe"
 #define DependencyHelper "scripts\install_easyrob.ps1"
 #define UninstallHelper "scripts\uninstall_easyrob.ps1"
 #define SharedEnvFile "..\shared\env.yaml"
 #define GuiLauncher "scripts\launch_easyrob.pyw"
+#define RobertWheel "assets\robert-2.1.2-py2.py3-none-any.whl"
 #define MyAppIconName "Robert_icon.ico"
-#define MiniforgeInstallerName "Miniforge3-Windows-x86_64.exe"
+#define MicromambaInstallerName "micromamba-win-64.exe"
 #define DependencyHelperName "install_easyrob.ps1"
 #define UninstallHelperName "uninstall_easyrob.ps1"
 #define SharedEnvFileName "env.yaml"
 #define GuiLauncherName "launch_easyrob.pyw"
+#define RobertWheelName "robert-2.1.2-py2.py3-none-any.whl"
 
 [Setup]
 AppId={{B2960D61-71B5-4BD2-83BB-42F2E5D1A69B}
@@ -50,16 +52,17 @@ Name: "{app}\logs"
 Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 
 [Files]
-Source: "{#MiniforgeInstaller}"; Flags: dontcopy
+Source: "{#MicromambaInstaller}"; Flags: dontcopy
 Source: "{#SharedEnvFile}"; Flags: dontcopy
 Source: "{#DependencyHelper}"; Flags: dontcopy
+Source: "{#RobertWheel}"; Flags: dontcopy
 Source: "{#GuiLauncher}"; DestDir: "{app}"; DestName: "{#GuiLauncherName}"; Flags: ignoreversion
 Source: "{#UninstallHelper}"; DestDir: "{app}"; DestName: "{#UninstallHelperName}"; Flags: ignoreversion
 Source: "{#MyAppIcon}"; DestDir: "{app}"; DestName: "{#MyAppIconName}"; Flags: ignoreversion
 
 [Icons]
-Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\miniforge\envs\easyrob\pythonw.exe"; Parameters: """{app}\{#GuiLauncherName}"""; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIconName}"; Tasks: desktopicon
-Name: "{userprograms}\{#MyAppName}\{#MyAppName}"; Filename: "{app}\miniforge\envs\easyrob\pythonw.exe"; Parameters: """{app}\{#GuiLauncherName}"""; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIconName}"
+Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\micromamba\envs\easyrob\pythonw.exe"; Parameters: """{app}\{#GuiLauncherName}"""; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIconName}"; Tasks: desktopicon
+Name: "{userprograms}\{#MyAppName}\{#MyAppName}"; Filename: "{app}\micromamba\envs\easyrob\pythonw.exe"; Parameters: """{app}\{#GuiLauncherName}"""; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIconName}"
 
 [Code]
 type
@@ -169,7 +172,7 @@ begin
     Exit;
 
   { These are the only external directories created by this installer. }
-  DelTree(AddBackslash(AppDir) + 'miniforge', True, True, True);
+  DelTree(AddBackslash(AppDir) + 'micromamba', True, True, True);
   if RemoveLogs then
     DelTree(AddBackslash(AppDir) + 'logs', True, True, True);
 end;
@@ -206,24 +209,31 @@ begin
     Exit;
 
   Phase := Trim(String(PhaseData));
-  if Phase = 'miniforge' then
+  if Phase = 'micromamba' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 1 of 4: Installing the private Miniforge distribution...';
+      'Step 1 of 4: Installing the private Micromamba runtime...';
     DependencyDetailLabel.Caption :=
       'This copy is isolated inside EasyRob and does not modify your Conda installation.';
   end
   else if Phase = 'environment' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 2 of 3: Creating the Conda environment from env.yaml...';
+      'Step 2 of 4: Creating the Conda environment from env.yaml...';
     DependencyDetailLabel.Caption :=
       'Conda is creating the EasyRob environment directly from the shared environment definition.';
+  end
+  else if Phase = 'robert-wheel' then
+  begin
+    DependencyStatusLabel.Caption :=
+      'Step 3 of 4: Installing the patched ROBERT package...';
+    DependencyDetailLabel.Caption :=
+      'Installing the bundled Windows-specific ROBERT wheel so EasyRob does not depend on the PyPI release.';
   end
   else if Phase = 'validate' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 3 of 3: Validating the EasyRob launcher...';
+      'Step 4 of 4: Validating the EasyRob launcher...';
     DependencyDetailLabel.Caption :=
       'Checking that the GUI entry point was created correctly.';
   end;
@@ -242,9 +252,10 @@ begin
   { Every attempt starts from a clean EasyRob-owned runtime. }
   RemovePrivateRuntime(True);
 
-  ExtractTemporaryFile('{#MiniforgeInstallerName}');
+  ExtractTemporaryFile('{#MicromambaInstallerName}');
   ExtractTemporaryFile('{#SharedEnvFileName}');
   ExtractTemporaryFile('{#DependencyHelperName}');
+  ExtractTemporaryFile('{#RobertWheelName}');
 
   DependencyRunning := True;
   DependencyComplete := False;
@@ -271,9 +282,10 @@ begin
     '-ExecutionPolicy Bypass -File ' +
     Quote(ExpandConstant('{tmp}\{#DependencyHelperName}')) +
     ' -InstallDir ' + Quote(WizardForm.DirEdit.Text) +
-    ' -MiniforgeInstaller ' +
-      Quote(ExpandConstant('{tmp}\{#MiniforgeInstallerName}')) +
+    ' -MicromambaInstaller ' +
+      Quote(ExpandConstant('{tmp}\{#MicromambaInstallerName}')) +
     ' -EnvFile ' + Quote(ExpandConstant('{tmp}\{#SharedEnvFileName}')) +
+    ' -RobertWheel ' + Quote(ExpandConstant('{tmp}\{#RobertWheelName}')) +
     ' -StateDir ' + Quote(DependencyStateDir);
 
   Log('Starting clean EasyRob dependency installation.');
@@ -369,7 +381,7 @@ begin
   DependencyPage := CreateCustomPage(
     wpReady,
     'Installing EasyRob dependencies',
-    'Miniforge and the isolated easyrob environment will be installed now. This can take 5 to 10 minutes.');
+    'Micromamba and the isolated easyrob environment will be installed now. This can take 5 to 10 minutes.');
 
   DependencyStatusLabel := TNewStaticText.Create(DependencyPage);
   DependencyStatusLabel.Parent := DependencyPage.Surface;
@@ -479,7 +491,7 @@ begin
     Confirm := False;
     if MsgBox(
       'Cancel the EasyRob installation?' + #13#10 + #13#10 +
-      'The current Miniforge/Conda process will be stopped and only the ' +
+      'The current Micromamba process will be stopped and only the ' +
       'private EasyRob runtime will be removed.',
       mbConfirmation,
       MB_YESNO) = IDYES then

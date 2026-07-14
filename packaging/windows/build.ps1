@@ -31,8 +31,9 @@ $requiredFiles = @(
     'scripts\install_easyrob.ps1',
     'scripts\launch_easyrob.pyw',
     'scripts\uninstall_easyrob.ps1',
-    'assets\Miniforge3-Windows-x86_64.exe',
-    'assets\Robert_icon.ico'
+    'assets\micromamba-win-64.exe',
+    'assets\Robert_icon.ico',
+    'assets\robert-2.1.2-py2.py3-none-any.whl'
 )
 
 foreach ($file in $requiredFiles) {

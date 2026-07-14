@@ -48,8 +48,25 @@ run_and_log() {
   log "Running: $*"
   if ! "$@" 2> >(tee -a "$ERROR_LOG" >&2) | tee -a "$INSTALL_LOG"; then
     log "Command failed: $*"
-    exit 1
+    return 1
   fi
+}
+
+run_environment_create_with_retry() {
+  local max_environment_create_attempts=3
+  local attempt=1
+
+  while (( attempt <= max_environment_create_attempts )); do
+    if run_and_log "$BIN_DIR/micromamba" create -y -p "$ENV_PREFIX" -f "$ENV_FILE"; then
+      return 0
+    fi
+    if (( attempt == max_environment_create_attempts )); then
+      return 1
+    fi
+    log "Environment creation attempt $attempt of $max_environment_create_attempts failed; retrying in $((attempt * 5)) seconds."
+    sleep "$((attempt * 5))"
+    ((attempt++))
+  done
 }
 
 TMP_DIR="$(mktemp -d)"
@@ -84,7 +101,7 @@ else
 fi
 
 log "Creating EasyRob environment..."
-run_and_log "$BIN_DIR/micromamba" create -y -p "$ENV_PREFIX" -f "$ENV_FILE"
+run_environment_create_with_retry
 
 if [[ -f "$ICON_SOURCE" ]]; then
   log "Installing icon copy into system runtime..."

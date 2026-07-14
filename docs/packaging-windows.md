@@ -20,7 +20,7 @@ From the repository root:
 
 - Windows
 - Inno Setup 6 or 7
-- `packaging/windows/assets/Miniforge3-Windows-x86_64.exe`
+- `packaging/windows/assets/micromamba-win-64.exe`
 - `packaging/shared/env.yaml`
 
 ## Source of truth
@@ -45,11 +45,12 @@ If dependencies or the release version change, edit those shared files first.
 
 ## What the installer does
 
-1. Installs the bundled Miniforge runtime
+1. Copies the bundled Micromamba runtime
 2. Creates the EasyRob environment from `packaging/shared/env.yaml`
-3. Validates the runtime
-4. Creates Start Menu entries
-5. Optionally creates a Desktop shortcut
+3. Retries environment creation up to three attempts if a transient download failure occurs
+4. Validates the runtime
+5. Creates Start Menu entries
+6. Optionally creates a Desktop shortcut
 
 ## User experience
 
@@ -66,7 +67,7 @@ When startup takes a moment, the launcher shows an opening message so the user d
 The private runtime is created here:
 
 ```text
-%LOCALAPPDATA%\Programs\EasyRob\miniforge\envs\easyrob
+%LOCALAPPDATA%\Programs\EasyRob\micromamba\envs\easyrob
 ```
 
 ## Log location
