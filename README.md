@@ -14,9 +14,9 @@ Latest version: `v2.2.0`
 
 | Platform   | Package             | Download                                                                                                                                                                   |
 | ---------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 Windows | `easyrob-2.2.1.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge\&logo=windows)](../../releases/latest/download/easyrob-2.2.0.exe)            |
-| 🐧 Linux   | `easyrob-2.2.1.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge\&logo=linux\&logoColor=black)](../../releases/latest/download/easyrob-2.2.0.deb) |
-| 🍎 macOS   | `easyrob-2.2.1.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge\&logo=apple)](../../releases/latest/download/easyrob-2.2.0.dmg)                  |
+| 💻 Windows | `easyrob-2.2.0.exe` | [![Download Windows](https://img.shields.io/badge/Download-Windows-0078D4?style=for-the-badge\&logo=windows)](../../releases/latest/download/easyrob-2.2.0.exe)            |
+| 🐧 Linux   | `easyrob-2.2.0.deb` | [![Download Linux](https://img.shields.io/badge/Download-Linux-FCC624?style=for-the-badge\&logo=linux\&logoColor=black)](../../releases/latest/download/easyrob-2.2.0.deb) |
+| 🍎 macOS   | `easyrob-2.2.0.dmg` | [![Download macOS](https://img.shields.io/badge/Download-macOS-000000?style=for-the-badge\&logo=apple)](../../releases/latest/download/easyrob-2.2.0.dmg)                  |
 
 > [!TIP]
 > Before installing EasyRob, we recommend reading the instructions for your operating system below. You'll find installation and uninstallation steps, along with platform-specific recommendations.
