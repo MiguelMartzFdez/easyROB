@@ -52,7 +52,7 @@ Package: $PACKAGE_NAME
 Version: $VERSION
 Section: science
 Priority: optional
-Architecture: all
+Architecture: amd64
 Maintainer: The Alegre Group
 Depends: bash, tar, curl | wget
 Recommends: desktop-file-utils

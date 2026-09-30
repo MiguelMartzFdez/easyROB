@@ -49,6 +49,9 @@ The macOS package now follows the same lightweight model as Windows and Linux:
 - first launch also creates `uninstall_easyrob.command` and `uninstall_easyrob.sh` in `~/Library/ApplicationSupport/EasyRob`
 - the uninstaller verifies whether the app bundle was removed and tells the user if `/Applications/EasyRob.app` must be deleted manually
 - the uninstaller also verifies its target paths before any recursive delete
+- Apple Silicon detection remains native even when the launcher is running under Rosetta
+- an existing runtime is rebuilt automatically when its Python architecture does not match the Mac
+- setup validates that both Python and `QtWebEngineProcess` support the selected macOS platform
 - later launches reuse that installed runtime
 
 Compatibility target:
@@ -66,3 +69,11 @@ Required assets:
 For the full workflow, see:
 
 - [macOS packaging](C:/Users/CSIC/OneDrive/Escritorio/TheAlegreGroup/PhD/Easyrob/docs/packaging-macos.md)
+
+## Architecture tests
+
+Run from the repository root on macOS or another system with Bash:
+
+```bash
+bash packaging/macos/tests/test_bootstrap_architecture.sh
+```

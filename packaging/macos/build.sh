@@ -47,6 +47,7 @@ mkdir -p \
 
 install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob_macos.sh" "$APP_BUILD_DIR/Contents/MacOS/EasyRob"
 install -m 0755 "$SCRIPT_DIR/scripts/bootstrap_easyrob_macos.sh" "$APP_BUILD_DIR/Contents/Resources/scripts/bootstrap_easyrob_macos.sh"
+install -m 0755 "$SCRIPT_DIR/scripts/architecture_utils.sh" "$APP_BUILD_DIR/Contents/Resources/scripts/architecture_utils.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$APP_BUILD_DIR/Contents/Resources/shared/env.yaml"
 printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt"
 

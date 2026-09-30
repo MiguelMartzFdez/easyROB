@@ -6,6 +6,13 @@ APP_BUNDLE_PATH="$(cd "$APP_ROOT/.." && pwd)"
 RESOURCES_DIR="$APP_ROOT/Resources"
 SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
+ARCHITECTURE_UTILS="$RESOURCES_DIR/scripts/architecture_utils.sh"
+
+if [[ ! -r "$ARCHITECTURE_UTILS" ]]; then
+  echo "EasyRob architecture utilities are missing: $ARCHITECTURE_UTILS" >&2
+  exit 1
+fi
+source "$ARCHITECTURE_UTILS"
 
 LEGACY_APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
 APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
@@ -317,20 +324,6 @@ validate_macos_version() {
   fi
 }
 
-detect_micromamba_platform() {
-  case "$(uname -m)" in
-    arm64|aarch64)
-      printf '%s\n' "osx-arm64"
-      ;;
-    x86_64)
-      printf '%s\n' "osx-64"
-      ;;
-    *)
-      return 1
-      ;;
-  esac
-}
-
 require_file() {
   local path="$1"
   local description="$2"
@@ -378,12 +371,38 @@ copy_bundled_micromamba() {
 }
 
 validate_environment() {
+  local environment_architecture platform qtwebengine_description qtwebengine_process
+
   if [[ ! -x "$ENV_PYTHON" ]]; then
     echo "EasyRob Python interpreter was not created at $ENV_PYTHON" >>"$INSTALL_ERR_LOG"
     return 1
   fi
+
+  platform="$(detect_micromamba_platform)" || {
+    echo "Could not determine the expected macOS runtime platform." >>"$INSTALL_ERR_LOG"
+    return 1
+  }
+  environment_architecture="$("$ENV_PYTHON" -c "import platform; print(platform.machine())" 2>>"$INSTALL_ERR_LOG")" || return 1
+  if ! environment_architecture_matches_platform "$environment_architecture" "$platform"; then
+    echo "EasyRob Python architecture $environment_architecture does not match $platform." >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+
   configure_private_environment
   run_install_command "$ENV_PYTHON" -c "import robert" || return 1
+
+  qtwebengine_process="$(find "$ENV_PREFIX" -name QtWebEngineProcess -print -quit 2>/dev/null || true)"
+  if [[ -z "$qtwebengine_process" ]]; then
+    echo "QtWebEngineProcess was not found in the EasyRob environment." >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+  qtwebengine_description="$(file "$qtwebengine_process" 2>>"$INSTALL_ERR_LOG")" || return 1
+  if ! binary_description_supports_platform "$qtwebengine_description" "$platform"; then
+    echo "QtWebEngineProcess does not support $platform: $qtwebengine_description" >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+  log "Validated Python architecture: $environment_architecture"
+  log "Validated QtWebEngineProcess: $qtwebengine_description"
 }
 
 remove_previous_runtime() {
@@ -514,6 +533,19 @@ if [[ -n "$current_version" && "$current_version" != "$installed_version" ]]; th
   install_reason="update"
 fi
 
+expected_platform="$(detect_micromamba_platform)" || {
+  show_error_dialog "EasyRob does not support this Mac architecture: $(uname -m)."
+  exit 1
+}
+installed_environment_architecture=""
+if [[ -x "$ENV_PYTHON" ]]; then
+  installed_environment_architecture="$("$ENV_PYTHON" -c "import platform; print(platform.machine())" 2>/dev/null || true)"
+  if ! environment_architecture_matches_platform "$installed_environment_architecture" "$expected_platform"; then
+    need_install=1
+    install_reason="architecture_mismatch"
+  fi
+fi
+
 if [[ "$need_install" == "1" ]]; then
   install_notice="EasyRob is being set up for the first time.\n\nThis may take a few minutes while the private runtime is installed.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
   install_success_message="EasyRob finished installing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
@@ -524,6 +556,9 @@ if [[ "$need_install" == "1" ]]; then
   elif [[ "$install_reason" == "repair" ]]; then
     install_notice="EasyRob found an existing installation, but its private runtime is incomplete or damaged.\n\nEasyRob will repair the private runtime now. This may take a few minutes.\n\nThe app will work only inside this workspace on macOS:\n$WORK_DIR"
     install_success_message="EasyRob finished repairing successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
+  elif [[ "$install_reason" == "architecture_mismatch" ]]; then
+    install_notice="EasyRob found a runtime for ${installed_environment_architecture:-an unknown architecture}, but this Mac requires $expected_platform.\n\nEasyRob will rebuild its private runtime without changing your workspace. This may take a few minutes.\n\nWorkspace:\n$WORK_DIR"
+    install_success_message="EasyRob rebuilt its runtime for $expected_platform successfully.\n\nPlease open EasyRob again to start the application.\n\nWorkspace:\n$WORK_DIR"
   fi
 
   : >"$INSTALL_LOG"

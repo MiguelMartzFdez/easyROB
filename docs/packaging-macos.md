@@ -37,8 +37,10 @@ packaging/shared/version.txt
 - `packaging/macos/README.md`
 - `packaging/macos/assets/`
 - `packaging/macos/app/EasyRob.app/Contents/Info.plist`
+- `packaging/macos/scripts/architecture_utils.sh`
 - `packaging/macos/scripts/bootstrap_easyrob_macos.sh`
 - `packaging/macos/scripts/launch_easyrob_macos.sh`
+- `packaging/macos/tests/test_bootstrap_architecture.sh`
 
 ## Build command
 
@@ -131,8 +133,11 @@ On first launch, the bootstrapper:
 7. Installs pip packages from the shared environment definition
 8. Writes detailed logs to `logs/install.log` and `logs/install-error.log`
 9. Writes a reusable uninstall script into `~/Library/ApplicationSupport/EasyRob`
-10. Shows an installation-complete message and exits
-11. Launches EasyRob from the private environment with the workspace as the working directory on the next open
+10. Validates the Python and `QtWebEngineProcess` architectures against the selected macOS platform
+11. Shows an installation-complete message and exits
+12. Launches EasyRob from the private environment with the workspace as the working directory on the next open
+
+Before reusing an existing runtime, the launcher checks its Python architecture. On Apple Silicon, this check also detects launchers running under Rosetta and rebuilds an Intel runtime as `osx-arm64` while preserving the user's workspace.
 
 ## Protected-folder policy
 
@@ -170,6 +175,12 @@ It also verifies the expected EasyRob paths before running any recursive delete,
 
 ## Testing focus
 
+Run the automated architecture checks first:
+
+```bash
+bash packaging/macos/tests/test_bootstrap_architecture.sh
+```
+
 The main macOS checks are now:
 
 1. Build on a real Mac
@@ -179,6 +190,8 @@ The main macOS checks are now:
 5. Verify that reinstalling a new version recreates the private runtime cleanly
 6. Verify that logs are written under `~/Library/ApplicationSupport/EasyRob/logs`
 7. Verify that workflows run from the private workspace
+8. Verify that an Intel runtime on Apple Silicon is rebuilt as `osx-arm64`
+9. Verify that `QtWebEngineProcess` reports `arm64` or a universal binary on Apple Silicon
 
 ## Signing
 
