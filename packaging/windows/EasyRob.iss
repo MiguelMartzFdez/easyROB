@@ -551,16 +551,16 @@ var
   FailureData: AnsiString;
   FailureText: String;
 begin
-  if UninstallSilent then
-    Exit;
-
   UninstallCleanupRunning := True;
   DelTree(UninstallCleanupStateDir, True, True, True);
   ForceDirectories(UninstallCleanupStateDir);
 
-  UninstallProgressForm.StatusLabel.Caption :=
-    'Removing the private EasyRob runtime...';
-  UninstallProgressForm.StatusLabel.Update;
+  if not UninstallSilent then
+  begin
+    UninstallProgressForm.StatusLabel.Caption :=
+      'Removing the private EasyRob runtime...';
+    UninstallProgressForm.StatusLabel.Update;
+  end;
 
   PowerShellExe := ExpandConstant(
     '{sys}\WindowsPowerShell\v1.0\powershell.exe');
@@ -597,13 +597,25 @@ begin
     FailureText := Trim(String(FailureData));
     if FailureText <> '' then
     begin
-      MsgBox(
-        'EasyRob runtime cleanup reported an issue:' + #13#10 + #13#10 +
-        FailureText,
-        mbInformation,
-        MB_OK);
+      Log('EasyRob runtime cleanup reported an issue: ' + FailureText);
+      if not UninstallSilent then
+        MsgBox(
+          'EasyRob runtime cleanup reported an issue:' + #13#10 + #13#10 +
+          FailureText,
+          mbInformation,
+          MB_OK);
     end;
   end;
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+  UninstallCleanupStateDir := ExpandConstant('{tmp}\EasyRobUninstallState');
+  UninstallCleanupSuccessFile :=
+    AddBackslash(UninstallCleanupStateDir) + 'success.flag';
+  UninstallCleanupFailureFile :=
+    AddBackslash(UninstallCleanupStateDir) + 'failure.txt';
+  Result := True;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
@@ -614,12 +626,8 @@ end;
 
 procedure InitializeUninstallProgressForm;
 begin
-  UninstallCleanupStateDir := ExpandConstant('{tmp}\EasyRobUninstallState');
-  UninstallCleanupSuccessFile :=
-    AddBackslash(UninstallCleanupStateDir) + 'success.flag';
-  UninstallCleanupFailureFile :=
-    AddBackslash(UninstallCleanupStateDir) + 'failure.txt';
-  SetUninstallProgressMarquee;
+  if not UninstallSilent then
+    SetUninstallProgressMarquee;
 end;
 
 procedure DeinitializeUninstall;

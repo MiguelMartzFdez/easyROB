@@ -67,6 +67,7 @@ install -m 0755 "$SCRIPT_DIR/scripts/install_easyrob.sh" "$STAGE_DIR/usr/lib/eas
 install -m 0755 "$SCRIPT_DIR/scripts/launch_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/launch_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob.sh"
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob_full.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob_full.sh"
+install -m 0644 "$REPO_ROOT/packaging/shared/launch_lock.sh" "$STAGE_DIR/usr/lib/easyrob/shared/launch_lock.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$STAGE_DIR/usr/lib/easyrob/shared/env.yaml"
 printf '%s\n' "$VERSION" > "$STAGE_DIR/usr/lib/easyrob/shared/version.txt"
 install -m 0644 "$REPO_ROOT/packaging/windows/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"

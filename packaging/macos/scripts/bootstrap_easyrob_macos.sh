@@ -7,12 +7,19 @@ RESOURCES_DIR="$APP_ROOT/Resources"
 SHARED_DIR="$RESOURCES_DIR/shared"
 BOOTSTRAP_DIR="$RESOURCES_DIR/bootstrap"
 ARCHITECTURE_UTILS="$RESOURCES_DIR/scripts/architecture_utils.sh"
+LAUNCH_LOCK_SCRIPT="$SHARED_DIR/launch_lock.sh"
 
 if [[ ! -r "$ARCHITECTURE_UTILS" ]]; then
   echo "EasyRob architecture utilities are missing: $ARCHITECTURE_UTILS" >&2
   exit 1
 fi
 source "$ARCHITECTURE_UTILS"
+
+if [[ ! -r "$LAUNCH_LOCK_SCRIPT" ]]; then
+  echo "EasyRob launch lock helper is missing: $LAUNCH_LOCK_SCRIPT" >&2
+  exit 1
+fi
+source "$LAUNCH_LOCK_SCRIPT"
 
 LEGACY_APP_SUPPORT_DIR="${HOME}/Library/Application Support/EasyRob"
 APP_SUPPORT_DIR="${HOME}/Library/ApplicationSupport/EasyRob"
@@ -247,7 +254,7 @@ update_notice() {
 
 cleanup() {
   stop_notice
-  rm -rf "$LOCK_DIR"
+  release_launch_lock "$LOCK_DIR"
 }
 
 clear_execution_attributes() {
@@ -389,7 +396,7 @@ validate_environment() {
   fi
 
   configure_private_environment
-  run_install_command "$ENV_PYTHON" -c "import robert" || return 1
+  run_install_command "$ENV_PYTHON" -c "from robert.gui_easyrob.easyrob_launcher import main" || return 1
 
   qtwebengine_process="$(find "$ENV_PREFIX" -name QtWebEngineProcess -print -quit 2>/dev/null || true)"
   if [[ -z "$qtwebengine_process" ]]; then
@@ -490,7 +497,7 @@ launch_easyrob() {
 
   configure_private_environment
   cd "$WORK_DIR"
-  rm -rf "$LOCK_DIR"
+  release_launch_lock "$LOCK_DIR"
   trap - EXIT
   exec "$launcher_python" -c "from robert.gui_easyrob.easyrob_launcher import main; raise SystemExit(main() or 0)" \
     >>"$RUNTIME_LOG" 2>>"$RUNTIME_ERR_LOG"
@@ -499,7 +506,7 @@ launch_easyrob() {
 ensure_directories
 write_uninstallers
 
-if ! mkdir "$LOCK_DIR" >/dev/null 2>&1; then
+if ! acquire_launch_lock "$LOCK_DIR"; then
   osascript -e 'display notification "EasyRob is already starting..." with title "EasyRob"' >/dev/null 2>&1 || true
   exit 0
 fi
@@ -516,7 +523,7 @@ if [[ -f "$INSTALLED_VERSION_FILE" ]]; then
 fi
 
 has_existing_install=0
-if [[ -d "$APP_SUPPORT_DIR" || -x "$MICROMAMBA_BIN" || -d "$ENV_PREFIX" || -n "$installed_version" ]]; then
+if [[ -x "$MICROMAMBA_BIN" || -d "$ENV_PREFIX" || -n "$installed_version" ]]; then
   has_existing_install=1
 fi
 
@@ -528,7 +535,7 @@ if [[ ! -x "$MICROMAMBA_BIN" || ! -d "$ENV_PREFIX" || ! -x "$ENV_PYTHON" ]]; the
     install_reason="repair"
   fi
 fi
-if [[ -n "$current_version" && "$current_version" != "$installed_version" ]]; then
+if [[ "$has_existing_install" == "1" && -n "$current_version" && "$current_version" != "$installed_version" ]]; then
   need_install=1
   install_reason="update"
 fi

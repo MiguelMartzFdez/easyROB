@@ -165,7 +165,7 @@ if [[ ! -x "$ENV_PREFIX/bin/python" ]]; then
 fi
 
 log "Validating EasyRob environment..."
-run_and_log "$ENV_PREFIX/bin/python" -c "import robert"
+run_and_log "$ENV_PREFIX/bin/python" -c "from robert.gui_easyrob.easyrob_launcher import main"
 
 log "Installing launcher..."
 install -m 0755 "$SCRIPT_DIR/launch_easyrob.sh" "$LAUNCHER_TARGET"

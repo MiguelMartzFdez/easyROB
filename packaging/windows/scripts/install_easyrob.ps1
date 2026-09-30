@@ -272,6 +272,13 @@ try {
     if (-not (Test-Path -LiteralPath $easyrobExe)) {
         throw 'ROBERT did not create the expected easyrob.exe entry point.'
     }
+    Invoke-LoggedProcess `
+        -FilePath $envPython `
+        -Arguments '-c "from robert.gui_easyrob.easyrob_launcher import main"' `
+        -LogBaseName 'launcher-validation'
+    if ($script:lastProcessExitCode -ne 0) {
+        throw 'EasyRob could not import its GUI entry point.'
+    }
 
     $script:phaseDurations['validate'] = (Get-Date) - $validationStartedAt
     Write-LogSummary -Status 'success'
