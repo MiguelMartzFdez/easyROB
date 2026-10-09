@@ -10,6 +10,11 @@ packaging/shared/env.yaml
 
 This is the dependency source of truth for EasyRob.
 
+ROBERT and AQME are installed from the `master` branches of their GitHub
+repositories. Creating the runtime therefore requires internet access to GitHub
+as well as the package indexes and Conda channels. The Git dependency in
+`env.yaml` lets pip fetch both repositories on every supported platform.
+
 ## Rule
 
 If the application runtime changes:

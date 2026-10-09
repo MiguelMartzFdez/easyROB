@@ -47,10 +47,14 @@ If dependencies or the release version change, edit those shared files first.
 
 1. Copies the bundled Micromamba runtime
 2. Creates the EasyRob environment from `packaging/shared/env.yaml`
+   and installs ROBERT and AQME from their GitHub `master` branches using pip
 3. Retries environment creation up to three attempts if a transient download failure occurs
 4. Validates the runtime
 5. Creates Start Menu entries
 6. Optionally creates a Desktop shortcut
+
+The installer needs access to GitHub while creating the runtime. ROBERT and AQME
+are not bundled as wheels in the Windows installer.
 
 ## User experience
 

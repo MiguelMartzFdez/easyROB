@@ -9,9 +9,6 @@ param(
     [string]$EnvFile,
 
     [Parameter(Mandatory = $true)]
-    [string]$RobertWheel,
-
-    [Parameter(Mandatory = $true)]
     [string]$StateDir
 )
 
@@ -28,7 +25,6 @@ $envPython = Join-Path $envPrefix 'python.exe'
 $envPythonw = Join-Path $envPrefix 'pythonw.exe'
 $easyrobExe = Join-Path $envPrefix 'Scripts\easyrob.exe'
 $sharedEnvFile = Join-Path $StateDir 'env.yaml'
-$bundledRobertWheel = Join-Path $StateDir ([System.IO.Path]::GetFileName($RobertWheel))
 
 $pidFile = Join-Path $StateDir 'pid.txt'
 $phaseFile = Join-Path $StateDir 'phase.txt'
@@ -191,10 +187,6 @@ function Copy-EnvironmentFile {
     Copy-Item -LiteralPath $EnvFile -Destination $sharedEnvFile -Force
 }
 
-function Copy-RobertWheel {
-    Copy-Item -LiteralPath $RobertWheel -Destination $bundledRobertWheel -Force
-}
-
 function Invoke-EnvironmentCreateWithRetry {
     param(
         [Parameter(Mandatory = $true)]
@@ -234,7 +226,6 @@ try {
     }
     New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
     Copy-EnvironmentFile
-    Copy-RobertWheel
 
     Set-Content -LiteralPath $phaseFile -Value 'micromamba' -Encoding ASCII
     New-Item -ItemType Directory -Path $micromambaDir -Force | Out-Null
@@ -248,18 +239,6 @@ try {
     $quotedEnvPrefix = "`"$envPrefix`""
     $condaArgs = "create --prefix $quotedEnvPrefix --yes --file $quotedEnvFile"
     Invoke-EnvironmentCreateWithRetry -Arguments $condaArgs
-
-    Set-Content -LiteralPath $phaseFile -Value 'robert-wheel' -Encoding ASCII
-    $quotedRobertWheel = "`"$bundledRobertWheel`""
-    $pipArgs = "-m pip install --force-reinstall --no-deps $quotedRobertWheel"
-    Invoke-LoggedProcess `
-        -FilePath $envPython `
-        -Arguments $pipArgs `
-        -LogBaseName 'robert-wheel-install'
-    $exitCode = $script:lastProcessExitCode
-    if ($exitCode -ne 0) {
-        throw "Bundled ROBERT wheel installation failed with exit code $exitCode."
-    }
 
     Set-Content -LiteralPath $phaseFile -Value 'validate' -Encoding ASCII
     $validationStartedAt = Get-Date

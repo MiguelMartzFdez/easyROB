@@ -7,14 +7,12 @@
 #define UninstallHelper "scripts\uninstall_easyrob.ps1"
 #define SharedEnvFile "..\shared\env.yaml"
 #define GuiLauncher "scripts\launch_easyrob.pyw"
-#define RobertWheel "assets\robert-2.1.2-py2.py3-none-any.whl"
 #define MyAppIconName "Robert_icon.ico"
 #define MicromambaInstallerName "micromamba-win-64.exe"
 #define DependencyHelperName "install_easyrob.ps1"
 #define UninstallHelperName "uninstall_easyrob.ps1"
 #define SharedEnvFileName "env.yaml"
 #define GuiLauncherName "launch_easyrob.pyw"
-#define RobertWheelName "robert-2.1.2-py2.py3-none-any.whl"
 
 [Setup]
 AppId={{B2960D61-71B5-4BD2-83BB-42F2E5D1A69B}
@@ -55,7 +53,6 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 Source: "{#MicromambaInstaller}"; Flags: dontcopy
 Source: "{#SharedEnvFile}"; Flags: dontcopy
 Source: "{#DependencyHelper}"; Flags: dontcopy
-Source: "{#RobertWheel}"; Flags: dontcopy
 Source: "{#GuiLauncher}"; DestDir: "{app}"; DestName: "{#GuiLauncherName}"; Flags: ignoreversion
 Source: "{#UninstallHelper}"; DestDir: "{app}"; DestName: "{#UninstallHelperName}"; Flags: ignoreversion
 Source: "{#MyAppIcon}"; DestDir: "{app}"; DestName: "{#MyAppIconName}"; Flags: ignoreversion
@@ -212,28 +209,21 @@ begin
   if Phase = 'micromamba' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 1 of 4: Installing the private Micromamba runtime...';
+      'Step 1 of 3: Installing the private Micromamba runtime...';
     DependencyDetailLabel.Caption :=
       'This copy is isolated inside EasyRob and does not modify your Conda installation.';
   end
   else if Phase = 'environment' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 2 of 4: Creating the Conda environment from env.yaml...';
+      'Step 2 of 3: Creating the Conda environment from env.yaml...';
     DependencyDetailLabel.Caption :=
       'Conda is creating the EasyRob environment directly from the shared environment definition.';
-  end
-  else if Phase = 'robert-wheel' then
-  begin
-    DependencyStatusLabel.Caption :=
-      'Step 3 of 4: Installing the patched ROBERT package...';
-    DependencyDetailLabel.Caption :=
-      'Installing the bundled Windows-specific ROBERT wheel so EasyRob does not depend on the PyPI release.';
   end
   else if Phase = 'validate' then
   begin
     DependencyStatusLabel.Caption :=
-      'Step 4 of 4: Validating the EasyRob launcher...';
+      'Step 3 of 3: Validating the EasyRob launcher...';
     DependencyDetailLabel.Caption :=
       'Checking that the GUI entry point was created correctly.';
   end;
@@ -255,7 +245,6 @@ begin
   ExtractTemporaryFile('{#MicromambaInstallerName}');
   ExtractTemporaryFile('{#SharedEnvFileName}');
   ExtractTemporaryFile('{#DependencyHelperName}');
-  ExtractTemporaryFile('{#RobertWheelName}');
 
   DependencyRunning := True;
   DependencyComplete := False;
@@ -285,7 +274,6 @@ begin
     ' -MicromambaInstaller ' +
       Quote(ExpandConstant('{tmp}\{#MicromambaInstallerName}')) +
     ' -EnvFile ' + Quote(ExpandConstant('{tmp}\{#SharedEnvFileName}')) +
-    ' -RobertWheel ' + Quote(ExpandConstant('{tmp}\{#RobertWheelName}')) +
     ' -StateDir ' + Quote(DependencyStateDir);
 
   Log('Starting clean EasyRob dependency installation.');
