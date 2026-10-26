@@ -24,6 +24,7 @@ require_command sed
 require_command rsync
 require_command hdiutil
 require_command codesign
+require_command python3
 
 if [[ ! -f "$SHARED_VERSION_FILE" ]]; then
   echo "Required shared version file is missing: $SHARED_VERSION_FILE" >&2
@@ -60,7 +61,9 @@ install -m 0755 "$SCRIPT_DIR/scripts/architecture_utils.sh" "$APP_BUILD_DIR/Cont
 install -m 0644 "$REPO_ROOT/packaging/shared/launch_lock.sh" "$APP_BUILD_DIR/Contents/Resources/shared/launch_lock.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$APP_BUILD_DIR/Contents/Resources/shared/env.yaml"
 mkdir -p "$APP_BUILD_DIR/Contents/Resources/shared/assets"
-install -m 0644 "${robert_wheels[0]}" "$APP_BUILD_DIR/Contents/Resources/shared/assets/"
+python3 "$SCRIPT_DIR/scripts/patch_robert_wheel.py" \
+  "${robert_wheels[0]}" \
+  "$APP_BUILD_DIR/Contents/Resources/shared/assets/$(basename "${robert_wheels[0]}")"
 printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt"
 
 if [[ ! -f "$ICON_SOURCE" ]]; then
