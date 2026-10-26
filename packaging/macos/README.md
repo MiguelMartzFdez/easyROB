@@ -25,8 +25,20 @@ Requirements:
 - `rsync`
 - `hdiutil`
 - `codesign`
+- `python3`
 - `grep`
 - `sed`
+
+## ROBERT compatibility patches
+
+The macOS build adjusts the bundled ROBERT wheel before adding it to the app:
+
+- ROBERT uses Numba 0.62.1 on all platforms; this also satisfies SHAP 0.52.0 on Intel macOS.
+- The global Qt application event filter is disabled on macOS to avoid a native PySide6 crash.
+
+These adjustments are made by `scripts/patch_robert_wheel.py` for older bundled
+wheels. The current ROBERT wheel already includes both fixes. Publish a new ROBERT
+release before switching the installer to `pip install robert`.
 
 ## Dependency source
 
