@@ -8,18 +8,27 @@ This folder contains the packaging inputs shared by Windows, Linux, and macOS.
 packaging/shared/env.yaml
 ```
 
-This is the dependency source of truth for EasyRob.
+This defines the shared Conda and pip dependencies. ROBERT itself is bundled as
+one wheel in `packaging/shared/assets/` and installed from that file by each
+platform installer. AQME still comes from its GitHub `master` branch, so
+runtime creation still needs network access for AQME and other dependencies.
 
-ROBERT and AQME are installed from the `master` branches of their GitHub
-repositories. Creating the runtime therefore requires internet access to GitHub
-as well as the package indexes and Conda channels. The Git dependency in
-`env.yaml` lets pip fetch both repositories on every supported platform.
+To refresh the bundled ROBERT wheel from the local `robert` Conda environment,
+run from the repository root:
+
+```powershell
+conda run -n robert python packaging/shared/package_robert.py
+```
+
+The script reads the ROBERT source imported by that environment, builds a
+portable wheel, and replaces the previous ROBERT wheel in `assets/`. Run it
+again whenever that local source changes before rebuilding installers.
 
 ## Rule
 
 If the application runtime changes:
 
-1. edit `packaging/shared/env.yaml`
+1. edit `packaging/shared/env.yaml` for dependencies or refresh the bundled ROBERT wheel
 2. rebuild the installer or package for the platform you want to ship
 3. test a clean install on that platform
 

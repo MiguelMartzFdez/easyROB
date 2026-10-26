@@ -11,6 +11,7 @@ DIST_DIR="$REPO_ROOT/dist/macos"
 ASSETS_DIR="$SCRIPT_DIR/assets"
 ICON_SOURCE="$ASSETS_DIR/easyrob.icns"
 SHARED_VERSION_FILE="$REPO_ROOT/packaging/shared/version.txt"
+ROBERT_ASSETS_DIR="$REPO_ROOT/packaging/shared/assets"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -35,6 +36,14 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
+shopt -s nullglob
+robert_wheels=("$ROBERT_ASSETS_DIR"/robert-*.whl)
+shopt -u nullglob
+if (( ${#robert_wheels[@]} != 1 )); then
+  echo "Expected one bundled ROBERT wheel in $ROBERT_ASSETS_DIR, found ${#robert_wheels[@]}" >&2
+  exit 1
+fi
+
 rm -rf "$APP_BUILD_DIR" "$DMG_STAGE_DIR"
 mkdir -p "$BUILD_ROOT" "$DIST_DIR"
 rsync -a "$APP_TEMPLATE/" "$APP_BUILD_DIR/"
@@ -50,6 +59,8 @@ install -m 0755 "$SCRIPT_DIR/scripts/bootstrap_easyrob_macos.sh" "$APP_BUILD_DIR
 install -m 0755 "$SCRIPT_DIR/scripts/architecture_utils.sh" "$APP_BUILD_DIR/Contents/Resources/scripts/architecture_utils.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/launch_lock.sh" "$APP_BUILD_DIR/Contents/Resources/shared/launch_lock.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$APP_BUILD_DIR/Contents/Resources/shared/env.yaml"
+mkdir -p "$APP_BUILD_DIR/Contents/Resources/shared/assets"
+install -m 0644 "${robert_wheels[0]}" "$APP_BUILD_DIR/Contents/Resources/shared/assets/"
 printf '%s\n' "$VERSION" > "$APP_BUILD_DIR/Contents/Resources/shared/version.txt"
 
 if [[ ! -f "$ICON_SOURCE" ]]; then

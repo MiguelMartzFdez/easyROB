@@ -65,6 +65,7 @@ Required assets:
 - `assets/micromamba-osx-64`
 - `assets/micromamba-osx-arm64`
 - `assets/easyrob.icns`
+- one `packaging/shared/assets/robert-*.whl`
 
 For the full workflow, see:
 

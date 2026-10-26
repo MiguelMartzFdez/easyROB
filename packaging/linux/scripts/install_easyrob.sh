@@ -10,6 +10,7 @@ else
 fi
 SHARED_ROOT="${EASYROB_SHARED_ROOT:-$DEFAULT_SHARED_ROOT}"
 ENV_FILE="${EASYROB_ENV_FILE:-$SHARED_ROOT/env.yaml}"
+ROBERT_ASSETS_DIR="$SHARED_ROOT/assets"
 VERSION_FILE="${EASYROB_VERSION_FILE:-$SHARED_ROOT/version.txt}"
 if [[ -f /usr/share/pixmaps/easyrob.ico ]]; then
   DEFAULT_ICON_SOURCE="/usr/share/pixmaps/easyrob.ico"
@@ -158,6 +159,16 @@ fi
 
 log "Creating EasyRob environment..."
 run_environment_create_with_retry
+
+shopt -s nullglob
+robert_wheels=("$ROBERT_ASSETS_DIR"/robert-*.whl)
+shopt -u nullglob
+if (( ${#robert_wheels[@]} != 1 )); then
+  echo "Expected one bundled ROBERT wheel in $ROBERT_ASSETS_DIR, found ${#robert_wheels[@]}" >&2
+  exit 1
+fi
+log "Installing bundled ROBERT..."
+run_and_log "$ENV_PREFIX/bin/python" -m pip install --no-cache-dir "${robert_wheels[0]}"
 
 if [[ ! -x "$ENV_PREFIX/bin/python" ]]; then
   echo "EasyRob Python interpreter was not created at $ENV_PREFIX/bin/python" >&2

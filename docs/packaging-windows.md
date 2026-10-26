@@ -22,6 +22,7 @@ From the repository root:
 - Inno Setup 6 or 7
 - `packaging/windows/assets/micromamba-win-64.exe`
 - `packaging/shared/env.yaml`
+- one `packaging/shared/assets/robert-*.whl`
 
 ## Source of truth
 
@@ -30,6 +31,7 @@ Windows packaging is driven by:
 ```text
 packaging/shared/env.yaml
 packaging/shared/version.txt
+packaging/shared/assets/robert-*.whl
 ```
 
 If dependencies or the release version change, edit those shared files first.
@@ -47,14 +49,14 @@ If dependencies or the release version change, edit those shared files first.
 
 1. Copies the bundled Micromamba runtime
 2. Creates the EasyRob environment from `packaging/shared/env.yaml`
-   and installs ROBERT and AQME from their GitHub `master` branches using pip
-3. Retries environment creation up to three attempts if a transient download failure occurs
-4. Validates the runtime
-5. Creates Start Menu entries
-6. Optionally creates a Desktop shortcut
+3. Installs ROBERT from the wheel bundled in the installer
+4. Retries environment creation up to three attempts if a transient download failure occurs
+5. Validates the runtime
+6. Creates Start Menu entries
+7. Optionally creates a Desktop shortcut
 
-The installer needs access to GitHub while creating the runtime. ROBERT and AQME
-are not bundled as wheels in the Windows installer.
+The installer still needs network access for AQME and other dependencies, but
+ROBERT is installed from the local bundled wheel.
 
 ## User experience
 

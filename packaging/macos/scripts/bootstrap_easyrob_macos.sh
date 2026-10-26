@@ -468,6 +468,17 @@ install_runtime() {
     clear_execution_attributes "$ENV_PREFIX"
   fi
 
+  shopt -s nullglob
+  local robert_wheels=("$SHARED_DIR"/assets/robert-*.whl)
+  shopt -u nullglob
+  if (( ${#robert_wheels[@]} != 1 )); then
+    echo "Expected one bundled ROBERT wheel in $SHARED_DIR/assets, found ${#robert_wheels[@]}" >>"$INSTALL_ERR_LOG"
+    return 1
+  fi
+  update_notice 6 "Installing bundled ROBERT."
+  run_install_command "$ENV_PYTHON" -m pip install --no-cache-dir "${robert_wheels[0]}" || return 1
+  clear_execution_attributes "$ENV_PREFIX"
+
   update_notice 6 "Validating the installed runtime."
   validate_environment || return 1
 

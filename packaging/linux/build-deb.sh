@@ -8,6 +8,7 @@ STAGE_DIR="$SCRIPT_DIR/.build/deb-root"
 DEBIAN_DIR="$STAGE_DIR/DEBIAN"
 PACKAGE_NAME="easyrob"
 MICROMAMBA_ASSET="$SCRIPT_DIR/assets/micromamba-linux-64"
+ROBERT_ASSETS_DIR="$REPO_ROOT/packaging/shared/assets"
 SHARED_VERSION_FILE="$REPO_ROOT/packaging/shared/version.txt"
 
 require_command() {
@@ -47,6 +48,14 @@ if [[ ! -f "$MICROMAMBA_ASSET" ]]; then
   exit 1
 fi
 
+shopt -s nullglob
+robert_wheels=("$ROBERT_ASSETS_DIR"/robert-*.whl)
+shopt -u nullglob
+if (( ${#robert_wheels[@]} != 1 )); then
+  echo "Expected one bundled ROBERT wheel in $ROBERT_ASSETS_DIR, found ${#robert_wheels[@]}" >&2
+  exit 1
+fi
+
 cat > "$DEBIAN_DIR/control" <<EOF
 Package: $PACKAGE_NAME
 Version: $VERSION
@@ -69,6 +78,8 @@ install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob.sh" "$STAGE_DIR/usr/lib/e
 install -m 0755 "$SCRIPT_DIR/scripts/uninstall_easyrob_full.sh" "$STAGE_DIR/usr/lib/easyrob/scripts/uninstall_easyrob_full.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/launch_lock.sh" "$STAGE_DIR/usr/lib/easyrob/shared/launch_lock.sh"
 install -m 0644 "$REPO_ROOT/packaging/shared/env.yaml" "$STAGE_DIR/usr/lib/easyrob/shared/env.yaml"
+mkdir -p "$STAGE_DIR/usr/lib/easyrob/shared/assets"
+install -m 0644 "${robert_wheels[0]}" "$STAGE_DIR/usr/lib/easyrob/shared/assets/"
 printf '%s\n' "$VERSION" > "$STAGE_DIR/usr/lib/easyrob/shared/version.txt"
 install -m 0644 "$REPO_ROOT/packaging/windows/assets/Robert_icon.ico" "$STAGE_DIR/usr/share/pixmaps/easyrob.ico"
 

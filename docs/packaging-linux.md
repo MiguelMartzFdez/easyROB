@@ -27,6 +27,7 @@ chmod +x packaging/linux/build-deb.sh
 - `dpkg-deb`
 - `install`
 - `packaging/linux/assets/micromamba-linux-64`
+- one `packaging/shared/assets/robert-*.whl`
 
 ## Source of truth
 
@@ -35,6 +36,7 @@ Linux packaging is driven by:
 ```text
 packaging/shared/env.yaml
 packaging/shared/version.txt
+packaging/shared/assets/robert-*.whl
 ```
 
 If dependencies or the release version change, edit those shared files first.
@@ -53,7 +55,8 @@ If dependencies or the release version change, edit those shared files first.
 1. Installs the EasyRob launcher under `/usr/bin/easyrob`
 2. Installs the shared environment definition under `/usr/lib/easyrob/shared/env.yaml`
 3. Installs the bundled Micromamba bootstrap under `/usr/lib/easyrob/bootstrap/micromamba`
-4. Creates an applications menu entry under `/usr/share/applications`
+4. Installs the bundled ROBERT wheel under `/usr/lib/easyrob/shared/assets/`
+5. Creates an applications menu entry under `/usr/share/applications`
 
 The `.deb` does not create the Conda/Python runtime during package installation. The runtime is created on first launch in the current user's profile:
 

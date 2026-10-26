@@ -46,6 +46,10 @@ $sharedEnvFile = Join-Path $root 'packaging\shared\env.yaml'
 if (-not (Test-Path -LiteralPath $sharedEnvFile)) {
     throw "Required shared environment file is missing: $sharedEnvFile"
 }
+$robertWheels = @(Get-ChildItem -LiteralPath (Join-Path $root 'packaging\shared\assets') -Filter 'robert-*.whl' -File)
+if ($robertWheels.Count -ne 1) {
+    throw "Expected one bundled ROBERT wheel in packaging\shared\assets, found $($robertWheels.Count)."
+}
 
 $isccCandidates = @(
     "$env:ProgramFiles\Inno Setup 7\ISCC.exe",
@@ -63,7 +67,7 @@ if (-not $iscc) {
 }
 
 Write-Host "Compiling EasyRob with: $iscc"
-$generatedScriptContent = $scriptContent.Replace('__EASYROB_VERSION__', $version)
+$generatedScriptContent = $scriptContent.Replace('__EASYROB_VERSION__', $version).Replace('__ROBERT_WHEEL_NAME__', $robertWheels[0].Name)
 [System.IO.File]::WriteAllText($generatedScriptFile, $generatedScriptContent, [System.Text.UTF8Encoding]::new($false))
 Push-Location $platformRoot
 try {

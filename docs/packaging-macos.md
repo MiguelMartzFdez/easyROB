@@ -29,6 +29,7 @@ Shared dependencies are still defined in:
 ```text
 packaging/shared/env.yaml
 packaging/shared/version.txt
+packaging/shared/assets/robert-*.whl
 ```
 
 ## Relevant files
@@ -67,6 +68,7 @@ The macOS build requires:
 - `packaging/macos/assets/micromamba-osx-64`
 - `packaging/macos/assets/micromamba-osx-arm64`
 - `packaging/macos/assets/easyrob.icns`
+- one `packaging/shared/assets/robert-*.whl`
 
 The build now fails if any of those files are missing.
 
@@ -74,7 +76,7 @@ The build now fails if any of those files are missing.
 
 1. Reads the EasyRob version from `packaging/shared/version.txt`
 2. Stages `EasyRob.app`
-3. Copies `packaging/shared/env.yaml` into the app resources
+3. Copies `packaging/shared/env.yaml` and the ROBERT wheel into the app resources
 4. Copies the macOS bootstrap and launcher scripts
 5. Bundles both Micromamba bootstrap binaries inside the app resources
 6. Clears extended attributes on the staged `.app`

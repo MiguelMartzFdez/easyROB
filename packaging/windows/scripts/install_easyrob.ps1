@@ -9,6 +9,9 @@ param(
     [string]$EnvFile,
 
     [Parameter(Mandatory = $true)]
+    [string]$RobertWheel,
+
+    [Parameter(Mandatory = $true)]
     [string]$StateDir
 )
 
@@ -239,6 +242,18 @@ try {
     $quotedEnvPrefix = "`"$envPrefix`""
     $condaArgs = "create --prefix $quotedEnvPrefix --yes --file $quotedEnvFile"
     Invoke-EnvironmentCreateWithRetry -Arguments $condaArgs
+
+    if (-not (Test-Path -LiteralPath $RobertWheel -PathType Leaf)) {
+        throw "Bundled ROBERT wheel is missing: $RobertWheel"
+    }
+    Set-Content -LiteralPath $phaseFile -Value 'robert' -Encoding ASCII
+    Invoke-LoggedProcess `
+        -FilePath $envPython `
+        -Arguments "-m pip install --no-cache-dir `"$RobertWheel`"" `
+        -LogBaseName 'robert-install'
+    if ($script:lastProcessExitCode -ne 0) {
+        throw "Installing bundled ROBERT failed with exit code $script:lastProcessExitCode."
+    }
 
     Set-Content -LiteralPath $phaseFile -Value 'validate' -Encoding ASCII
     $validationStartedAt = Get-Date

@@ -6,12 +6,14 @@
 #define DependencyHelper "scripts\install_easyrob.ps1"
 #define UninstallHelper "scripts\uninstall_easyrob.ps1"
 #define SharedEnvFile "..\shared\env.yaml"
+#define RobertWheel "..\shared\assets\__ROBERT_WHEEL_NAME__"
 #define GuiLauncher "scripts\launch_easyrob.pyw"
 #define MyAppIconName "Robert_icon.ico"
 #define MicromambaInstallerName "micromamba-win-64.exe"
 #define DependencyHelperName "install_easyrob.ps1"
 #define UninstallHelperName "uninstall_easyrob.ps1"
 #define SharedEnvFileName "env.yaml"
+#define RobertWheelName "__ROBERT_WHEEL_NAME__"
 #define GuiLauncherName "launch_easyrob.pyw"
 
 [Setup]
@@ -52,6 +54,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; Flags: unchecked
 [Files]
 Source: "{#MicromambaInstaller}"; Flags: dontcopy
 Source: "{#SharedEnvFile}"; Flags: dontcopy
+Source: "{#RobertWheel}"; Flags: dontcopy
 Source: "{#DependencyHelper}"; Flags: dontcopy
 Source: "{#GuiLauncher}"; DestDir: "{app}"; DestName: "{#GuiLauncherName}"; Flags: ignoreversion
 Source: "{#UninstallHelper}"; DestDir: "{app}"; DestName: "{#UninstallHelperName}"; Flags: ignoreversion
@@ -220,6 +223,13 @@ begin
     DependencyDetailLabel.Caption :=
       'Conda is creating the EasyRob environment directly from the shared environment definition.';
   end
+  else if Phase = 'robert' then
+  begin
+    DependencyStatusLabel.Caption :=
+      'Step 2 of 3: Installing bundled ROBERT...';
+    DependencyDetailLabel.Caption :=
+      'Installing ROBERT from the wheel included in this installer.';
+  end
   else if Phase = 'validate' then
   begin
     DependencyStatusLabel.Caption :=
@@ -244,6 +254,7 @@ begin
 
   ExtractTemporaryFile('{#MicromambaInstallerName}');
   ExtractTemporaryFile('{#SharedEnvFileName}');
+  ExtractTemporaryFile('{#RobertWheelName}');
   ExtractTemporaryFile('{#DependencyHelperName}');
 
   DependencyRunning := True;
@@ -274,6 +285,7 @@ begin
     ' -MicromambaInstaller ' +
       Quote(ExpandConstant('{tmp}\{#MicromambaInstallerName}')) +
     ' -EnvFile ' + Quote(ExpandConstant('{tmp}\{#SharedEnvFileName}')) +
+    ' -RobertWheel ' + Quote(ExpandConstant('{tmp}\{#RobertWheelName}')) +
     ' -StateDir ' + Quote(DependencyStateDir);
 
   Log('Starting clean EasyRob dependency installation.');

@@ -10,7 +10,8 @@ Dependencies are shared across platforms from one place:
 packaging/shared/env.yaml
 ```
 
-If the runtime changes, edit that file first.
+If the runtime changes, edit that file first. ROBERT is packaged separately
+from the local `robert` Conda environment into `packaging/shared/assets/`.
 
 ## Folder layout
 
@@ -18,7 +19,9 @@ If the runtime changes, edit that file first.
 EasyRob/
 |-- packaging/
 |   |-- shared/
+|   |   |-- assets/robert-<VERSION>-*.whl
 |   |   |-- env.yaml
+|   |   |-- package_robert.py
 |   |   `-- README.md
 |   |-- windows/
 |   |   |-- build.ps1
@@ -109,5 +112,6 @@ Then update only the relevant platform folder and docs.
 ### If dependencies changed
 
 1. Edit `packaging/shared/env.yaml`
-2. Rebuild the platform installer
-3. Verify a clean installation on that platform
+2. Refresh `packaging/shared/assets/` with `package_robert.py` if ROBERT changed
+3. Rebuild the platform installer
+4. Verify a clean installation on that platform
