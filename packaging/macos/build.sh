@@ -98,6 +98,7 @@ rm -f "$DMG_OUTPUT"
 hdiutil create \
   -volname "EasyRob" \
   -srcfolder "$DMG_STAGE_DIR" \
+  -noatomic \
   -ov \
   -format UDZO \
   "$DMG_OUTPUT"
